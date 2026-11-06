@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fffdf5">
+<title>Kapı Rehberi</title>
+<style>
+:root{
+  --bg:#fffdf5; --fg:#111; --g:#0a7a3d; --b:#1257b5; --r:#b3261e;
+  --card:#ece9df; --ring:#999; --muted:#555;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#121212;--fg:#fff;--card:#262626;--ring:#777;--muted:#bbb}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:22px; line-height:1.35;
+  padding:calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
+  text-align:center;
+  -webkit-text-size-adjust:100%;
+  touch-action:manipulation;
+}
+.hide{display:none!important}
+.btn{
+  display:block; width:100%; border:0; border-radius:22px;
+  padding:28px 12px; font-size:30px; font-weight:800; color:#fff;
+  margin:14px 0; min-height:64px; cursor:pointer;
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  transition:transform .08s ease;
+}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:4px solid #ffb300;outline-offset:2px}
+.btn small{display:block;font-size:18px;font-weight:500;margin-top:6px;opacity:.95}
+.g{background:var(--g)} .b{background:var(--b)} .r{background:var(--r)}
+.x{background:#5f5f5f;font-size:22px;padding:16px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+.big{font-size:34px;font-weight:800;line-height:1.2}
+.muted{color:var(--muted);font-size:20px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 0;font-size:24px;padding:26px 4px;min-width:100px}
+#map{width:100%;border-radius:16px;background:var(--card);display:block;margin:8px auto;max-width:520px}
+#say{font-size:32px;font-weight:800;margin:8px 0;min-height:1.4em}
+#dist{font-size:44px;font-weight:900;margin:4px 0}
+.calm{font-size:22px;margin:10px 0}
+a.btn{text-decoration:none;display:block}
+@media (prefers-reduced-motion:reduce){
+  .btn{transition:none}
+  .btn:active{transform:none}
+}
+</style>
+</head>
+<body>
+<!-- Ana Ekran -->
+<section id="home">
+  <div class="card" id="saved" aria-live="polite">Henüz kapı kaydedilmedi.</div>
+  <button class="btn g" id="btnSave">📍 BURASI GİRİŞ KAPIM<small>Kapıdan girerken buna basın</small></button>
+  <button class="btn b" id="btnGuide">🧭 BENİ GERİ GÖTÜR<small>Kaybolursanız buna basın</small></button>
+  <button class="btn r" id="btnHelp">🆘 YARDIM</button>
+</section>
+
+<!-- Onay Ekranı -->
+<section id="confirm" class="hide">
+  <div class="big" style="margin-top:40px">Burayı giriş kapısı olarak kaydetmek istiyor musunuz?</div>
+  <p class="calm">Lütfen kapının tam önünde durun.</p>
+  <button class="btn g" id="btnConfirmYes">✅ EVET, KAYDET</button>
+  <button class="btn x" id="btnConfirmNo">❌ HAYIR, İPTAL</button>
+</section>
+
+<!-- Kaydetme Ekranı -->
+<section id="saving" class="hide" aria-live="assertive">
+  <div class="big" style="margin-top:20px">📡 Kapı kaydediliyor…</div>
+  
+  <div class="card" style="border:3px solid var(--b); margin-top:20px">
+    <div style="font-size:26px; font-weight:bold; color:var(--b); margin-bottom:8px;">⚠️ ÖNEMLİ UYARI</div>
+    <div style="font-size:22px; text-align:left;">
+      Ekranda <b>"Konumunuza erişmek istiyor"</b> gibi bir pencere çıkarsa lütfen <b style="color:var(--g); font-size:26px;">"İZİN VER"</b> yazan yere basın.
+    </div>
+  </div>
+
+  <div class="card" id="fix">Konum aranıyor…</div>
+  <button class="btn g" id="btnRetry" style="margin-top:20px">🔄 TEKRAR DENE</button>
+  <button class="btn x" id="btnSaveBack">Vazgeç</button>
+</section>
+
+<!-- Kat Seçimi -->
+<section id="floor" class="hide">
+  <div class="big">✅ Kapı kaydedildi</div>
+  <p class="calm">Hangi kattasınız?</p>
+  <div class="row">
+    <button class="btn b" data-floor="Zemin kat">ZEMİN</button>
+    <button class="btn b" data-floor="1. kat">1. KAT</button>
+    <button class="btn b" data-floor="Çatı">ÇATI</button>
+  </div>
+  <button class="btn x" data-floor="">Atla</button>
+</section>
+
+<!-- Rehber Ekranı -->
+<section id="guide" class="hide">
+  <div class="calm" aria-hidden="true">😌 Sakin olun, sizi götürüyorum.<br>Yavaş yürüyün.</div>
+  <canvas id="map" role="img" aria-label="Kapıya giden yolun kuşbakışı haritası"></canvas>
+  <div id="say" aria-live="polite" aria-atomic="true">…</div>
+  <div id="dist" aria-live="polite">—</div>
+  <div class="row">
+    <button class="btn b" id="btnRepeat">🔊 TEKRAR SÖYLE</button>
+    <button class="btn x" id="btnStop" style="font-size:24px">DURDUR</button>
+  </div>
+  <a class="btn x" id="gm" target="_blank" rel="noopener">🗺 Google Haritalar’da aç</a>
+</section>
+
+<!-- Yardım Ekranı -->
+<section id="help" class="hide">
+  <div class="big" style="color:var(--r)">🆘 YARDIM</div>
+  <div class="card" aria-live="polite">
+    <div class="calm">Bu ekranı bir görevliye gösterin.</div>
+    <div class="big" id="hinfo" style="margin-top:10px">—</div>
+  </div>
+  <button class="btn x" id="btnHelpBack">Geri Dön</button>
+</section>
+<script>
+"use strict";
+(function(){
+var $ = function(id){ return document.getElementById(id); };
+var RADIUS = 20;
+var SAVE_MIN_ACC = 25;
+var SAVE_MAX_MS  = 15000;
+var SPEAK_MIN_MS = 6000;
+
+var gate = null, wid = null, heading = null, trail = [], arrived = false;
+var lastSpeak = 0, lastTxt = "", lastFull = "";
+var wakeLock = null, orientAttached = false;
+
+// Çift tıklama / uzun basma değişkenleri
+var deleteTimer = null;
+
+function ls(k, v){
+  try{
+    if (v === undefined) return localStorage.getItem(k);
+    localStorage.setItem(k, v);
+  }catch(e){}
+  return null;
+}
+function jparse(s){ try{ return JSON.parse(s); }catch(e){ return null; } }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+function announce(msg){
+  var el = $("sr");
+  if (!el){ return; }
+  el.textContent = "";
+  setTimeout(function(){ el.textContent = msg; }, 30);
+}
+
+function load(){
+  gate = jparse(ls("gate"));
+  if (gate && gate.lat != null){
+    var dateStr = gate.ts ? new Date(gate.ts).toLocaleString("tr-TR") : "";
+    var accStr = gate.acc ? ("±" + Math.round(gate.acc) + " m") : "";
+    $("saved").innerHTML =
+      "🚪 <b>Kayıtlı Kapı</b><br>" +
+      (gate.floor ? ("<b>" + esc(gate.floor) + "</b><br>") : "") +
+      '<span class="muted">' + esc(dateStr) + (accStr ? " · " + accStr : "") + "</span>";
+  } else {
+    $("saved").textContent = "Henüz kapı kaydedilmedi.";
+  }
+}
+
+var SECTIONS = ["home","confirm","saving","floor","guide","help"];
+function show(id){
+  SECTIONS.forEach(function(x){
+    var el = $(x);
+    var on = (x === id);
+    el.classList.toggle("hide", !on);
+    el.setAttribute("aria-hidden", on ? "false" : "true");
+  });
+  window.scrollTo(0, 0);
+  try { speechSynthesis.cancel(); } catch(e){}
+  if (id !== "guide" && wid != null){ stopGuide(); }
+}
+
+function speak(text, force){
+  if (!text) return;
+  var now = Date.now();
+  if (!force && now - lastSpeak < SPEAK_MIN_MS) return;
+  lastSpeak = now;
+  lastFull = text;
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "tr-TR"; u.rate = 0.9; u.pitch = 1;
+    var voices = speechSynthesis.getVoices() || [];
+    for (var i=0; i<voices.length; i++){
+      if (voices[i].lang && voices[i].lang.toLowerCase().indexOf("tr") === 0){ u.voice = voices[i]; break; }
+    }
+    speechSynthesis.speak(u);
+  } catch(e){}
+  announce(text);
+}
+
+// Kapıyı silme (Sadece uzun basınca çalışır)
+function startDelete(e){
+  if(e) e.preventDefault();
+  if(!gate) return;
+  deleteTimer = setTimeout(function(){
+    if(confirm("Kayıtlı kapıyı silmek istediğinize emin misiniz?")){
+      ls("gate", ""); // Sil
+      load();
+      speak("Kapı kaydı silindi.", true);
+      try{ navigator.vibrate && navigator.vibrate([100,50,100]); }catch(e){}
+    }
+    deleteTimer = null;
+  }, 3000); // 3 saniye basılı tut
+}
+function cancelDelete(){
+  if(deleteTimer){
+    clearTimeout(deleteTimer);
+    deleteTimer = null;
+  }
+}
+
+// Yön (Pusula)
+function onOrient(e){
+  var h = null;
+  if (e.webkitCompassHeading != null && !isNaN(e.webkitCompassHeading)){ h = e.webkitCompassHeading; }
+  else if (e.absolute && e.alpha != null){ h = (360 - e.alpha) % 360; }
+  else if (e.alpha != null){ h = (360 - e.alpha) % 360; }
+  if (h == null) return;
+  var so = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  if (so) h = (h + so + 360) % 360;
+  if (heading == null) heading = h;
+  else {
+    var d = ((h - heading + 540) % 360) - 180;
+    heading = (heading + d * 0.25 + 360) % 360;
+  }
+}
+async function attachOrientation(){
+  if (orientAttached) return;
+  try {
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
+      var r = await DeviceOrientationEvent.requestPermission();
+      if (r !== "granted") return;
+    }
+  } catch(e){}
+  window.addEventListener("deviceorientationabsolute", onOrient, true);
+  window.addEventListener("deviceorientation", onOrient, true);
+  orientAttached = true;
+}
+function detachOrientation(){
+  if (!orientAttached) return;
+  window.removeEventListener("deviceorientationabsolute", onOrient, true);
+  window.removeEventListener("deviceorientation", onOrient, true);
+  orientAttached = false;
+}
+
+// Konum Hesaplamaları
+function rad(d){ return d * Math.PI / 180; }
+function enu(la1, lo1, la2, lo2){
+  var k = 111320 * Math.cos(rad(la1));
+  return { x: (lo2 - lo1) * k, y: (la2 - la1) * 110540 };
+}
+function median(arr){
+  var a = arr.slice().sort(function(x,y){return x-y;});
+  var n = a.length;
+  return n % 2 ? a[(n-1)/2] : (a[n/2-1] + a[n/2]) / 2;
+}
+
+// Kayıt İşlemi
+var saveWatch = null, saveTimer = null, saveActive = false;
+var saveSamples = [], saveBest = null, saveStart = 0;
+
+function endSave(){
+  saveActive = false;
+  if (saveWatch != null){ try { navigator.geolocation.clearWatch(saveWatch); } catch(e){} saveWatch = null; }
+  clearTimeout(saveTimer); saveTimer = null;
+}
+
+function startSave(){
+  endSave(); saveActive = true;
+  show("saving");
+  saveSamples = []; saveBest = null; saveStart = Date.now();
+  $("fix").textContent = "Konum aranıyor…";
+  speak("Kapı kaydediliyor. Lütfen birkaç saniye bekleyin.", true);
+
+  function fail(msg){
+    if (!saveActive) return;
+    endSave();
+    $("fix").textContent = msg;
+    speak("Konum alınamadı. Açık alana çıkıp tekrar deneyin.", true);
+  }
+
+  function finish(){
+    if (!saveActive || !saveBest) return;
+    var accs = saveSamples.map(function(s){ return s.acc; });
+    var use = saveSamples.filter(function(s){ return s.acc <= median(accs) * 1.5; });
+    if (!use.length) use = saveSamples;
+    var lat = median(use.map(function(s){ return s.lat; }));
+    var lon = median(use.map(function(s){ return s.lon; }));
+    var acc = median(use.map(function(s){ return s.acc; }));
+
+    endSave();
+    gate = { lat: lat, lon: lon, acc: acc, floor: "", ts: Date.now() };
+    ls("gate", JSON.stringify(gate));
+    load();
+    speak("Kapı kaydedildi. Hangi kattasınız?", true);
+    show("floor");
+  }
+
+  function onpos(p){
+    if (!saveActive) return;
+    var acc = p.coords.accuracy;
+    saveSamples.push({ lat: p.coords.latitude, lon: p.coords.longitude, acc: acc });
+    if (saveSamples.length > 30) saveSamples.shift();
+    if (!saveBest || acc < saveBest.acc) saveBest = saveSamples[saveSamples.length-1];
+    $("fix").textContent = "Doğruluk yaklaşık " + Math.round(saveBest.acc) + " m";
+    var el = Date.now() - saveStart;
+    if ((saveBest.acc <= SAVE_MIN_ACC && el > 2000 && saveSamples.length >= 3) || el > SAVE_MAX_MS){ finish(); }
+  }
+  function onerr(e){
+    if (!saveActive) return;
+    if (e && e.code === 1){ fail("Konum izni verilmedi. Tarayıcı ayarlarından izin verip tekrar deneyin."); }
+    else { $("fix").textContent = "Konum bekleniyor… (açık alanda daha iyi sonuç)"; }
+  }
+
+  if (!navigator.geolocation){ fail("Bu cihazda konum desteklenmiyor."); return; }
+  navigator.geolocation.getCurrentPosition(onpos, onerr, { enableHighAccuracy:false, maximumAge:60000, timeout:10000 });
+  saveWatch = navigator.geolocation.watchPosition(onpos, onerr, { enableHighAccuracy:true, maximumAge:3000, timeout:15000 });
+  saveTimer = setTimeout(function(){ if (saveBest) finish(); else fail("Konum alınamadı. Açık alana çıkıp tekrar deneyin."); }, SAVE_MAX_MS + 3000);
+}
+
+function setFloor(f){
+  if (gate){ gate.floor = f; ls("gate", JSON.stringify(gate)); }
+  load(); show("home");
+  speak("Tamam. Dönmek isterseniz mavi düğmeye basın.", true);
+}
+
+// Rehber İşlemi
+async function startGuide(){
+  load();
+  if (!gate || gate.lat == null){
+    speak("Önce giriş kapısını kaydetmeniz gerekiyor.", true);
+    alert("Önce yeşil düğmeyle kapıyı kaydedin."); return;
+  }
+  if (!navigator.geolocation){ alert("Bu cihazda konum desteklenmiyor."); return; }
+  
+  trail = []; arrived = false; heading = null;
+  await attachOrientation();
+  try {
+    if ("wakeLock" in navigator){
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", function(){ wakeLock = null; });
+    }
+  } catch(e){}
+  show("guide");
+  speak("Sakin olun. Sizi kapıya götüreceğim. Yavaş yürüyün.", true);
+  wid = navigator.geolocation.watchPosition(update, onGuideErr, { enableHighAccuracy:true, maximumAge:0, timeout:20000 });
+}
+
+function onGuideErr(e){
+  if (!e) return;
+  var msg = "Konum alınamıyor";
+  if (e.code === 1) msg = "Konum izni yok. Lütfen izin verin.";
+  else if (e.code === 2) msg = "Konum sinyali yok. Açık alana çıkın.";
+  else if (e.code === 3) msg = "Konum zaman aşımı.";
+  $("say").textContent = msg;
+  announce(msg);
+}
+
+function stopGuide(){
+  if (wid != null){ try { navigator.geolocation.clearWatch(wid); } catch(e){} wid = null; }
+  detachOrientation();
+  if (wakeLock){ try { wakeLock.release(); } catch(e){} wakeLock = null; }
+  try { speechSynthesis.cancel(); } catch(e){}
+  arrived = false;
+}
+
+function update(p){
+  var c = p.coords;
+  var v = enu(c.latitude, c.longitude, gate.lat, gate.lon);
+  var d = Math.sqrt(v.x*v.x + v.y*v.y);
+  trail.push({ la: c.latitude, lo: c.longitude });
+  if (trail.length > 60) trail.shift();
+
+  var h = heading;
+  if (h == null && c.heading != null && !isNaN(c.heading)) h = c.heading;
+
+  var shown = d < RADIUS ? Math.round(d) : Math.round(d/10)*10;
+  $("dist").textContent = shown + " metre";
+  $("gm").href = "https://www.google.com/maps/dir/?api=1&destination=" + gate.lat + "," + gate.lon + "&travelmode=walking";
+
+  var txt;
+  if (d < RADIUS){
+    txt = "Kapıya yaklaştınız";
+    if (!arrived){
+      arrived = true;
+      var f = gate.floor ? (" " + gate.floor + " olduğundan emin olun.") : " Etrafınıza bakın.";
+      speak("Kapıya yaklaştınız." + f, true);
+      try { navigator.vibrate && navigator.vibrate([200,100,200]); } catch(e){}
+    }
+  } else {
+    arrived = false;
+    if (h == null){ txt = "Biraz yürüyün, yönü bulacağım"; }
+    else {
+      var br = Math.atan2(v.x, v.y) * 180 / Math.PI;
+      var delta = ((br - h + 540) % 360) - 180;
+      var a = Math.abs(delta);
+      var side = delta > 0 ? "sağa" : "sola";
+      if (a < 25) txt = "Düz yürüyün";
+      else if (a < 75) txt = "Hafifçe " + side + " dönün";
+      else if (a < 140) txt = side.charAt(0).toUpperCase() + side.slice(1) + " dönün";
+      else txt = "Arkanıza dönün";
+    }
+    var changed = (txt !== lastTxt);
+    lastTxt = txt;
+    speak(txt + ". Kapıya " + shown + " metre.", changed && (Date.now() - lastSpeak > 3500));
+  }
+  $("say").textContent = txt;
+  draw(c, h, v, d);
+}
+
+function draw(c, h, v, d){
+  var cv = $("map");
+  var W = Math.min(window.innerWidth - 28, 520);
+  var H = Math.round(W * 0.95);
+  var dpr = window.devicePixelRatio || 1;
+  cv.style.width = W + "px"; cv.style.height = H + "px";
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+
+  var g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+
+  var cs = getComputedStyle(document.documentElement);
+  var fg = (cs.getPropertyValue("--fg") || "#111").trim();
+  var ring = (cs.getPropertyValue("--ring") || "#999").trim();
+
+  var rot = (h != null) ? rad(h) : 0;
+  var range = Math.max(60, d * 1.2);
+  var cx = W/2, cy = H*0.72;
+  var s = (H*0.62) / range;
+
+  function P(dx, dy){
+    var xr = dx * Math.cos(rot) - dy * Math.sin(rot);
+    var yr = dx * Math.sin(rot) + dy * Math.cos(rot);
+    return [cx + xr*s, cy - yr*s];
+  }
+
+  g.strokeStyle = ring; g.lineWidth = 1; g.fillStyle = ring;
+  g.font = "14px system-ui, Arial"; g.textAlign = "left"; g.textBaseline = "alphabetic";
+  var step = range > 400 ? 200 : range > 150 ? 100 : range > 70 ? 50 : 20;
+  for (var r = step; r < range*1.5; r += step){
+    g.beginPath(); g.arc(cx, cy, r*s, 0, Math.PI*2); g.stroke();
+    g.fillText(r + " m", cx + 4, cy - r*s - 3);
+  }
+
+  if (trail.length > 1){
+    g.strokeStyle = "#1257b5"; g.lineWidth = 4;
+    g.beginPath();
+    for (var i=0; i<trail.length; i++){
+      var u = enu(c.latitude, c.longitude, trail[i].la, trail[i].lo);
+      var q = P(u.x, u.y);
+      if (i === 0) g.moveTo(q[0], q[1]); else g.lineTo(q[0], q[1]);
+    }
+    g.stroke();
+  }
+
+  var q = P(v.x, v.y);
+  g.fillStyle = "rgba(10,122,61,.20)"; g.strokeStyle = "#0a7a3d"; g.lineWidth = 3;
+  g.beginPath(); g.arc(q[0], q[1], Math.max(6, RADIUS*s), 0, Math.PI*2);
+  g.fill(); g.stroke();
+  g.font = Math.max(30, Math.min(64, RADIUS*s)) + "px system-ui";
+  g.textAlign = "center"; g.textBaseline = "middle"; g.fillStyle = fg; g.fillText("🚪", q[0], q[1]);
+
+  g.setLineDash([10, 8]); g.strokeStyle = "#0a7a3d"; g.lineWidth = 4;
+  g.beginPath(); g.moveTo(cx, cy); g.lineTo(q[0], q[1]); g.stroke();
+  g.setLineDash([]);
+
+  g.fillStyle = "#b3261e";
+  g.beginPath(); g.moveTo(cx, cy - 20); g.lineTo(cx + 14, cy + 14); g.lineTo(cx, cy + 7); g.lineTo(cx - 14, cy + 14);
+  g.closePath(); g.fill();
+  g.font = "bold 16px system-ui"; g.textAlign = "center"; g.textBaseline = "alphabetic";
+  g.fillStyle = fg; g.fillText("SİZ", cx, cy + 36);
+
+  if (h == null){
+    g.textAlign = "left"; g.font = "14px system-ui"; g.fillText("Kuzey yukarıda", 8, H - 8);
+  }
+}
+
+// Yardım
+function showHelp(){
+  load(); show("help");
+  $("hinfo").innerHTML = gate && gate.lat != null
+    ? ("Giriş kapısı kayıtlı" + (gate.floor ? "<br><b>" + esc(gate.floor) + "</b>" : ""))
+    : "Kapı kaydı yok";
+  speak("Sakin olun. Bu ekranı bir görevliye gösterin.", true);
+}
+
+// Olay Dinleyicileri
+function bind(){
+  // Uzun basarak silme
+  var savedEl = $("saved");
+  savedEl.addEventListener("mousedown", startDelete);
+  savedEl.addEventListener("touchstart", startDelete, {passive: false});
+  savedEl.addEventListener("mouseup", cancelDelete);
+  savedEl.addEventListener("mouseleave", cancelDelete);
+  savedEl.addEventListener("touchend", cancelDelete);
+  savedEl.addEventListener("touchmove", cancelDelete);
+
+  // Kaydetme butonu -> Onay ekranı
+  $("btnSave").addEventListener("click", function(){ show("confirm"); });
+  $("btnConfirmNo").addEventListener("click", function(){ show("home"); });
+  $("btnConfirmYes").addEventListener("click", startSave);
+  
+  $("btnRetry").addEventListener("click", startSave);
+  $("btnSaveBack").addEventListener("click", function(){ endSave(); show("home"); });
+
+  // Rehber
+  $("btnGuide").addEventListener("click", startGuide);
+  $("btnRepeat").addEventListener("click", function(){ if (lastFull) speak(lastFull, true); });
+  $("btnStop").addEventListener("click", function(){ stopGuide(); show("home"); });
+
+  // Yardım
+  $("btnHelp").addEventListener("click", showHelp);
+  $("btnHelpBack").addEventListener("click", function(){ show("home"); });
+
+  document.querySelectorAll("#floor [data-floor]").forEach(function(b){
+    b.addEventListener("click", function(){ setFloor(b.getAttribute("data-floor")); });
+  });
+
+  // Ekran açık tutma (WakeLock)
+  document.addEventListener("visibilitychange", function(){
+    if (document.visibilityState === "visible" && !$("guide").classList.contains("hide") && "wakeLock" in navigator && !wakeLock){
+      navigator.wakeLock.request("screen").then(function(w){ wakeLock = w; w.addEventListener("release", function(){ wakeLock = null; }); }).catch(function(){});
+    }
+  });
+  window.addEventListener("pagehide", function(){ endSave(); stopGuide(); });
+
+  // Görme engelliler için
+  var sr = document.createElement("div");
+  sr.id = "sr"; sr.setAttribute("aria-live", "polite"); sr.setAttribute("aria-atomic", "true");
+  sr.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden";
+  document.body.appendChild(sr);
+}
+
+load();
+bind();
+})();
+</script>
+</body>
+</html>
