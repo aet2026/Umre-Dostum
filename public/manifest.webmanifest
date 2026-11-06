@@ -1,0 +1,10 @@
+{
+  "name": "Kapı Rehberi",
+  "short_name": "Kapı",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fffdf5",
+  "theme_color": "#fffdf5",
+  "lang": "tr",
+  "icons": []
+}
