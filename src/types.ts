@@ -1,3 +1,5 @@
+export type VerificationStatus = 'verified' | 'approximate' | 'unverified';
+
 export interface DoorInfo {
   id: number;
   name: string;
@@ -5,6 +7,8 @@ export interface DoorInfo {
   outsideLat: number;
   outsideLng: number;
   isMain: boolean;
+  verification: VerificationStatus;
+  source?: string;
 }
 
 export interface TrailPoint {

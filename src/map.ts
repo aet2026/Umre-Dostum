@@ -38,8 +38,13 @@ export function drawTrail(trail: TrailPoint[]): void {
   const first = trail[0];
   if (first) {
     L.circleMarker([first.lat, first.lng], {
-      radius: 8, color: '#0a7a3d', fillColor: '#0a7a3d', fillOpacity: 0.9,
-    }).addTo(trailLayer).bindPopup('Giriş Kapısı');
+      radius: 8,
+      color: '#0a7a3d',
+      fillColor: '#0a7a3d',
+      fillOpacity: 0.9,
+    })
+      .addTo(trailLayer)
+      .bindPopup('Giriş Kapısı');
   }
 }
 
@@ -47,16 +52,26 @@ export function setTarget(lat: number, lng: number, label: string): void {
   if (!mapInstance) return;
   if (targetMarker) mapInstance.removeLayer(targetMarker);
   targetMarker = L.circleMarker([lat, lng], {
-    radius: 12, color: '#b3261e', fillColor: '#b3261e', fillOpacity: 0.9,
-  }).addTo(mapInstance).bindPopup(label);
+    radius: 12,
+    color: '#b3261e',
+    fillColor: '#b3261e',
+    fillOpacity: 0.9,
+  })
+    .addTo(mapInstance)
+    .bindPopup(label);
 }
 
 export function setCurrent(lat: number, lng: number): void {
   if (!mapInstance) return;
   if (currentMarker) mapInstance.removeLayer(currentMarker);
   currentMarker = L.circleMarker([lat, lng], {
-    radius: 10, color: '#1257b5', fillColor: '#1257b5', fillOpacity: 0.9,
-  }).addTo(mapInstance).bindPopup('Şu an buradasınız');
+    radius: 10,
+    color: '#1257b5',
+    fillColor: '#1257b5',
+    fillOpacity: 0.9,
+  })
+    .addTo(mapInstance)
+    .bindPopup('Şu an buradasınız');
   currentMarker.bringToFront();
 }
 
@@ -83,15 +98,17 @@ export function fitToAll(): void {
 export function invalidateSize(): void {
   mapInstance?.invalidateSize();
 }
-// src/map.ts — debug modu ekle
+
 export function showAllDoorsDebug(): void {
   if (!mapInstance) return;
-  // DOORS listesini import et
   import('./doors').then(({ DOORS }) => {
     for (const door of DOORS) {
-      const color = door.verification === 'verified' ? '#0a7a3d'
-                  : door.verification === 'approximate' ? '#ffb300'
-                  : '#b3261e';
+      const color =
+        door.verification === 'verified'
+          ? '#0a7a3d'
+          : door.verification === 'approximate'
+          ? '#ffb300'
+          : '#b3261e';
       L.circleMarker([door.outsideLat, door.outsideLng], {
         radius: 10,
         color,

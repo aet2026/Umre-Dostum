@@ -4,7 +4,16 @@ import { DOORS, findDoor } from './doors';
 import { loadGate, saveGate, clearGate } from './storage';
 import { TrailRecorder, distanceM } from './trail';
 import { computeNavigation } from './guide';
-import { initMap, drawTrail, setCurrent, setTarget, drawLineToTarget, fitToAll, invalidateSize } from './map';
+import {
+  initMap,
+  drawTrail,
+  setCurrent,
+  setTarget,
+  drawLineToTarget,
+  fitToAll,
+  invalidateSize,
+  showAllDoorsDebug,
+} from './map';
 import { speak, repeatLast, stopSpeech, initSpeech } from './speech';
 import { show } from './ui';
 
@@ -19,6 +28,17 @@ initSpeech();
 savedGate = loadGate();
 renderSavedCard();
 bind();
+
+// Debug modu: ?debug=1
+const params = new URLSearchParams(window.location.search);
+if (params.get('debug') === '1') {
+  show('guide');
+  initMap('map');
+  setTimeout(() => {
+    invalidateSize();
+    showAllDoorsDebug();
+  }, 100);
+}
 
 // ---------- Saved card ----------
 function renderSavedCard(): void {
@@ -36,9 +56,9 @@ function renderSavedCard(): void {
 }
 
 function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, c => (
-    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string
-  ));
+  return s.replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string)
+  );
 }
 
 // ---------- Door picker ----------
@@ -75,7 +95,6 @@ function bind(): void {
   });
 
   document.getElementById('btnGuide')?.addEventListener('click', onGuide);
-
   document.getElementById('btnHelp')?.addEventListener('click', onHelp);
 
   document.getElementById('btnConfirmNo')?.addEventListener('click', () => {
@@ -91,7 +110,6 @@ function bind(): void {
 
   document.getElementById('btnStop')?.addEventListener('click', onStopGuide);
   document.getElementById('btnRepeat')?.addEventListener('click', () => repeatLast());
-
   document.getElementById('btnHelpBack')?.addEventListener('click', () => show('home'));
 
   document.querySelectorAll<HTMLButtonElement>('[data-action="home"]').forEach(el => {
@@ -115,7 +133,12 @@ function bind(): void {
         }
       }, 3000);
     };
-    const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    const cancel = () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
     savedEl.addEventListener('mousedown', start);
     savedEl.addEventListener('touchstart', start, { passive: false });
     savedEl.addEventListener('mouseup', cancel);
@@ -142,12 +165,10 @@ async function onSaveConfirm(): Promise<void> {
   if (fix) fix.textContent = 'Konum aranıyor…';
   speak('Kapı kaydediliyor. Lütfen birkaç saniye bekleyin.', true);
 
-  // GPS'ten dış koordinat al; başarısızsa kapı verisini kullan
   let lat = door.outsideLat;
   let lng = door.outsideLng;
   try {
     const pos = await getCurrentPosition(8000);
-    // Kapıya makul yakınlıkta mı? (200m) Değilse kapı koordinatını kullan
     const d = distanceM(
       { lat: pos.coords.latitude, lng: pos.coords.longitude },
       { lat: door.outsideLat, lng: door.outsideLng }
@@ -160,7 +181,6 @@ async function onSaveConfirm(): Promise<void> {
     // GPS yok — kapı koordinatını kullan
   }
 
-  // İz kaydını başlat
   recorder.start();
 
   savedGate = {
@@ -197,7 +217,6 @@ async function onGuide(): Promise<void> {
     return;
   }
 
-  // İz kaydını durdur ve kaydet
   const trail = recorder.stop();
   if (trail.length > 0) {
     savedGate.trail = trail;
@@ -216,17 +235,15 @@ async function onGuide(): Promise<void> {
   setTarget(tLat, tLng, `${target?.name ?? savedGate.doorName} Kapısı`);
   drawTrail(savedGate.trail);
 
-  // Dış mekan GPS takibi
   if (guideWatchId !== null) {
     navigator.geolocation.clearWatch(guideWatchId);
   }
   guideWatchId = navigator.geolocation.watchPosition(
-    (pos) => onGuidePos(pos, tLat, tLng),
-    (err) => onGuideErr(err),
+    pos => onGuidePos(pos, tLat, tLng),
+    err => onGuideErr(err),
     { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
   );
 
-  // GMaps link
   const gm = document.getElementById('gm') as HTMLAnchorElement | null;
   if (gm) {
     gm.href = `https://www.google.com/maps/dir/?api=1&destination=${tLat},${tLng}&travelmode=walking`;
@@ -252,7 +269,9 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   if (nav.arrived && guideWatchId !== null) {
     navigator.geolocation.clearWatch(guideWatchId);
     guideWatchId = null;
-    try { navigator.vibrate?.([200, 100, 200]); } catch {}
+    try {
+      navigator.vibrate?.([200, 100, 200]);
+    } catch {}
   }
 }
 
@@ -273,17 +292,6 @@ function onStopGuide(): void {
   }
   stopSpeech();
   show('home');
-}
-// URL parametresi kontrolü
-const params = new URLSearchParams(window.location.search);
-if (params.get('debug') === '1') {
-  // Ana ekran yerine doğrudan haritayı aç
-  show('guide');
-  initMap('map');
-  setTimeout(() => {
-    invalidateSize();
-    showAllDoorsDebug();
-  }, 100);
 }
 
 // ---------- Help ----------

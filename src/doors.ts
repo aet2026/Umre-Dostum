@@ -1,18 +1,4 @@
-// src/doors.ts
 import type { DoorInfo } from './types';
-
-export type VerificationStatus = 'verified' | 'approximate' | 'unverified';
-
-export interface DoorInfo {
-  id: number;
-  name: string;
-  area: 'kuzey' | 'güney' | 'doğu' | 'batı';
-  outsideLat: number;
-  outsideLng: number;
-  isMain: boolean;
-  verification: VerificationStatus;
-  source?: string;  // koordinat kaynağı
-}
 
 export const DOORS: DoorInfo[] = [
   {
@@ -56,7 +42,7 @@ export const DOORS: DoorInfo[] = [
     id: 45,
     name: 'Fetih',
     area: 'kuzey',
-    outsideLat: 21.42402,   // OSM doğrulanmış [citation:6]
+    outsideLat: 21.42402,
     outsideLng: 39.82652,
     isMain: true,
     verification: 'verified',
