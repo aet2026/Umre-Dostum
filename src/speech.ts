@@ -1,5 +1,6 @@
 let lastSpeak = 0;
 let lastFull = '';
+let lastSpokenText = '';
 let voicesReady = false;
 
 const MIN_GAP_MS = 6000;
@@ -20,10 +21,15 @@ export function initSpeech(): void {
 
 export function speak(text: string, force = false): void {
   if (!text) return;
+
+  if (!force && text === lastSpokenText) return;
+
   const now = Date.now();
   if (!force && now - lastSpeak < MIN_GAP_MS) return;
+
   lastSpeak = now;
   lastFull = text;
+  lastSpokenText = text;
 
   try {
     speechSynthesis.cancel();
@@ -44,12 +50,18 @@ export function repeatLast(): void {
 }
 
 export function stopSpeech(): void {
-  try { speechSynthesis.cancel(); } catch {}
+  try {
+    speechSynthesis.cancel();
+  } catch {}
+  lastSpokenText = '';
+  lastSpeak = 0;
 }
 
 function announce(msg: string): void {
   const el = document.getElementById('sr');
   if (!el) return;
   el.textContent = '';
-  setTimeout(() => { el.textContent = msg; }, 30);
+  setTimeout(() => {
+    el.textContent = msg;
+  }, 30);
 }

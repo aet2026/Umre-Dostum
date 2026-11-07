@@ -11,7 +11,11 @@ export function loadGate(): SavedGate | null {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as SavedGate;
-    if (typeof parsed.doorId !== 'number' || typeof parsed.outsideLat !== 'number') {
+    if (
+      typeof parsed.doorId !== 'number' ||
+      typeof parsed.outsideLat !== 'number' ||
+      typeof parsed.outsideLng !== 'number'
+    ) {
       return null;
     }
     parsed.trail = Array.isArray(parsed.trail) ? parsed.trail : [];

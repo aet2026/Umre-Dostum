@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .vite/
+covarege/
 *.log
 .DS_Store

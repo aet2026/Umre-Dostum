@@ -12,7 +12,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "types": ["vite/client"]
+    "noEmit": true,
+    "types": ["vite/client", "vitest/globals"]
   },
   "include": ["src"]
 }
