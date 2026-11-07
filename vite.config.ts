@@ -1,7 +1,13 @@
 import { defineConfig } from 'vitest/config';
 import process from 'node:process';
 
-if (!process.env.NODE_OPTIONS?.includes('--no-webstorage')) {
+// --no-webstorage yalnızca Node 22.4+ için geçerli.
+// Node 20 (GitHub Actions) bu bayrağı tanımaz; eklersek worker başlamaz.
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
+const supportsNoWebstorage =
+  nodeMajor! > 22 || (nodeMajor === 22 && nodeMinor! >= 4);
+
+if (supportsNoWebstorage && !process.env.NODE_OPTIONS?.includes('--no-webstorage')) {
   process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ''} --no-webstorage`.trim();
 }
 
