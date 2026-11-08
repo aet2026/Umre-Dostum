@@ -1,4 +1,5 @@
 export type VerificationStatus = 'verified' | 'approximate' | 'unverified';
+export type Popularity = 'high' | 'medium' | 'low';
 
 export interface DoorInfo {
   id: number;
@@ -9,6 +10,8 @@ export interface DoorInfo {
   isMain: boolean;
   verification: VerificationStatus;
   source?: string;
+  nearBus?: string;
+  popularity?: Popularity;
 }
 
 export interface TrailPoint {

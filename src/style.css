@@ -54,10 +54,58 @@ a.btn{text-decoration:none;display:block}
 .door-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
 .door-grid .btn{font-size:26px;padding:22px 8px;margin:0}
 .door-grid .btn small{font-size:16px}
+
+/* ---------- Yardım Ekranı (Arapça) ---------- */
+.help-arabic{
+  background:#fff;
+  color:#111;
+  border-radius:22px;
+  padding:32px 20px;
+  margin:12px 0;
+  border:4px solid var(--r);
+  text-align:center;
+}
+.help-arabic-title{
+  font-size:30px;
+  font-weight:900;
+  color:var(--r);
+  margin-bottom:16px;
+  font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;
+}
+.help-arabic-body{
+  font-size:38px;
+  font-weight:800;
+  line-height:1.5;
+  font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;
+  word-break:break-word;
+}
+.help-turkish{
+  background:var(--card);
+  border-radius:16px;
+  padding:14px;
+  margin:12px 0;
+}
+.help-turkish .calm{
+  font-size:20px;
+  color:var(--muted);
+}
+.door-section-header {
+  grid-column: 1 / -1;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--b);
+  margin: 16px 0 4px;
+  text-align: left;
+  padding: 4px 8px;
+  border-left: 5px solid var(--b);
+  background: var(--card);
+  border-radius: 6px;
+}
 @media (prefers-reduced-motion:reduce){
   .btn{transition:none}.btn:active{transform:none}
 }
 @media (prefers-contrast:more){
   .btn{border:2px solid currentColor}
   .card{border:2px solid var(--fg)}
+  .help-arabic{border-width:6px}
 }

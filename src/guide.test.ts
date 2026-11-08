@@ -90,3 +90,60 @@ describe('computeNavigation', () => {
     expect(nav.bearingDeg).toBeLessThan(360);
   });
 });
+describe('computeNavigation — pusula', () => {
+  it('cihaz yönü verilmezse kuzey referanslı tarif döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82590 });
+    expect(nav.relativeBearing).toBeUndefined();
+    expect(nav.instruction).toMatch(/kuzey/);
+  });
+
+  it('cihaz hedefe bakıyorsa "düz yürüyün"', () => {
+    // hedef kuzeyde, cihaz kuzeye bakıyor
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      0
+    );
+    expect(nav.relativeBearing).toBeDefined();
+    expect(nav.instruction).toContain('düz yürüyün');
+  });
+
+  it('hedef sağda ise "sağa dönüp yürüyün"', () => {
+    // hedef kuzeyde, cihaz doğuya bakıyor (90) → hedef solda (-90) → sola dön
+    // hedef kuzeyde, cihaz batıya bakıyor (270) → hedef sağda (90) → sağa dön
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      270
+    );
+    expect(nav.instruction).toContain('sağa');
+  });
+
+  it('hedef solda ise "sola dönüp yürüyün"', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      90
+    );
+    expect(nav.instruction).toContain('sola');
+  });
+
+  it('hedef arkada ise "arkanıza dönüp yürüyün"', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      180
+    );
+    expect(nav.instruction).toContain('arkanıza dönüp');
+  });
+
+  it('relativeBearing -180..180 aralığında', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      300
+    );
+    expect(nav.relativeBearing).toBeGreaterThanOrEqual(-180);
+    expect(nav.relativeBearing).toBeLessThanOrEqual(180);
+  });
+});

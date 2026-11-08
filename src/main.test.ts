@@ -17,6 +17,7 @@ vi.mock('./map', () => ({
 vi.mock('./speech', () => ({
   initSpeech: vi.fn(),
   speak: vi.fn(),
+  speakArabic: vi.fn(),
   repeatLast: vi.fn(),
   stopSpeech: vi.fn(),
 }));
@@ -51,7 +52,11 @@ function setupDOM(): void {
       <button id="btnRepeat"></button><button id="btnStop"></button>
       <a id="gm"></a>
     </section>
-    <section id="help" class="screen hide"><div id="hinfo"></div>
+    <section id="help" class="screen hide">
+      <div id="hTitleAr"></div>
+      <div id="hBodyAr"></div>
+      <div id="hBodyTr"></div>
+      <button id="btnSpeakAr"></button>
       <button id="btnHelpBack"></button>
     </section>
   `;
@@ -167,17 +172,23 @@ describe('main.ts entegrasyon', () => {
     expect(document.getElementById('help')!.classList.contains('hide')).toBe(false);
   });
 
-  it('yardım ekranı kayıtlı kapı adını gösterir', async () => {
+  it('yardım ekranı kayıtlı kapı adını Arapça ve Türkçe gösterir', async () => {
     localStorage.setItem('savedGate.v1', JSON.stringify(sample));
     await loadMain();
     document.getElementById('btnHelp')!.click();
-    expect(document.getElementById('hinfo')!.textContent).toContain('Kral Abdullah');
+
+    expect(document.getElementById('hBodyTr')!.textContent).toContain('Kral Abdullah');
+    expect(document.getElementById('hBodyAr')!.textContent).toContain('الملك عبد الله');
+    expect(document.getElementById('hTitleAr')!.textContent).toContain('أحتاج مساعدة');
   });
 
-  it('kayıt yokken yardım "Kapı kaydı yok" gösterir', async () => {
+  it('kayıt yokken yardım genel mesaj gösterir', async () => {
     await loadMain();
     document.getElementById('btnHelp')!.click();
-    expect(document.getElementById('hinfo')!.textContent).toContain('Kapı kaydı yok');
+
+    expect(document.getElementById('hTitleAr')!.textContent).toContain('أحتاج مساعدة');
+    expect(document.getElementById('hBodyAr')!.textContent).toContain('هل يمكنك أن تساعدني');
+    expect(document.getElementById('hBodyTr')!.textContent).toContain('yardım');
   });
 
   it('onay ekranında vazgeç ana ekrana döner', async () => {

@@ -5,9 +5,13 @@ let voicesReady = false;
 
 const MIN_GAP_MS = 6000;
 
-function pickTurkishVoice(): SpeechSynthesisVoice | undefined {
+function pickVoice(lang: string): SpeechSynthesisVoice | undefined {
   const vs = speechSynthesis.getVoices() ?? [];
-  return vs.find(v => v.lang?.toLowerCase().startsWith('tr'));
+  const lower = lang.toLowerCase();
+  return (
+    vs.find(v => v.lang?.toLowerCase() === lower) ??
+    vs.find(v => v.lang?.toLowerCase().startsWith(lower.split('-')[0]!))
+  );
 }
 
 export function initSpeech(): void {
@@ -17,6 +21,19 @@ export function initSpeech(): void {
   };
   load();
   speechSynthesis.addEventListener('voiceschanged', load);
+}
+
+function speakWithLang(text: string, lang: string, rate: number): void {
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = rate;
+    u.pitch = 1;
+    const v = pickVoice(lang);
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch {}
 }
 
 export function speak(text: string, force = false): void {
@@ -31,17 +48,17 @@ export function speak(text: string, force = false): void {
   lastFull = text;
   lastSpokenText = text;
 
-  try {
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'tr-TR';
-    u.rate = 0.9;
-    u.pitch = 1;
-    const v = pickTurkishVoice();
-    if (v) u.voice = v;
-    speechSynthesis.speak(u);
-  } catch {}
+  speakWithLang(text, 'tr-TR', 0.9);
+  announce(text);
+}
 
+/**
+ * Arapça konuşma — görevliye hitap için.
+ * force=true, çünkü yardım ekranı her açıldığında tekrar okunmalı.
+ */
+export function speakArabic(text: string): void {
+  if (!text) return;
+  speakWithLang(text, 'ar-SA', 0.85);
   announce(text);
 }
 

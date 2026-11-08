@@ -1,7 +1,8 @@
 import './style.css';
 import type { SavedGate, NavUpdate } from './types';
-import { DOORS, findDoor } from './doors';
+import { DOORS, findDoor, popularDoors, doorsNearBus } from './doors';
 import { loadGate, saveGate, clearGate } from './storage';
+import { startCompass, requestCompassPermission, type CompassHandle } from './compass';
 import { TrailRecorder, distanceM } from './trail';
 import { computeNavigation, type NavResult } from './guide';
 import {
@@ -14,21 +15,20 @@ import {
   invalidateSize,
   showAllDoorsDebug,
 } from './map';
-import { speak, repeatLast, stopSpeech, initSpeech } from './speech';
+import { speak, speakArabic, repeatLast, stopSpeech, initSpeech } from './speech';
 import { show } from './ui';
+import { getHelpMessages } from './help-i18n';
 
 // ---------- State ----------
 let pendingDoorId: number | null = null;
 let savedGate: SavedGate | null = null;
 const recorder = new TrailRecorder();
 let guideWatchId: number | null = null;
-
-// "Harem dışındasınız" uyarısının tekrar tekrar okunmasını engeller
 let hasWarnedTooFar = false;
-// Harita sadece ilk konumda sığdırılsın
 let hasFittedMap = false;
-// Wake Lock referansı
 let wakeLock: WakeLockSentinel | null = null;
+let compass: CompassHandle | null = null;
+let deviceHeading: number | null = null;
 
 // ---------- Init ----------
 initSpeech();
@@ -36,7 +36,6 @@ savedGate = loadGate();
 renderSavedCard();
 bind();
 
-// Debug modu: ?debug=1
 const params = new URLSearchParams(window.location.search);
 if (params.get('debug') === '1') {
   show('guide');
@@ -70,15 +69,38 @@ function renderSavedCard(): void {
 }
 
 // ---------- Door picker ----------
+
 function renderDoorPicker(): void {
   const list = document.getElementById('doorList');
   if (!list) return;
   list.innerHTML = '';
-  const mains = DOORS.filter(d => d.isMain);
-  for (const d of mains) {
+
+  // Önce popüler + otobüs yakını kapılar
+  const featured = popularDoors().filter(d => d.nearBus && d.nearBus !== '—');
+  const featuredIds = new Set(featured.map(d => d.id));
+
+  // Kalan popüler kapılar
+  const popularRest = popularDoors().filter(d => !featuredIds.has(d.id));
+
+  // Diğerleri
+  const others = DOORS.filter(
+    d => !featuredIds.has(d.id) && !popularRest.some(p => p.id === d.id)
+  );
+
+  const addHeader = (text: string) => {
+    const h = document.createElement('div');
+    h.className = 'door-section-header';
+    h.textContent = text;
+    list.appendChild(h);
+  };
+
+  const addDoor = (d: typeof DOORS[number]) => {
     const b = document.createElement('button');
     b.className = 'btn b';
-    b.innerHTML = `${d.id}<small>${escapeHtml(d.name)}</small>`;
+    const busInfo = d.nearBus && d.nearBus !== '—'
+      ? `<small style="opacity:0.8">🚌 ${escapeHtml(d.nearBus)}</small>`
+      : '';
+    b.innerHTML = `${d.id}<small>${escapeHtml(d.name)}</small>${busInfo}`;
     b.addEventListener('click', () => {
       pendingDoorId = d.id;
       const ct = document.getElementById('confirmText');
@@ -91,9 +113,21 @@ function renderDoorPicker(): void {
       speak(`${d.name} Kapısı seçildi. Onaylıyor musunuz?`, true);
     });
     list.appendChild(b);
+  };
+
+  if (featured.length > 0) {
+    addHeader('🚌 Otobüs duraklarına yakın');
+    featured.forEach(addDoor);
+  }
+  if (popularRest.length > 0) {
+    addHeader('⭐ En çok kullanılan');
+    popularRest.forEach(addDoor);
+  }
+  if (others.length > 0) {
+    addHeader('Diğer kapılar');
+    others.forEach(addDoor);
   }
 }
-
 // ---------- Bind ----------
 function bind(): void {
   document.getElementById('btnSave')?.addEventListener('click', () => {
@@ -104,6 +138,10 @@ function bind(): void {
 
   document.getElementById('btnGuide')?.addEventListener('click', onGuide);
   document.getElementById('btnHelp')?.addEventListener('click', onHelp);
+  document.getElementById('btnSpeakAr')?.addEventListener('click', () => {
+    const msgs = getHelpMessages(savedGate);
+    speakArabic(msgs.speakArabic);
+  });
 
   document.getElementById('btnConfirmNo')?.addEventListener('click', () => {
     show('home');
@@ -118,13 +156,15 @@ function bind(): void {
 
   document.getElementById('btnStop')?.addEventListener('click', onStopGuide);
   document.getElementById('btnRepeat')?.addEventListener('click', () => repeatLast());
-  document.getElementById('btnHelpBack')?.addEventListener('click', () => show('home'));
+  document.getElementById('btnHelpBack')?.addEventListener('click', () => {
+    stopSpeech();
+    show('home');
+  });
 
   document.querySelectorAll<HTMLButtonElement>('[data-action="home"]').forEach(el => {
     el.addEventListener('click', () => show('home'));
   });
 
-  // Uzun basarak silme (saved card) — 3 saniye
   const savedEl = document.getElementById('saved');
   if (savedEl) {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -133,8 +173,6 @@ function bind(): void {
       e.preventDefault();
       timer = setTimeout(() => {
         timer = null;
-        // confirm() yerine doğrudan sil + sesli bildirim
-        // (yaşlı kullanıcı için ekstra onay penceresi kafa karıştırıcı)
         clearGate();
         savedGate = null;
         renderSavedCard();
@@ -183,16 +221,13 @@ async function onSaveConfirm(): Promise<void> {
       { lat: pos.coords.latitude, lng: pos.coords.longitude },
       { lat: door.outsideLat, lng: door.outsideLng }
     );
-    // Kullanıcı seçtiği kapıya 200m'den yakınsa gerçek GPS'i kullan
     if (d < 200) {
       lat = pos.coords.latitude;
       lng = pos.coords.longitude;
     }
-  } catch {
-    // GPS yok — kapının referans koordinatını kullan
-  }
+  } catch {}
 
-  recorder.stop(); // eski kayıttan kalan watch varsa temizle
+  recorder.stop();
   recorder.start();
 
   savedGate = {
@@ -229,14 +264,12 @@ async function onGuide(): Promise<void> {
     return;
   }
 
-  // Önceki trail'i kaydet
   const trail = recorder.stop();
   if (trail.length > 0) {
     savedGate.trail = trail;
     saveGate(savedGate);
   }
 
-  // Rehber başında "harem dışı" uyarısını sıfırla
   hasWarnedTooFar = false;
   hasFittedMap = false;
 
@@ -244,17 +277,33 @@ async function onGuide(): Promise<void> {
   initMap('map');
   setTimeout(() => invalidateSize(), 50);
 
-  // Ekranı açık tut
   await keepAwake();
+
+// Pusula izni ve başlatma
+deviceHeading = null;
+try {
+  const granted = await requestCompassPermission();
+  if (granted) {
+    compass = startCompass(
+      h => {
+        deviceHeading = h;
+      },
+      reason => {
+        if (reason === 'unsupported') {
+          // Sessizce geç — pusula olmadan da çalışır
+        }
+      }
+    );
+  }
+} catch {
+  // Pusula başarısız → eski davranış
+}
 
   speak('Konumunuz alınıyor. Lütfen bekleyin.', true);
 
-  // Konum iznini önceden tetikle (watchPosition bazı tarayıcılarda izin istemez)
   try {
     await getCurrentPosition(8000);
-  } catch {
-    // İzin reddedildiyse watchPosition zaten onGuideErr'e düşecek
-  }
+  } catch {}
 
   const target = findDoor(savedGate.doorId);
   const tLat = target?.outsideLat ?? savedGate.outsideLat;
@@ -284,14 +333,13 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   setCurrent(cur.lat, cur.lng);
   drawLineToTarget(cur, { lat: tLat, lng: tLng });
 
-  // Sadece ilk konumda haritayı sığdır (kullanıcı sonra kaydırabilsin)
   if (!hasFittedMap) {
     fitToAll();
     hasFittedMap = true;
   }
 
-  const nav: NavResult = computeNavigation(savedGate, cur);
-
+ 
+  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading);
   const say = document.getElementById('say');
   const dist = document.getElementById('dist');
 
@@ -310,7 +358,6 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
     }
   }
 
-  // --- Harem dışı uyarısı: sadece bir kez oku, harem'e dönünce sıfırla ---
   if (nav.isTooFar) {
     if (!hasWarnedTooFar) {
       speak(nav.instruction, true);
@@ -320,27 +367,28 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   }
   hasWarnedTooFar = false;
 
-  // --- Normal yönlendirme ---
   speak(nav.instruction, nav.arrived);
 
   if (nav.arrived && guideWatchId !== null) {
     navigator.geolocation.clearWatch(guideWatchId);
     guideWatchId = null;
-    // Varış: haritayı son kez sığdır + titreşim + yeşil ekran
     fitToAll();
     try {
       navigator.vibrate?.([200, 100, 200]);
     } catch {}
-    // Varış görsel geri bildirimi
     if (say) say.style.color = 'var(--g)';
     if (dist) {
       dist.textContent = '✅ VARDINIZ';
       dist.style.color = 'var(--g)';
     }
-    releaseAwake();
-  }
+    if (compass) {
+  compass.stop();
+  compass = null;
 }
-
+deviceHeading = null;
+    releaseAwake();
+ }
+}
 function onGuideErr(err: GeolocationPositionError): void {
   let msg = 'Konum alınamıyor.';
   if (err.code === 1) msg = 'Konum izni verilmedi. Lütfen tarayıcı ayarlarından izin verin.';
@@ -363,16 +411,25 @@ function onStopGuide(): void {
   show('home');
 }
 
-// ---------- Help ----------
+// ---------- Help (Arapça) ----------
 function onHelp(): void {
-  const info = document.getElementById('hinfo');
-  if (info) {
-    info.innerHTML = savedGate
-      ? `Giriş kapısı kayıtlı:<br><b>${escapeHtml(savedGate.doorName)}</b>`
-      : 'Kapı kaydı yok';
-  }
+  const msgs = getHelpMessages(savedGate);
+
+  const titleAr = document.getElementById('hTitleAr');
+  const bodyAr = document.getElementById('hBodyAr');
+  const bodyTr = document.getElementById('hBodyTr');
+
+  if (titleAr) titleAr.textContent = msgs.arabicTitle;
+  if (bodyAr) bodyAr.textContent = msgs.arabicBody;
+  if (bodyTr) bodyTr.textContent = msgs.turkishBody;
+
   show('help');
-  speak('Sakin olun. Bu ekranı bir görevliye gösterin.', true);
+
+  // Görevliye Arapça hitap et, sonra Türkçe kullanıcıya bilgi ver
+  speakArabic(msgs.speakArabic);
+  setTimeout(() => {
+    speak('Bu ekranı görevliye gösterin.', true);
+  }, 2000);
 }
 
 // ---------- Wake Lock ----------
@@ -384,9 +441,7 @@ async function keepAwake(): Promise<void> {
         wakeLock = null;
       });
     }
-  } catch {
-    // Wake Lock desteklenmiyorsa sessizce geç
-  }
+  } catch {}
 }
 
 function releaseAwake(): void {

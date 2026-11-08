@@ -74,16 +74,21 @@
   <a class="btn x" id="gm" target="_blank" rel="noopener">🗺 Google Haritalar'da aç</a>
 </section>
 
-<!-- Yardım -->
+<!-- Yardım (Arapça) -->
 <section id="help" class="screen hide">
-  <div class="big" style="color:var(--r)">🆘 YARDIM</div>
-  <div class="card">
-    <div class="calm">Bu ekranı bir görevliye gösterin.</div>
-    <div class="big" id="hinfo" style="margin-top:10px">—</div>
+  <div class="help-arabic" dir="rtl" lang="ar">
+    <div class="help-arabic-title" id="hTitleAr">أحتاج مساعدة</div>
+    <div class="help-arabic-body" id="hBodyAr">هل يمكنك أن تساعدني؟</div>
+  </div>
+  <div class="help-turkish">
+    <div class="calm" id="hBodyTr">Yardıma ihtiyacım var.</div>
+  </div>
+  <div class="row">
+    <button class="btn b" id="btnSpeakAr">🔊 ARAPÇA TEKRAR</button>
   </div>
   <button class="btn x" id="btnHelpBack">GERİ DÖN</button>
 </section>
 
-<script type="module" src="/src/main.ts"></script>
+<script type="module" src="./src/main.ts"></script>
 </body>
 </html>
