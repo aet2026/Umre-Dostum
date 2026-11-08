@@ -1,10 +1,27 @@
 {
-  "name": "Kapı Rehberi",
-  "short_name": "Kapı",
+  "name": "Kapı Rehberi — Umre Dostum",
+  "short_name": "Kapı Rehberi",
+  "description": "Mescid-i Haram'da kaybolmamak için sesli yönlendirme.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#fffdf5",
-  "theme_color": "#fffdf5",
+  "theme_color": "#1257b5",
   "lang": "tr",
-  "icons": []
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
 }

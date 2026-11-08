@@ -1,8 +1,7 @@
 import { defineConfig } from 'vitest/config';
+import { VitePWA } from 'vite-plugin-pwa';
 import process from 'node:process';
 
-// --no-webstorage yalnızca Node 22.4+ için geçerli.
-// Node 20 (GitHub Actions) bu bayrağı tanımaz; eklersek worker başlamaz.
 const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
 const supportsNoWebstorage =
   nodeMajor! > 22 || (nodeMajor === 22 && nodeMinor! >= 4);
@@ -16,7 +15,21 @@ export default defineConfig({
   build: {
     target: 'es2020',
     outDir: 'dist',
+    minify: 'esbuild',
   },
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['icons/icon.svg'],
+      manifest: false,
+      minify: false,
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallback: null,
+        mode: 'development',
+      },
+    }),
+  ],
   test: {
     environment: 'jsdom',
     globals: true,
@@ -33,6 +46,8 @@ export default defineConfig({
         'src/trail.ts',
         'src/ui.ts',
         'src/main.ts',
+        'src/compass.ts',
+        'src/help-i18n.ts',
       ],
       exclude: ['src/**/*.test.ts', 'src/test/**'],
       thresholds: {
