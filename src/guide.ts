@@ -1,25 +1,52 @@
 import type { SavedGate, NavUpdate } from './types';
-import { findDoor } from './doors';
+import { findDoor, doorLabel } from './doors';
 import { distanceM, bearingDeg } from './trail';
 
 const ARRIVE_RADIUS_M = 20;
 const MAX_ALLOWED_DISTANCE_M = 2000;
+const MAX_ARRIVE_RADIUS_M = 40;
 
 export interface NavResult extends NavUpdate {
   isTooFar: boolean;
+  /** Konum kullanıcı ölçümü değil, doğrulanmamış katalogdan geliyorsa true */
+  approximate: boolean;
   /** Pusula varsa: hedef yönü ile cihaz yönü arasındaki fark (-180..180) */
   relativeBearing?: number;
+}
+
+/**
+ * Hedef HER ZAMAN kullanıcının kapının önündeyken kaydettiği konumdur.
+ * (Katalog koordinatları doğrulanmadığı için hedef olarak kullanılmaz.)
+ */
+export function resolveTarget(saved: SavedGate): { lat: number; lng: number; name: string } {
+  const door = findDoor(saved.doorId);
+  return {
+    lat: saved.outsideLat,
+    lng: saved.outsideLng,
+    name: door?.name ?? saved.doorName,
+  };
+}
+
+function arriveRadius(accuracyM?: number | null): number {
+  if (typeof accuracyM !== 'number' || !Number.isFinite(accuracyM)) return ARRIVE_RADIUS_M;
+  return Math.min(Math.max(accuracyM, ARRIVE_RADIUS_M), MAX_ARRIVE_RADIUS_M);
+}
+
+function formatDistance(d: number): string {
+  if (d < 50) return `${Math.round(d)} metre`;
+  const r = Math.round(d / 10) * 10;
+  if (r < 1000) return `${r} metre`;
+  return `${(d / 1000).toFixed(1)} kilometre`;
 }
 
 export function computeNavigation(
   saved: SavedGate,
   current: { lat: number; lng: number },
-  deviceHeading?: number | null
+  deviceHeading?: number | null,
+  accuracyM?: number | null
 ): NavResult {
-  const door = findDoor(saved.doorId);
-  const targetLat = door?.outsideLat ?? saved.outsideLat;
-  const targetLng = door?.outsideLng ?? saved.outsideLng;
-  const doorName = door?.name ?? saved.doorName;
+  const { lat: targetLat, lng: targetLng, name: doorName } = resolveTarget(saved);
+  const approximate = saved.locationSource !== 'gps';
 
   const distance = distanceM(current, { lat: targetLat, lng: targetLng });
   const bearingDegVal = bearingDeg(current, { lat: targetLat, lng: targetLng });
@@ -36,32 +63,28 @@ export function computeNavigation(
       bearingDeg: bearingDegVal,
       arrived: false,
       isTooFar: true,
+      approximate,
       relativeBearing,
       instruction:
         "Mescid-i Haram'ın dışındasınız. Lütfen Harem bölgesine yaklaşıp tekrar deneyin.",
     };
   }
 
-  if (distance < ARRIVE_RADIUS_M) {
+  if (distance < arriveRadius(accuracyM)) {
     return {
       distance,
       bearingDeg: bearingDegVal,
       arrived: true,
       isTooFar: false,
+      approximate,
       relativeBearing,
-      instruction: `${doorName} Kapısı'nın önündesiniz. Hedefe ulaştınız.`,
+      instruction:
+        `Giriş kapınızın önündesiniz (${doorLabel(saved.doorId, doorName)}). Hedefe ulaştınız.` +
+        (approximate ? ' Kapı numarasını tabeladan kontrol edin.' : ''),
     };
   }
 
-  let distStr = '';
-  if (distance < 1000) {
-    distStr =
-      distance < 50
-        ? `${Math.round(distance)} metre`
-        : `${Math.round(distance / 10) * 10} metre`;
-  } else {
-    distStr = `${(distance / 1000).toFixed(1)} kilometre`;
-  }
+  const distStr = formatDistance(distance);
 
   // Pusula varsa göreli yön tarifi, yoksa kuzey referanslı
   const dirInstruction =
@@ -74,6 +97,7 @@ export function computeNavigation(
     bearingDeg: bearingDegVal,
     arrived: false,
     isTooFar: false,
+    approximate,
     relativeBearing,
     instruction: `${distStr} ${dirInstruction}.`,
   };

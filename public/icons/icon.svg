@@ -1,7 +1,53 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#1257b5"/>
-  <path d="M160 120 h192 v272 h-192 z" fill="#fffdf5"/>
-  <path d="M256 120 v272" stroke="#1257b5" stroke-width="12"/>
-  <circle cx="288" cy="256" r="12" fill="#b3261e"/>
-  <path d="M128 392 h256" stroke="#0a7a3d" stroke-width="24" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f3470"/>
+      <stop offset="1" stop-color="#1c5fae"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4a2c14"/>
+      <stop offset="0.5" stop-color="#6b4222"/>
+      <stop offset="1" stop-color="#4a2c14"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 262) scale(0.9) translate(-256 -256)">
+    <!-- hilal -->
+    <path d="M266.19 37.16 A18 18 0 1 0 266.19 66.84 A15 15 0 1 1 266.19 37.16Z" fill="#f2c14e"/>
+    <polygon points="283.0,45.0 284.8,49.6 289.7,49.8 285.9,52.9 287.1,57.7 283.0,55.0 278.9,57.7 280.1,52.9 276.3,49.8 281.2,49.6" fill="#f2c14e"/>
+    <!-- dış çerçeve -->
+    <path d="M122 442 V258 Q122 160 256 66 Q390 160 390 258 V442" fill="none" stroke="#d4a537" stroke-width="4"/>
+    <!-- kapı çerçevesi (sivri kemer) -->
+    <path d="M136 442 V258 Q136 172 256 84 Q376 172 376 258 V442 Z" fill="#fbf3dc" stroke="#d4a537" stroke-width="8" stroke-linejoin="round"/>
+    <polygon points="150.0,283.0 151.5,288.3 156.4,285.6 153.7,290.5 159.0,292.0 153.7,293.5 156.4,298.4 151.5,295.7 150.0,301.0 148.5,295.7 143.6,298.4 146.3,293.5 141.0,292.0 146.3,290.5 143.6,285.6 148.5,288.3" fill="#d4a537"/><polygon points="150.0,329.0 151.5,334.3 156.4,331.6 153.7,336.5 159.0,338.0 153.7,339.5 156.4,344.4 151.5,341.7 150.0,347.0 148.5,341.7 143.6,344.4 146.3,339.5 141.0,338.0 146.3,336.5 143.6,331.6 148.5,334.3" fill="#d4a537"/><polygon points="150.0,375.0 151.5,380.3 156.4,377.6 153.7,382.5 159.0,384.0 153.7,385.5 156.4,390.4 151.5,387.7 150.0,393.0 148.5,387.7 143.6,390.4 146.3,385.5 141.0,384.0 146.3,382.5 143.6,377.6 148.5,380.3" fill="#d4a537"/><polygon points="362.0,283.0 363.5,288.3 368.4,285.6 365.7,290.5 371.0,292.0 365.7,293.5 368.4,298.4 363.5,295.7 362.0,301.0 360.5,295.7 355.6,298.4 358.3,293.5 353.0,292.0 358.3,290.5 355.6,285.6 360.5,288.3" fill="#d4a537"/><polygon points="362.0,329.0 363.5,334.3 368.4,331.6 365.7,336.5 371.0,338.0 365.7,339.5 368.4,344.4 363.5,341.7 362.0,347.0 360.5,341.7 355.6,344.4 358.3,339.5 353.0,338.0 358.3,336.5 355.6,331.6 360.5,334.3" fill="#d4a537"/><polygon points="362.0,375.0 363.5,380.3 368.4,377.6 365.7,382.5 371.0,384.0 365.7,385.5 368.4,390.4 363.5,387.7 362.0,393.0 360.5,387.7 355.6,390.4 358.3,385.5 353.0,384.0 358.3,382.5 355.6,377.6 360.5,380.3" fill="#d4a537"/>
+    <!-- iç kemer (turkuaz) -->
+    <path d="M164 442 V264 Q164 194 256 122 Q348 194 348 264 V442 Z" fill="#13857e" stroke="#0b5f5a" stroke-width="4"/>
+    <!-- sekiz köşeli yıldız -->
+    <polygon points="256.0,146.0 260.6,158.9 273.0,153.0 267.1,165.4 280.0,170.0 267.1,174.6 273.0,187.0 260.6,181.1 256.0,194.0 251.4,181.1 239.0,187.0 244.9,174.6 232.0,170.0 244.9,165.4 239.0,153.0 251.4,158.9" fill="#f2c14e" stroke="#b8860b" stroke-width="2"/>
+    <circle cx="256" cy="170" r="6" fill="#c8302b"/>
+    <!-- kapı kanatları -->
+    <path d="M190 442 V304 Q190 262 256 214 Q322 262 322 304 V442 Z" fill="url(#wood)" stroke="#2c180a" stroke-width="3"/>
+    <path d="M256 214 V442" stroke="#d4a537" stroke-width="4"/>
+    <path d="M208 442 V312 Q208 282 232 262 M304 442 V312 Q304 282 280 262" stroke="#d4a537" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <circle cx="236" cy="380" r="6" fill="#f2c14e"/>
+    <circle cx="276" cy="380" r="6" fill="#f2c14e"/>
+    <circle cx="236" cy="330" r="4" fill="#f2c14e"/>
+    <circle cx="276" cy="330" r="4" fill="#f2c14e"/>
+    <!-- basamaklar -->
+    <rect x="124" y="442" width="264" height="10" rx="2" fill="#d4a537"/>
+    <rect x="112" y="452" width="288" height="8" rx="2" fill="#0a2550"/>
+    <!-- laleler -->
+    <g transform="translate(96 376)"><g class="tulip">
+  <path d="M0 6 C0 40 -2 60 -2 72" stroke="#2e8b57" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M-1 58 C-22 50 -30 34 -26 22 C-12 28 -3 42 -1 58Z" fill="#2e8b57"/>
+  <path d="M-19 -46 C-28 -24 -21 -4 0 6 C21 -4 28 -24 19 -46 L9 -30 L0 -50 L-9 -30 Z" fill="#c8302b"/>
+  <path d="M0 -50 L9 -30 C6 -14 3 -2 0 6 C-3 -2 -6 -14 -9 -30Z" fill="#e8574f"/>
+</g></g>
+    <g transform="translate(416 376) scale(-1 1)"><g class="tulip">
+  <path d="M0 6 C0 40 -2 60 -2 72" stroke="#2e8b57" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M-1 58 C-22 50 -30 34 -26 22 C-12 28 -3 42 -1 58Z" fill="#2e8b57"/>
+  <path d="M-19 -46 C-28 -24 -21 -4 0 6 C21 -4 28 -24 19 -46 L9 -30 L0 -50 L-9 -30 Z" fill="#c8302b"/>
+  <path d="M0 -50 L9 -30 C6 -14 3 -2 0 6 C-3 -2 -6 -14 -9 -30Z" fill="#e8574f"/>
+</g></g>
+  </g>
 </svg>

@@ -3,13 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umre Dostum</title>
+<meta name="application-name" content="Umre Dostum">
+<meta name="apple-mobile-web-app-title" content="Umre Dostum">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Umre Dostum: Mescid-i Haram'da giriş kapınızı kaydedin, sesli yönlendirmeyle geri dönün.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#fffdf5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
-<link rel="apple-touch-icon" href="./icons/icon.svg">
-<link rel="stylesheet" href="./src/style.css">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
 </head>
 <body>
 
@@ -17,6 +22,10 @@
 
 <!-- Ana Ekran -->
 <section id="home" class="screen">
+  <header class="brand">
+    <img src="./icons/icon-192.png" alt="" width="64" height="64">
+    <div><b>Umre Dostum</b><small>Kapınızı kaydedin, kaybolmayın</small></div>
+  </header>
   <div class="card" id="saved">Henüz kapı kaydedilmedi.</div>
   <button class="btn g" id="btnSave">
     📍 GİRİŞ KAPISINI KAYDET
@@ -37,6 +46,11 @@
   <div class="big">Hangi kapıdan girdiniz?</div>
   <p class="muted">Kapının üzerindeki numaraya bakın.</p>
   <div id="doorList" class="door-grid"></div>
+  <div class="card custom-door">
+    <label for="customDoor"><b>Kapınız listede yok mu?</b><br>Kapının üzerindeki numarayı yazın:</label>
+    <input id="customDoor" type="number" inputmode="numeric" min="1" max="300" placeholder="Örn. 84">
+    <button class="btn b" id="btnCustomDoor">NUMARAYI KULLAN</button>
+  </div>
   <button class="btn x" data-action="home">VAZGEÇ</button>
 </section>
 
@@ -58,13 +72,15 @@
       <b style="color:var(--g)">"İZİN VER"</b> yazan yere basın.
     </div>
   </div>
-  <div class="card" id="fix">Konum aranıyor…</div>
+  <div class="card" id="fix" role="status">Konum aranıyor…</div>
+  <button class="btn g hide" id="btnSaveRetry">🔄 TEKRAR DENE</button>
   <button class="btn x" id="btnSaveBack">VAZGEÇ</button>
 </section>
 
 <!-- Rehber -->
 <section id="guide" class="screen hide">
   <div class="calm">😌 Sakin olun, sizi kapıya götürüyorum.</div>
+  <div id="warn" class="warn hide" role="alert"></div>
   <div id="map" role="img" aria-label="Kapıya giden yol haritası"></div>
   <div id="say" aria-live="polite" aria-atomic="true">…</div>
   <div id="dist" aria-hidden="true">—</div>
@@ -84,6 +100,7 @@
   <div class="help-turkish">
     <div class="calm" id="hBodyTr">Yardıma ihtiyacım var.</div>
   </div>
+  <div id="hNote" class="warn hide" role="status"></div>
   <div class="row">
     <button class="btn b" id="btnSpeakAr">🔊 ARAPÇA TEKRAR</button>
   </div>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeNavigation } from './guide';
+import { computeNavigation, resolveTarget } from './guide';
 import type { SavedGate } from './types';
 
 const mockSaved: SavedGate = {
@@ -9,6 +9,7 @@ const mockSaved: SavedGate = {
   outsideLng: 39.82590,
   savedAt: Date.now(),
   trail: [],
+  locationSource: 'gps',
 };
 
 describe('computeNavigation', () => {
@@ -78,6 +79,7 @@ describe('computeNavigation', () => {
       outsideLng: 39.82590,
       savedAt: Date.now(),
       trail: [],
+      locationSource: 'gps',
     };
     const nav = computeNavigation(orphan, { lat: 21.42355, lng: 39.82590 });
     expect(nav.arrived).toBe(true);
@@ -145,5 +147,39 @@ describe('computeNavigation — pusula', () => {
     );
     expect(nav.relativeBearing).toBeGreaterThanOrEqual(-180);
     expect(nav.relativeBearing).toBeLessThanOrEqual(180);
+  });
+});
+describe('computeNavigation — güvenlik', () => {
+  it('hedef katalog değil, kaydedilen GPS konumudur', () => {
+    const gps: SavedGate = { ...mockSaved, outsideLat: 21.4300, outsideLng: 39.8300 };
+    const t = resolveTarget(gps);
+    expect(t.lat).toBe(21.4300);
+    expect(t.lng).toBe(39.8300);
+    const nav = computeNavigation(gps, { lat: 21.4300, lng: 39.8300 });
+    expect(nav.arrived).toBe(true);
+  });
+
+  it('yaklaşık (katalog) kayıtta approximate=true ve varışta tabela uyarısı verir', () => {
+    const old: SavedGate = { ...mockSaved, locationSource: 'catalog' };
+    const nav = computeNavigation(old, { lat: 21.42355, lng: 39.82590 });
+    expect(nav.approximate).toBe(true);
+    expect(nav.instruction).toMatch(/tabeladan/);
+  });
+
+  it('GPS kaydında approximate=false', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82590 });
+    expect(nav.approximate).toBe(false);
+  });
+
+  it('düşük hassasiyette varış yarıçapı büyür (en çok 40 m)', () => {
+    // ~33 m kuzey
+    const cur = { lat: 21.42385, lng: 39.82590 };
+    expect(computeNavigation(mockSaved, cur).arrived).toBe(false);
+    expect(computeNavigation(mockSaved, cur, null, 35).arrived).toBe(true);
+  });
+
+  it('995 m "1000 metre" değil kilometre olarak okunur', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42355 - 0.00895, lng: 39.82590 });
+    expect(nav.instruction).not.toMatch(/1000 metre/);
   });
 });

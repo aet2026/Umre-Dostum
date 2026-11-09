@@ -1,10 +1,10 @@
 import './style.css';
 import type { SavedGate, NavUpdate } from './types';
-import { DOORS, findDoor, popularDoors, doorsNearBus } from './doors';
+import { DOORS, findDoor, mainDoors, doorLabel } from './doors';
 import { loadGate, saveGate, clearGate } from './storage';
 import { startCompass, requestCompassPermission, type CompassHandle } from './compass';
 import { TrailRecorder, distanceM } from './trail';
-import { computeNavigation, type NavResult } from './guide';
+import { computeNavigation, resolveTarget, type NavResult } from './guide';
 import {
   initMap,
   drawTrail,
@@ -15,12 +15,16 @@ import {
   invalidateSize,
   showAllDoorsDebug,
 } from './map';
-import { speak, speakArabic, repeatLast, stopSpeech, initSpeech } from './speech';
+import { speak, speakArabic, speakHelp, repeatLast, stopSpeech, initSpeech } from './speech';
 import { show } from './ui';
 import { getHelpMessages } from './help-i18n';
 
 // ---------- State ----------
-let pendingDoorId: number | null = null;
+interface PendingDoor {
+  id: number;
+  name: string; // listede yoksa boş
+}
+let pendingDoor: PendingDoor | null = null;
 let savedGate: SavedGate | null = null;
 const recorder = new TrailRecorder();
 let guideWatchId: number | null = null;
@@ -29,6 +33,12 @@ let hasFittedMap = false;
 let wakeLock: WakeLockSentinel | null = null;
 let compass: CompassHandle | null = null;
 let deviceHeading: number | null = null;
+let lastAccuracy: number | null = null;
+let saveToken = 0;
+let guideStarting = false;
+
+const MAX_SAVE_ACCURACY_M = 100;
+const MISMATCH_DISTANCE_M = 300;
 
 // ---------- Init ----------
 initSpeech();
@@ -64,28 +74,39 @@ function renderSavedCard(): void {
   const dateStr = new Date(savedGate.savedAt).toLocaleString('tr-TR');
   el.innerHTML =
     `🚪 <b>Kayıtlı Kapı</b><br>` +
-    `<b>${escapeHtml(savedGate.doorName)}</b><br>` +
-    `<span class="muted">${escapeHtml(dateStr)}</span>`;
+    `<b>${escapeHtml(doorLabel(savedGate.doorId, savedGate.doorName))}</b><br>` +
+    `<span class="muted">${escapeHtml(dateStr)}</span>` +
+    (savedGate.locationSource === 'gps'
+      ? ''
+      : `<br><span class="warn-text">⚠️ Konum yaklaşık. Kapıyı yeniden kaydedin.</span>`) +
+    (savedGate.numberMismatch
+      ? `<br><span class="warn-text">⚠️ Kapı numarası bulunduğunuz yerle uyuşmuyor olabilir. Tabeladaki numarayı kontrol edip yeniden kaydedin.</span>`
+      : '');
 }
 
 // ---------- Door picker ----------
+
+function chooseDoor(door: PendingDoor): void {
+  pendingDoor = door;
+  const label = doorLabel(door.id, door.name);
+  const ct = document.getElementById('confirmText');
+  if (ct) {
+    ct.innerHTML =
+      `<b>${door.id} — ${escapeHtml(label)}</b><br>` +
+      `Burayı giriş kapısı olarak kaydetmek istiyor musunuz?`;
+  }
+  show('confirm');
+  speak(`${label} seçildi. Onaylıyor musunuz?`, true);
+}
 
 function renderDoorPicker(): void {
   const list = document.getElementById('doorList');
   if (!list) return;
   list.innerHTML = '';
 
-  // Önce popüler + otobüs yakını kapılar
-  const featured = popularDoors().filter(d => d.nearBus && d.nearBus !== '—');
-  const featuredIds = new Set(featured.map(d => d.id));
-
-  // Kalan popüler kapılar
-  const popularRest = popularDoors().filter(d => !featuredIds.has(d.id));
-
-  // Diğerleri
-  const others = DOORS.filter(
-    d => !featuredIds.has(d.id) && !popularRest.some(p => p.id === d.id)
-  );
+  const main = mainDoors();
+  const mainIds = new Set(main.map(d => d.id));
+  const others = DOORS.filter(d => !mainIds.has(d.id));
 
   const addHeader = (text: string) => {
     const h = document.createElement('div');
@@ -97,36 +118,32 @@ function renderDoorPicker(): void {
   const addDoor = (d: typeof DOORS[number]) => {
     const b = document.createElement('button');
     b.className = 'btn b';
-    const busInfo = d.nearBus && d.nearBus !== '—'
-      ? `<small style="opacity:0.8">🚌 ${escapeHtml(d.nearBus)}</small>`
-      : '';
-    b.innerHTML = `${d.id}<small>${escapeHtml(d.name)}</small>${busInfo}`;
-    b.addEventListener('click', () => {
-      pendingDoorId = d.id;
-      const ct = document.getElementById('confirmText');
-      if (ct) {
-        ct.innerHTML =
-          `<b>${d.id} — ${escapeHtml(d.name)}</b><br>` +
-          `Burayı giriş kapısı olarak kaydetmek istiyor musunuz?`;
-      }
-      show('confirm');
-      speak(`${d.name} Kapısı seçildi. Onaylıyor musunuz?`, true);
-    });
+    const hint = d.hint ? `<small style="opacity:0.8">${escapeHtml(d.hint)}</small>` : '';
+    b.innerHTML = `${d.id}<small>${escapeHtml(d.name)}</small>${hint}`;
+    b.addEventListener('click', () => chooseDoor({ id: d.id, name: d.name }));
     list.appendChild(b);
   };
 
-  if (featured.length > 0) {
-    addHeader('🚌 Otobüs duraklarına yakın');
-    featured.forEach(addDoor);
-  }
-  if (popularRest.length > 0) {
-    addHeader('⭐ En çok kullanılan');
-    popularRest.forEach(addDoor);
+  if (main.length > 0) {
+    addHeader('⭐ Ana kapılar');
+    main.forEach(addDoor);
   }
   if (others.length > 0) {
     addHeader('Diğer kapılar');
     others.forEach(addDoor);
   }
+}
+
+/** Listede olmayan kapı: kullanıcı tabeladaki numarayı yazar */
+function onCustomDoor(): void {
+  const input = document.getElementById('customDoor') as HTMLInputElement | null;
+  const n = Math.round(Number(input?.value));
+  if (!Number.isFinite(n) || n < 1 || n > 300) {
+    speak('Lütfen kapının üzerindeki numarayı yazın.', true);
+    return;
+  }
+  const known = findDoor(n);
+  chooseDoor({ id: n, name: known?.name ?? '' });
 }
 // ---------- Bind ----------
 function bind(): void {
@@ -136,6 +153,7 @@ function bind(): void {
     speak('Hangi kapıdan girdiniz? Kapının numarasına bakın.', true);
   });
 
+  document.getElementById('btnCustomDoor')?.addEventListener('click', onCustomDoor);
   document.getElementById('btnGuide')?.addEventListener('click', onGuide);
   document.getElementById('btnHelp')?.addEventListener('click', onHelp);
   document.getElementById('btnSpeakAr')?.addEventListener('click', () => {
@@ -150,6 +168,7 @@ function bind(): void {
   document.getElementById('btnConfirmYes')?.addEventListener('click', onSaveConfirm);
 
   document.getElementById('btnSaveBack')?.addEventListener('click', () => {
+    saveToken++; // süren kayıt işlemini iptal et
     recorder.stop();
     show('home');
   });
@@ -159,6 +178,9 @@ function bind(): void {
   document.getElementById('btnHelpBack')?.addEventListener('click', () => {
     stopSpeech();
     show('home');
+  });
+  document.getElementById('btnSaveRetry')?.addEventListener('click', () => {
+    void onSaveConfirm();
   });
 
   document.querySelectorAll<HTMLButtonElement>('[data-action="home"]').forEach(el => {
@@ -194,6 +216,10 @@ function bind(): void {
   }
 
   window.addEventListener('resize', () => invalidateSize());
+  document.addEventListener('visibilitychange', () => {
+    // Ekran kilitlenince wake lock düşer; rehber açıksa geri al
+    if (document.visibilityState === 'visible' && guideWatchId !== null) void keepAwake();
+  });
   window.addEventListener('pagehide', () => {
     if (guideWatchId !== null || recorder.getPoints().length > 0) {
       recorder.stop();
@@ -204,28 +230,54 @@ function bind(): void {
 
 // ---------- Save flow ----------
 async function onSaveConfirm(): Promise<void> {
-  if (pendingDoorId === null) return;
-  const door = findDoor(pendingDoorId);
-  if (!door) return;
+  if (pendingDoor === null) return;
+  const door = pendingDoor;
+  const catalog = findDoor(door.id);
 
+  const token = ++saveToken;
+  const retry = document.getElementById('btnSaveRetry');
+  retry?.classList.add('hide');
   show('saving');
   const fix = document.getElementById('fix');
   if (fix) fix.textContent = 'Konum aranıyor…';
   speak('Kapı kaydediliyor. Lütfen birkaç saniye bekleyin.', true);
 
-  let lat = door.outsideLat;
-  let lng = door.outsideLng;
-  try {
-    const pos = await getCurrentPosition(8000);
-    const d = distanceM(
-      { lat: pos.coords.latitude, lng: pos.coords.longitude },
-      { lat: door.outsideLat, lng: door.outsideLng }
-    );
-    if (d < 200) {
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
+  // Doğrulanmamış katalog koordinatı ASLA kaydedilmez: yalnızca kullanıcının
+  // kapının önündeyken ölçülen gerçek GPS konumu. Yoksa kayıt yapılmaz.
+  let pos: GeolocationPosition | null = null;
+  let errCode = 0;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const p = await getCurrentPosition(10000);
+      if (token !== saveToken) return;
+      if (!pos || p.coords.accuracy < pos.coords.accuracy) pos = p;
+      if (p.coords.accuracy <= 30) break;
+    } catch (e) {
+      if (token !== saveToken) return;
+      errCode = (e as { code?: number })?.code ?? 0;
+      if (errCode === 1) break; // izin reddedildi, tekrar denemenin anlamı yok
     }
-  } catch {}
+  }
+  if (token !== saveToken) return;
+
+  if (!pos || pos.coords.accuracy > MAX_SAVE_ACCURACY_M) {
+    const msg =
+      errCode === 1
+        ? 'Konum izni verilmedi. Tarayıcı ayarlarından konum iznini açın.'
+        : 'Konum hassas alınamadı. Açık alana çıkıp tekrar deneyin.';
+    if (fix) fix.textContent = msg;
+    retry?.classList.remove('hide');
+    speak(msg, true);
+    return;
+  }
+
+  // Seçilen numara, ölçülen konumla uyuşuyor mu? (katalog yalnızca bu denetim için)
+  const mismatch = catalog
+    ? distanceM(
+        { lat: pos.coords.latitude, lng: pos.coords.longitude },
+        { lat: catalog.outsideLat, lng: catalog.outsideLng }
+      ) > MISMATCH_DISTANCE_M
+    : false;
 
   recorder.stop();
   recorder.start();
@@ -233,14 +285,24 @@ async function onSaveConfirm(): Promise<void> {
   savedGate = {
     doorId: door.id,
     doorName: door.name,
-    outsideLat: lat,
-    outsideLng: lng,
+    outsideLat: pos.coords.latitude,
+    outsideLng: pos.coords.longitude,
     savedAt: Date.now(),
     trail: [],
+    locationSource: 'gps',
+    accuracy: pos.coords.accuracy,
+    numberMismatch: mismatch,
   };
   saveGate(savedGate);
   renderSavedCard();
-  speak(`${door.name} Kapısı kaydedildi. İyi ziyaretler.`, true);
+  if (mismatch) {
+    speak(
+      'Konumunuz kaydedildi, ancak seçtiğiniz kapı numarası bulunduğunuz yerle uyuşmuyor olabilir. Kapının üzerindeki numarayı kontrol edin.',
+      true
+    );
+  } else {
+    speak(`${doorLabel(door.id, door.name)} kaydedildi. İyi ziyaretler.`, true);
+  }
   show('home');
 }
 
@@ -257,78 +319,92 @@ function getCurrentPosition(timeoutMs: number): Promise<GeolocationPosition> {
 
 // ---------- Guide flow ----------
 async function onGuide(): Promise<void> {
+  if (guideStarting) return;
+  // iOS: pusula izni kullanıcı jesti içinde, İLK await'ten önce istenmeli
+  const compassPermission = requestCompassPermission().catch(() => false);
+
   savedGate = loadGate();
   if (!savedGate) {
     speak('Önce giriş kapınızı kaydedin.', true);
     show('home');
     return;
   }
-
-  const trail = recorder.stop();
-  if (trail.length > 0) {
-    savedGate.trail = trail;
-    saveGate(savedGate);
-  }
-
-  hasWarnedTooFar = false;
-  hasFittedMap = false;
-
-  show('guide');
-  initMap('map');
-  setTimeout(() => invalidateSize(), 50);
-
-  await keepAwake();
-
-// Pusula izni ve başlatma
-deviceHeading = null;
-try {
-  const granted = await requestCompassPermission();
-  if (granted) {
-    compass = startCompass(
-      h => {
-        deviceHeading = h;
-      },
-      reason => {
-        if (reason === 'unsupported') {
-          // Sessizce geç — pusula olmadan da çalışır
-        }
-      }
-    );
-  }
-} catch {
-  // Pusula başarısız → eski davranış
-}
-
-  speak('Konumunuz alınıyor. Lütfen bekleyin.', true);
+  guideStarting = true;
 
   try {
-    await getCurrentPosition(8000);
-  } catch {}
+    const trail = recorder.stop();
+    if (trail.length > 0) {
+      savedGate.trail = trail;
+      saveGate(savedGate);
+    }
 
-  const target = findDoor(savedGate.doorId);
-  const tLat = target?.outsideLat ?? savedGate.outsideLat;
-  const tLng = target?.outsideLng ?? savedGate.outsideLng;
-  setTarget(tLat, tLng, `${target?.name ?? savedGate.doorName} Kapısı`);
-  drawTrail(savedGate.trail);
+    hasWarnedTooFar = false;
+    hasFittedMap = false;
+    lastAccuracy = null;
 
-  if (guideWatchId !== null) {
-    navigator.geolocation.clearWatch(guideWatchId);
-  }
-  guideWatchId = navigator.geolocation.watchPosition(
-    pos => onGuidePos(pos, tLat, tLng),
-    err => onGuideErr(err),
-    { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
-  );
+    show('guide');
+    initMap('map');
+    setTimeout(() => invalidateSize(), 50);
 
-  const gm = document.getElementById('gm') as HTMLAnchorElement | null;
-  if (gm) {
-    gm.href = `https://www.google.com/maps/dir/?api=1&destination=${tLat},${tLng}&travelmode=walking`;
+    // Konum doğrulanmamışsa (eski kayıt) açıkça uyar
+    const warn = document.getElementById('warn');
+    if (warn) {
+      const approx = savedGate.locationSource !== 'gps';
+      warn.classList.toggle('hide', !approx);
+      warn.textContent = approx
+        ? '⚠️ Kayıtlı konum yaklaşık. Kapı numarasını tabeladan kontrol edin.'
+        : '';
+    }
+
+    await keepAwake();
+
+    // Pusula
+    compass?.stop();
+    compass = null;
+    deviceHeading = null;
+    if (await compassPermission) {
+      compass = startCompass(
+        h => {
+          deviceHeading = h;
+        },
+        () => {
+          // Pusula olmadan da çalışır
+        }
+      );
+    }
+
+    speak('Konumunuz alınıyor. Lütfen bekleyin.', true);
+
+    try {
+      await getCurrentPosition(8000);
+    } catch {}
+
+    const target = resolveTarget(savedGate);
+    setTarget(target.lat, target.lng, doorLabel(savedGate.doorId, target.name));
+    drawTrail(savedGate.trail);
+
+    if (guideWatchId !== null) {
+      navigator.geolocation.clearWatch(guideWatchId);
+    }
+    guideWatchId = navigator.geolocation.watchPosition(
+      pos => onGuidePos(pos, target.lat, target.lng),
+      err => onGuideErr(err),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
+    );
+
+    const gm = document.getElementById('gm') as HTMLAnchorElement | null;
+    if (gm) {
+      gm.href = `https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}&travelmode=walking`;
+    }
+  } finally {
+    guideStarting = false;
   }
 }
 
 function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void {
   if (!savedGate) return;
   const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  lastAccuracy = pos.coords.accuracy;
 
   setCurrent(cur.lat, cur.lng);
   drawLineToTarget(cur, { lat: tLat, lng: tLng });
@@ -338,22 +414,22 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
     hasFittedMap = true;
   }
 
- 
-  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading);
+  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading, lastAccuracy);
   const say = document.getElementById('say');
   const dist = document.getElementById('dist');
 
   if (say) say.textContent = nav.instruction;
 
   if (dist) {
+    const weak = lastAccuracy > 100 ? ' (GPS zayıf)' : '';
     if (nav.isTooFar) {
       dist.textContent = `Uzaklık: ${Math.round(nav.distance / 1000)} km`;
       dist.style.color = 'var(--r)';
     } else {
       dist.textContent =
-        nav.distance < 1000
+        (nav.distance < 1000
           ? `${Math.round(nav.distance)} metre`
-          : `${(nav.distance / 1000).toFixed(1)} km`;
+          : `${(nav.distance / 1000).toFixed(1)} km`) + weak;
       dist.style.color = '';
     }
   }
@@ -381,14 +457,17 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
       dist.textContent = '✅ VARDINIZ';
       dist.style.color = 'var(--g)';
     }
-    if (compass) {
-  compass.stop();
-  compass = null;
-}
-deviceHeading = null;
+    stopCompass();
     releaseAwake();
- }
+  }
 }
+
+function stopCompass(): void {
+  compass?.stop();
+  compass = null;
+  deviceHeading = null;
+}
+
 function onGuideErr(err: GeolocationPositionError): void {
   let msg = 'Konum alınamıyor.';
   if (err.code === 1) msg = 'Konum izni verilmedi. Lütfen tarayıcı ayarlarından izin verin.';
@@ -396,7 +475,7 @@ function onGuideErr(err: GeolocationPositionError): void {
   else if (err.code === 3) msg = 'Konum zaman aşımı. Açık alana çıkın.';
   const say = document.getElementById('say');
   if (say) say.textContent = msg;
-  speak(msg, true);
+  speak(msg);
 }
 
 function onStopGuide(): void {
@@ -405,6 +484,7 @@ function onStopGuide(): void {
     guideWatchId = null;
   }
   stopSpeech();
+  stopCompass();
   releaseAwake();
   hasWarnedTooFar = false;
   hasFittedMap = false;
@@ -418,6 +498,7 @@ function onHelp(): void {
   const titleAr = document.getElementById('hTitleAr');
   const bodyAr = document.getElementById('hBodyAr');
   const bodyTr = document.getElementById('hBodyTr');
+  const note = document.getElementById('hNote');
 
   if (titleAr) titleAr.textContent = msgs.arabicTitle;
   if (bodyAr) bodyAr.textContent = msgs.arabicBody;
@@ -425,11 +506,14 @@ function onHelp(): void {
 
   show('help');
 
-  // Görevliye Arapça hitap et, sonra Türkçe kullanıcıya bilgi ver
-  speakArabic(msgs.speakArabic);
-  setTimeout(() => {
-    speak('Bu ekranı görevliye gösterin.', true);
-  }, 2000);
+  // Önce Arapça (görevliye), bittikten sonra Türkçe (kullanıcıya) — tek kuyrukta
+  const hasArabicVoice = speakHelp(msgs.speakArabic, msgs.speakTurkish);
+  if (note) {
+    note.classList.toggle('hide', hasArabicVoice);
+    note.textContent = hasArabicVoice
+      ? ''
+      : 'Bu cihazda Arapça ses yok. Lütfen ekrandaki yazıyı görevliye gösterin.';
+  }
 }
 
 // ---------- Wake Lock ----------

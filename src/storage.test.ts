@@ -14,6 +14,8 @@ const sample: SavedGate = {
     { lat: 21.42355, lng: 39.82590, accuracy: 10, timestamp: 1 },
     { lat: 21.42360, lng: 39.82595, accuracy: 12, timestamp: 2 },
   ],
+  locationSource: 'gps',
+  accuracy: 8,
 };
 
 describe('storage', () => {
@@ -86,5 +88,30 @@ describe('storage', () => {
     });
     expect(() => clearGate()).not.toThrow();
     spy.mockRestore();
+  });
+
+  it('GPS kaynağı korunur', () => {
+    saveGate(sample);
+    expect(loadGate()?.locationSource).toBe('gps');
+    expect(loadGate()?.accuracy).toBe(8);
+  });
+
+  it('eski kayıt (locationSource yok) güvenilmez sayılır → catalog', () => {
+    const old = { ...sample } as Partial<SavedGate>;
+    delete old.locationSource;
+    localStorage.setItem(KEY, JSON.stringify(old));
+    expect(loadGate()?.locationSource).toBe('catalog');
+  });
+
+  it('geçersiz koordinat aralığı null döner', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, outsideLat: 123 }));
+    expect(loadGate()).toBeNull();
+  });
+
+  it('numberMismatch bayrağı korunur', () => {
+    saveGate({ ...sample, numberMismatch: true });
+    expect(loadGate()?.numberMismatch).toBe(true);
+    saveGate(sample);
+    expect(loadGate()?.numberMismatch).toBe(false);
   });
 });

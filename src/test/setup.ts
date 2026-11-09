@@ -19,6 +19,7 @@ afterEach(() => {
 if (!('speechSynthesis' in window) || !window.speechSynthesis) {
   const voices: SpeechSynthesisVoice[] = [
     { lang: 'tr-TR', name: 'Turkish', default: true, localService: true, voiceURI: 'tr' } as SpeechSynthesisVoice,
+    { lang: 'ar-SA', name: 'Arabic', default: false, localService: true, voiceURI: 'ar' } as SpeechSynthesisVoice,
     { lang: 'en-US', name: 'English', default: false, localService: true, voiceURI: 'en' } as SpeechSynthesisVoice,
   ];
 

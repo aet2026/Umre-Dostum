@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { TrailPoint } from './types';
+import { DOORS } from './doors';
 
 let mapInstance: L.Map | null = null;
 let trailLayer: L.LayerGroup | null = null;
@@ -101,7 +102,7 @@ export function invalidateSize(): void {
 
 export function showAllDoorsDebug(): void {
   if (!mapInstance) return;
-  import('./doors').then(({ DOORS }) => {
+  {
     for (const door of DOORS) {
       const color =
         door.verification === 'verified'
@@ -123,5 +124,5 @@ export function showAllDoorsDebug(): void {
           (door.source ? `Kaynak: ${door.source}` : '')
         );
     }
-  });
+  }
 }

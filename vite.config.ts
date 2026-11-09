@@ -20,13 +20,27 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon.svg'],
+      includeAssets: ['icons/icon.svg', 'icons/icon-180.png'],
       manifest: false,
       minify: false,
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
-        navigateFallback: null,
+        // 'development': service worker terser ile sıkıştırılmaz. Termux/Android'de
+        // workbox'un terser adımı çöküyor ("Unable to write the service worker file").
         mode: 'development',
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            // Görüntülenen harita karoları çevrimdışı da görünsün
+            urlPattern: /^https:\/\/[abc]\.tile\.openstreetmap\.org\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

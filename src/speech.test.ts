@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { speak, repeatLast, stopSpeech, initSpeech } from './speech';
+import { speak, speakHelp, speakArabic, hasVoiceFor, repeatLast, stopSpeech, initSpeech } from './speech';
 
 describe('speech', () => {
   beforeEach(() => {
@@ -97,5 +97,43 @@ describe('speech', () => {
     const call = (speechSynthesis.speak as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
     expect(call).toBeTruthy();
     expect(call.voice?.lang).toBe('tr-TR');
+  });
+
+  it('speakHelp önce Arapça sonra Türkçeyi KUYRUĞA koyar, aralarında cancel yok', () => {
+    const speakMock = speechSynthesis.speak as ReturnType<typeof vi.fn>;
+    const cancelMock = speechSynthesis.cancel as ReturnType<typeof vi.fn>;
+    cancelMock.mockClear(); // beforeEach'teki stopSpeech() çağrısını say
+    speakHelp('مرحبا', 'Merhaba');
+    expect(speakMock).toHaveBeenCalledTimes(2);
+    expect(speakMock.mock.calls[0]![0].lang).toBe('ar-SA');
+    expect(speakMock.mock.calls[1]![0].lang).toBe('tr-TR');
+    expect(speakMock.mock.calls[0]![0].voice?.lang).toBe('ar-SA');
+    expect(cancelMock).not.toHaveBeenCalled();
+  });
+
+  it('speakHelp zamanlayıcı kullanmaz (fake timer ilerletmeden ikisi de kuyrukta)', () => {
+    const speakMock = speechSynthesis.speak as ReturnType<typeof vi.fn>;
+    speakHelp('مرحبا', 'Merhaba');
+    expect(speakMock).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(5000);
+    expect(speakMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('speakArabic ar-SA ile konuşur', () => {
+    speakArabic('مرحبا');
+    const call = (speechSynthesis.speak as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    expect(call.lang).toBe('ar-SA');
+  });
+
+  it('hasVoiceFor Arapça ses varsa true, olmayan dilde false', () => {
+    expect(hasVoiceFor('ar-SA')).toBe(true);
+    expect(hasVoiceFor('xx-XX')).toBe(false);
+  });
+
+  it('konuşma sürerken yeni konuşma önce eskiyi iptal eder', () => {
+    Object.defineProperty(speechSynthesis, 'speaking', { value: true, configurable: true });
+    speak('yeni', true);
+    expect(speechSynthesis.cancel).toHaveBeenCalled();
+    Object.defineProperty(speechSynthesis, 'speaking', { value: false, configurable: true });
   });
 });

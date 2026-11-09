@@ -109,3 +109,13 @@ a.btn{text-decoration:none;display:block}
   .card{border:2px solid var(--fg)}
   .help-arabic{border-width:6px}
 }
+.warn{background:#fff3cd;color:#5c3b00;border:3px solid #b26a00;border-radius:14px;padding:12px;margin:10px 0;font-size:19px;font-weight:700;text-align:center}
+.warn.hide{display:none}
+.warn-text{color:#b3261e;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{background:#3a2c00;color:#ffd98a;border-color:#ffb74d}}
+.custom-door label{display:block;font-size:19px;margin-bottom:10px;text-align:left}
+.custom-door input{width:100%;font-size:32px;padding:14px;border-radius:12px;border:3px solid var(--ring);background:var(--bg);color:var(--fg);text-align:center;margin-bottom:10px;box-sizing:border-box}
+.brand{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.brand img{border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.brand b{display:block;font-size:28px;line-height:1.1}
+.brand small{display:block;font-size:16px;opacity:.75;margin-top:2px}

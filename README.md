@@ -1,4 +1,4 @@
-# 🚪 Kapı Rehberi (Kaybolmaya Karşı Yönlendirme Uygulaması)
+# 🚪 Umre Dostum (Mescid-i Haram Kapı Rehberi)
 
 Bu uygulama, özellikle **dijital okuryazarlığı olmayan yaşlılar, Alzheimer/demans hastaları veya kalabalık otellerde/stadyumlarda yönünü kaybeden kişiler** için tasarlanmış, tarayıcı tabanlı bir web uygulamasıdır.
 
@@ -44,6 +44,17 @@ Uygulamayı yaşlı birinin telefonuna kurmak için internete yüklemeniz gereki
    - Dışarı çıkarken kapının önünde **Yeşil** düğmeye basıp kapıyı kaydedin.
    - Kaybolduğunuzda ana ekrandaki **Mavi** düğmeye basın, sesli komutları dinleyerek yürüyün.
    - **Kırmızı** düğme (YARDIM), kapı bilgilerini tam ekran göstererek çevredeki bir görevliye yardım için gösterilebilir.
+
+## 📍 Koordinat Güvenliği
+
+- Rehber, **kullanıcının kapının önündeyken ölçtüğü GPS konumuna** götürür.
+- `src/doors.ts` kataloğu 8 kapı içerir: **1, 13, 19, 45, 62, 64, 79, 100**. Numaralar Suudi Basın Ajansı'nın (SPA) 2025 resmî numaralarıdır; koordinatlar OpenStreetMap kapı noktalarıdır (kaynak ve node numarası her kapıda `source` alanında). Eski haritalar Umre kapısına 40, Fetih kapısına 30 diyor; resmî numaralar 62 ve 45'tir.
+- Katalog yalnızca **denetim** içindir: seçilen numara ile ölçülen konum 300 m'den fazla ayrışıyorsa uyarı çıkar, yardım ekranında yanlış numara söylenmez.
+- Listede olmayan kapılar için kullanıcı numarayı elle yazar.
+- Eski listedeki 2, 37, 60, 86, 90 numaralı kapılar kaynaklarda doğrulanamadığı için kaldırıldı.
+- GPS hassasiyeti 100 m'den kötüyse kayıt yapılmaz; kullanıcıya "açık alana çıkıp tekrar deneyin" denir.
+- Eski sürümden kalan kayıtlar "yaklaşık" sayılır: rehberde uyarı bandı çıkar, varışta "kapı numarasını tabeladan kontrol edin" denir.
+- Kapı numaraları kaynaklara göre değişebiliyor (ör. Umre kapısı 62/63, Ajyad 2/5). Yayına almadan önce numaraları sahadaki tabelalarla doğrulayın.
 
 ## ⚠️ Önemli Notlar
 - Uygulamanın doğru çalışması için telefonun **GPS (Konum)** ayarlarının açık olması şarttır.

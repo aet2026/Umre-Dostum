@@ -10,15 +10,24 @@ describe('help-i18n', () => {
     const msgs = getHelpMessages({ doorId: 62, doorName: 'Umre' });
     expect(msgs.arabicTitle).toBe('أحتاج مساعدة');
     expect(msgs.arabicBody).toContain('باب العمرة');
-    expect(msgs.arabicBody).toContain('هل يمكنك أن ترشدني بيدك');
-    expect(msgs.turkishBody).toContain('Umre');
-    expect(msgs.turkishBody).toContain('El ile bana tarif edebilir misiniz');
-    expect(msgs.speakArabic).toBe(msgs.arabicBody);
+    expect(msgs.arabicBody).toContain('الباب رقم 62');
+    expect(msgs.arabicBody).toContain('أريد الذهاب إلى');
+    expect(msgs.arabicBody).toContain('تدلّني على الطريق');
+    expect(msgs.turkishBody).toContain('62 numaralı Umre Kapısı');
+    expect(msgs.turkishBody).toContain('gitmek istiyorum');
+    expect(msgs.speakArabic).toBe(`${msgs.arabicTitle}. ${msgs.arabicBody}`);
+    expect(msgs.speakTurkish).toBe('Bu ekranı görevliye gösterin.');
   });
 
-  it('Kral Abdullah kapısı için doğru Arapça adı kullanır', () => {
+  it('Arapça ve Türkçe aynı kapı numarasını içerir (senkron)', () => {
+    const msgs = getHelpMessages({ doorId: 79, doorName: 'Kral Fahd' });
+    expect(msgs.arabicBody).toContain('79');
+    expect(msgs.turkishBody).toContain('79');
+  });
+
+  it('Kral Abdullah kapısı "باب" ile başlayan doğru Arapça ad kullanır', () => {
     const msgs = getHelpMessages({ doorId: 100, doorName: 'Kral Abdullah' });
-    expect(msgs.arabicBody).toContain('الملك عبد الله');
+    expect(msgs.arabicBody).toContain('باب الملك عبد الله');
     expect(msgs.turkishBody).toContain('Kral Abdullah');
   });
 
@@ -27,18 +36,19 @@ describe('help-i18n', () => {
     expect(msgs.arabicTitle).toBe('أحتاج مساعدة');
     expect(msgs.arabicBody).toBe('هل يمكنك أن تساعدني؟');
     expect(msgs.turkishBody).toContain('Yardıma ihtiyacım var');
-    expect(msgs.speakArabic).toBe(msgs.arabicBody);
+    expect(msgs.speakArabic).toContain(msgs.arabicBody);
   });
 
-  it('bilinmeyen kapı id için Türkçe adı Arapça yerine kullanır', () => {
+  it('bilinmeyen kapıda Türkçe (Latin) ad Arapça cümleye girmez, numara kullanılır', () => {
     const msgs = getHelpMessages({ doorId: 9999, doorName: 'Test Kapı' });
-    expect(msgs.arabicBody).toContain('Test Kapı');
+    expect(msgs.arabicBody).not.toContain('Test Kapı');
+    expect(msgs.arabicBody).toContain('الباب رقم 9999');
     expect(msgs.turkishBody).toContain('Test Kapı');
   });
 
   it('getArabicDoorName bilinen kapılar için Arapça ad döner', () => {
     expect(getArabicDoorName(62)).toBe('باب العمرة');
-    expect(getArabicDoorName(100)).toBe('الملك عبد الله');
+    expect(getArabicDoorName(100)).toBe('باب الملك عبد الله');
     expect(getArabicDoorName(45)).toBe('باب الفتح');
   });
 
@@ -52,21 +62,30 @@ describe('help-i18n', () => {
     expect(hasArabicTranslation(9999)).toBe(false);
   });
 
-  it('tüm ana kapıların Arapça çevirisi var', async () => {
-    const { DOORS, mainDoors } = await import('./doors');
-    for (const door of mainDoors()) {
-      expect(hasArabicTranslation(door.id)).toBe(true);
-    }
+  it('tüm kapıların Arapça çevirisi var; köprü dışındakiler "باب" ile başlar', async () => {
+    const { DOORS } = await import('./doors');
     for (const door of DOORS) {
       expect(hasArabicTranslation(door.id)).toBe(true);
+      if (door.id !== 64) expect(getArabicDoorName(door.id)!.startsWith('باب')).toBe(true);
     }
   });
 
-  it('yeni kapıların Arapça çevirisi var', () => {
-    expect(getArabicDoorName(2)).toBe('باب أجياد');
-    expect(getArabicDoorName(37)).toBe('باب المروة');
-    expect(getArabicDoorName(60)).toBe('باب الحديبية');
-    expect(getArabicDoorName(86)).toBe('باب الفتح (شعب عامر)');
-    expect(getArabicDoorName(90)).toBe('باب المدينة');
+  it('numara konumla uyuşmuyorsa yanlış kapı numarası söylenmez (genel mesaj)', () => {
+    const msgs = getHelpMessages({ doorId: 62, doorName: 'Umre', numberMismatch: true });
+    expect(msgs.arabicBody).toBe('هل يمكنك أن تساعدني؟');
+    expect(msgs.arabicBody).not.toContain('62');
+  });
+
+  it('adsız (elle girilen) kapıda yalnızca numara kullanılır', () => {
+    const msgs = getHelpMessages({ doorId: 84, doorName: '' });
+    expect(msgs.arabicBody).toContain('الباب رقم 84');
+    expect(msgs.turkishBody).toContain('84 numaralı kapıya');
+  });
+
+  it('Arapça metinde parantez yok (TTS düzgün okusun)', async () => {
+    const { DOORS } = await import('./doors');
+    for (const door of DOORS) {
+      expect(getArabicDoorName(door.id)).not.toMatch(/[()]/);
+    }
   });
 });

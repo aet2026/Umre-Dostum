@@ -10,7 +10,8 @@ export interface DoorInfo {
   isMain: boolean;
   verification: VerificationStatus;
   source?: string;
-  nearBus?: string;
+  /** Kısa Türkçe konum ipucu (yalnızca kaynaklarda doğrulananlar) */
+  hint?: string;
   popularity?: Popularity;
 }
 
@@ -21,6 +22,8 @@ export interface TrailPoint {
   timestamp: number;
 }
 
+export type LocationSource = 'gps' | 'catalog';
+
 export interface SavedGate {
   doorId: number;
   doorName: string;
@@ -28,6 +31,12 @@ export interface SavedGate {
   outsideLng: number;
   savedAt: number;
   trail: TrailPoint[];
+  /** 'gps': kullanıcı kapının önündeyken ölçülen gerçek konum. 'catalog': doğrulanmamış katalog (eski kayıtlar). */
+  locationSource: LocationSource;
+  /** Kayıt anındaki GPS hassasiyeti (metre) */
+  accuracy?: number;
+  /** Seçilen kapı numarası, kayıt anındaki GPS konumuyla uyuşmuyor (>300 m) */
+  numberMismatch?: boolean;
 }
 
 export interface NavUpdate {

@@ -18,6 +18,7 @@ vi.mock('./speech', () => ({
   initSpeech: vi.fn(),
   speak: vi.fn(),
   speakArabic: vi.fn(),
+  speakHelp: vi.fn(() => true),
   repeatLast: vi.fn(),
   stopSpeech: vi.fn(),
 }));
@@ -29,6 +30,7 @@ const sample: SavedGate = {
   outsideLng: 39.82590,
   savedAt: 1_700_000_000_000,
   trail: [],
+  locationSource: 'gps',
 };
 
 function setupDOM(): void {
@@ -39,23 +41,23 @@ function setupDOM(): void {
       <button id="btnGuide"></button>
       <button id="btnHelp"></button>
     </section>
-    <section id="pickDoor" class="screen hide"><div id="doorList"></div></section>
+    <section id="pickDoor" class="screen hide"><div id="doorList"></div><input id="customDoor"><button id="btnCustomDoor"></button></section>
     <section id="confirm" class="screen hide"><div id="confirmText"></div>
       <button id="btnConfirmYes"></button>
       <button id="btnConfirmNo"></button>
     </section>
     <section id="saving" class="screen hide"><div id="fix"></div>
-      <button id="btnSaveBack"></button>
+      <button id="btnSaveBack"></button><button id="btnSaveRetry" class="hide"></button>
     </section>
     <section id="guide" class="screen hide">
-      <div id="map"></div><div id="say"></div><div id="dist"></div>
+      <div id="warn" class="hide"></div><div id="map"></div><div id="say"></div><div id="dist"></div>
       <button id="btnRepeat"></button><button id="btnStop"></button>
       <a id="gm"></a>
     </section>
     <section id="help" class="screen hide">
       <div id="hTitleAr"></div>
       <div id="hBodyAr"></div>
-      <div id="hBodyTr"></div>
+      <div id="hBodyTr"></div><div id="hNote" class="hide"></div>
       <button id="btnSpeakAr"></button>
       <button id="btnHelpBack"></button>
     </section>
@@ -178,7 +180,7 @@ describe('main.ts entegrasyon', () => {
     document.getElementById('btnHelp')!.click();
 
     expect(document.getElementById('hBodyTr')!.textContent).toContain('Kral Abdullah');
-    expect(document.getElementById('hBodyAr')!.textContent).toContain('الملك عبد الله');
+    expect(document.getElementById('hBodyAr')!.textContent).toContain('باب الملك عبد الله');
     expect(document.getElementById('hTitleAr')!.textContent).toContain('أحتاج مساعدة');
   });
 
@@ -332,5 +334,182 @@ describe('main.ts entegrasyon', () => {
 
     expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
     expect(w.clearSpy).toHaveBeenCalled();
+  });
+
+  it('kayıt: GPS konumu kaydedilir (katalog koordinatı değil) ve source=gps', async () => {
+    mockGeoOK(21.4300, 39.8300);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.outsideLat).toBe(21.4300);
+    expect(saved.outsideLng).toBe(39.8300);
+    expect(saved.locationSource).toBe('gps');
+  });
+
+  it('kayıt: GPS hassasiyeti kötüyse (>100 m) kayıt YAPILMAZ ve tekrar dene görünür', async () => {
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (ok: PositionCallback) => {
+        ok({
+          coords: { latitude: 21.4, longitude: 39.8, accuracy: 500 } as GeolocationCoordinates,
+          timestamp: Date.now(),
+        } as GeolocationPosition);
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('btnSaveRetry')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('kayıt: konum izni reddedilirse kayıt yapılmaz', async () => {
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (_ok, err) => {
+        err?.({ code: 1, message: 'denied' } as GeolocationPositionError);
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('fix')!.textContent).toContain('izni');
+  });
+
+  it('kayıt sürerken VAZGEÇ → sonradan kayıt yazılmaz', async () => {
+    let resolveGeo: PositionCallback | null = null;
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (ok: PositionCallback) => {
+        resolveGeo = ok;
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    document.getElementById('btnSaveBack')!.click();
+    resolveGeo!({
+      coords: { latitude: 21.4, longitude: 39.8, accuracy: 5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('rehber: hedef kayıtlı GPS konumudur (katalog değil)', async () => {
+    const custom = { ...sample, outsideLat: 21.4400, outsideLng: 39.8400 };
+    localStorage.setItem('savedGate.v1', JSON.stringify(custom));
+    mockGeoOK();
+    mockWatch();
+    const map = await import('./map');
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(map.setTarget).toHaveBeenCalledWith(21.44, 39.84, expect.any(String));
+    expect((document.getElementById('gm') as HTMLAnchorElement).href).toContain('21.44,39.84');
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('rehber: eski/yaklaşık kayıtta uyarı bandı görünür', async () => {
+    const old = { ...sample } as Partial<SavedGate>;
+    delete old.locationSource;
+    localStorage.setItem('savedGate.v1', JSON.stringify(old));
+    mockGeoOK();
+    mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(document.getElementById('warn')!.classList.contains('hide')).toBe(false);
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('yardım: Arapça→Türkçe tek kuyrukta (speakHelp) çağrılır, geri dönünce konuşma durur', async () => {
+    const speech = await import('./speech');
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+    expect(speech.speakHelp).toHaveBeenCalledTimes(1);
+    document.getElementById('btnHelpBack')!.click();
+    expect(speech.stopSpeech).toHaveBeenCalled();
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('yardım: Arapça ses yoksa not gösterilir', async () => {
+    const speech = await import('./speech');
+    (speech.speakHelp as ReturnType<typeof vi.fn>).mockReturnValueOnce(false);
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+    expect(document.getElementById('hNote')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('seçici: ana kapılar listelenir, doğrulanamayan eski numaralar listelenmez', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const labels = Array.from(document.querySelectorAll('#doorList button')).map(
+      b => b.firstChild?.textContent
+    );
+    for (const id of ['1', '45', '62', '79', '100']) expect(labels).toContain(id);
+    for (const id of ['2', '37', '60', '86', '90']) expect(labels).not.toContain(id);
+  });
+
+  it('elle numara girilince onay ekranı açılır ve kayıt adsız kapı olarak yapılır', async () => {
+    mockGeoOK(21.4220, 39.8290);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '84';
+    document.getElementById('btnCustomDoor')!.click();
+    expect(document.getElementById('confirm')!.classList.contains('hide')).toBe(false);
+    expect(document.getElementById('confirmText')!.textContent).toContain('84 numaralı kapı');
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.doorId).toBe(84);
+    expect(saved.doorName).toBe('');
+    expect(saved.numberMismatch).toBe(false); // katalogda olmayan numara denetlenemez
+  });
+
+  it('geçersiz numara kabul edilmez', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '9999';
+    document.getElementById('btnCustomDoor')!.click();
+    expect(document.getElementById('confirm')!.classList.contains('hide')).toBe(true);
+  });
+
+  it('numara–konum uyuşmazlığı (>300 m): GPS kaydedilir ama numberMismatch=true', async () => {
+    // Kapı 100 (kuzeybatı, 21.42539, 39.82413) seçilip güneyde (Gate 1 yakını) kaydediliyor
+    mockGeoOK(21.42104, 39.82584);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.outsideLat).toBe(21.42104);
+    expect(saved.numberMismatch).toBe(true);
+    expect(document.getElementById('saved')!.textContent).toContain('uyuşmuyor');
+  });
+
+  it('numara–konum uyumluysa (Gate 1 önünde) numberMismatch=false', async () => {
+    mockGeoOK(21.42104, 39.82584);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '1'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.numberMismatch).toBe(false);
   });
 });
