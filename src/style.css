@@ -47,7 +47,7 @@ body{
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row .btn{flex:1 1 0;font-size:24px;padding:26px 4px;min-width:100px}
 a.btn{text-decoration:none;display:block}
-#map{width:100%;border-radius:16px;background:var(--card);display:block;margin:8px auto;height:60vh}
+#map{width:100%;border-radius:16px;background:var(--card);display:block;margin:8px auto;height:38vh}
 #say{font-size:32px;font-weight:800;margin:8px 0;min-height:1.4em}
 #dist{font-size:44px;font-weight:900;margin:4px 0}
 #sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -119,3 +119,15 @@ a.btn{text-decoration:none;display:block}
 .brand img{border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .brand b{display:block;font-size:28px;line-height:1.1}
 .brand small{display:block;font-size:16px;opacity:.75;margin-top:2px}
+.arrow-wrap{display:flex;flex-direction:column;align-items:center;margin:6px 0}
+.arrow-wrap svg{transition:transform .35s ease-out;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));overflow:visible}
+.arrow-shape{fill:#0a7a3d;stroke:#fff;stroke-width:5;stroke-linejoin:round;paint-order:stroke fill}
+.arrow-wrap[data-state="go"] svg{animation:arrowpulse 1.6s ease-in-out infinite}
+.arrow-wrap[data-state="idle"],.arrow-wrap[data-state="far"]{display:none}
+.arrow-wrap[data-state="arrived"] svg{display:none}
+.arrow-ok{display:none;font-size:110px;line-height:1}
+.arrow-wrap[data-state="arrived"] .arrow-ok{display:block}
+.arrow-note{font-size:15px;opacity:.75;margin-top:2px;min-height:1.2em}
+.line-label{font-weight:900;font-size:18px;padding:4px 8px;border:2px solid #0a7a3d}
+@keyframes arrowpulse{0%,100%{scale:1}50%{scale:1.07}}
+@media (prefers-reduced-motion:reduce){.arrow-wrap[data-state="go"] svg{animation:none}}

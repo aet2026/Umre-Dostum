@@ -4,7 +4,7 @@ import { DOORS, findDoor, mainDoors, doorLabel } from './doors';
 import { loadGate, saveGate, clearGate } from './storage';
 import { startCompass, requestCompassPermission, type CompassHandle } from './compass';
 import { TrailRecorder, distanceM } from './trail';
-import { computeNavigation, resolveTarget, type NavResult } from './guide';
+import { computeNavigation, resolveTarget, formatKm, type NavResult } from './guide';
 import {
   initMap,
   drawTrail,
@@ -34,6 +34,10 @@ let wakeLock: WakeLockSentinel | null = null;
 let compass: CompassHandle | null = null;
 let deviceHeading: number | null = null;
 let lastAccuracy: number | null = null;
+let lastBearing: number | null = null;
+type ArrowState = 'idle' | 'go' | 'far' | 'arrived';
+let arrowState: ArrowState = 'idle';
+let arrowRot = 0; // birikimli açı: 359°→1° geçişinde ok geri sarmasın
 let saveToken = 0;
 let guideStarting = false;
 
@@ -341,6 +345,9 @@ async function onGuide(): Promise<void> {
     hasWarnedTooFar = false;
     hasFittedMap = false;
     lastAccuracy = null;
+    lastBearing = null;
+    arrowState = 'idle';
+    updateArrow();
 
     show('guide');
     initMap('map');
@@ -366,6 +373,7 @@ async function onGuide(): Promise<void> {
       compass = startCompass(
         h => {
           deviceHeading = h;
+          updateArrow();
         },
         () => {
           // Pusula olmadan da çalışır
@@ -407,14 +415,18 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   lastAccuracy = pos.coords.accuracy;
 
   setCurrent(cur.lat, cur.lng);
-  drawLineToTarget(cur, { lat: tLat, lng: tLng });
+
+  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading, lastAccuracy);
+  drawLineToTarget(cur, { lat: tLat, lng: tLng }, nav.isTooFar ? formatKm(nav.distance) : undefined);
 
   if (!hasFittedMap) {
     fitToAll();
     hasFittedMap = true;
   }
 
-  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading, lastAccuracy);
+  lastBearing = nav.bearingDeg;
+  arrowState = nav.arrived ? 'arrived' : nav.isTooFar ? 'far' : 'go';
+  updateArrow();
   const say = document.getElementById('say');
   const dist = document.getElementById('dist');
 
@@ -423,7 +435,7 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   if (dist) {
     const weak = lastAccuracy > 100 ? ' (GPS zayıf)' : '';
     if (nav.isTooFar) {
-      dist.textContent = `Uzaklık: ${Math.round(nav.distance / 1000)} km`;
+      dist.textContent = `Uzaklık: ${formatKm(nav.distance)}`;
       dist.style.color = 'var(--r)';
     } else {
       dist.textContent =
@@ -462,6 +474,30 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   }
 }
 
+/** Büyük yön oku: pusula varsa telefona göre, yoksa kuzeye göre döner */
+function updateArrow(): void {
+  const wrap = document.getElementById('arrowWrap');
+  const svg = document.getElementById('arrow');
+  const note = document.getElementById('arrowNote');
+  if (!wrap || !svg) return;
+  wrap.setAttribute('data-state', arrowState);
+  if (arrowState !== 'go' || lastBearing === null) {
+    svg.style.transform = '';
+    if (note) note.textContent = '';
+    return;
+  }
+  let rot = deviceHeading !== null ? lastBearing - deviceHeading : lastBearing;
+  const delta = ((((rot - arrowRot) % 360) + 540) % 360) - 180; // en kısa dönüş
+  arrowRot += delta;
+  svg.style.transform = `rotate(${arrowRot.toFixed(0)}deg)`;
+  if (note) {
+    note.textContent =
+      deviceHeading !== null
+        ? 'Ok, telefonun baktığı yöne göre gösterir'
+        : 'Pusula yok: ok kuzeye göre gösterir';
+  }
+}
+
 function stopCompass(): void {
   compass?.stop();
   compass = null;
@@ -486,6 +522,9 @@ function onStopGuide(): void {
   stopSpeech();
   stopCompass();
   releaseAwake();
+  arrowState = 'idle';
+  lastBearing = null;
+  updateArrow();
   hasWarnedTooFar = false;
   hasFittedMap = false;
   show('home');

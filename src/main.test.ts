@@ -50,7 +50,7 @@ function setupDOM(): void {
       <button id="btnSaveBack"></button><button id="btnSaveRetry" class="hide"></button>
     </section>
     <section id="guide" class="screen hide">
-      <div id="warn" class="hide"></div><div id="map"></div><div id="say"></div><div id="dist"></div>
+      <div id="warn" class="hide"></div><div id="arrowWrap" data-state="idle"><svg id="arrow"></svg><div id="arrowNote"></div></div><div id="map"></div><div id="say"></div><div id="dist"></div>
       <button id="btnRepeat"></button><button id="btnStop"></button>
       <a id="gm"></a>
     </section>
@@ -511,5 +511,50 @@ describe('main.ts entegrasyon', () => {
     await new Promise(r => setTimeout(r, 50));
     const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
     expect(saved.numberMismatch).toBe(false);
+  });
+
+  it('ok: yürüyüş sırasında görünür ve hedef yönüne döner (pusulasız: kuzeye göre)', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    // kullanıcı hedefin ~150 m batısında → hedef doğuda (~90°)
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    const wrap = document.getElementById('arrowWrap')!;
+    expect(wrap.getAttribute('data-state')).toBe('go');
+    const deg = parseFloat(
+      /rotate\((-?\d+)deg\)/.exec((document.getElementById('arrow') as unknown as HTMLElement).style.transform)![1]!
+    );
+    expect(deg).toBeGreaterThan(80);
+    expect(deg).toBeLessThan(100);
+    document.getElementById('btnStop')!.click();
+    expect(wrap.getAttribute('data-state')).toBe('idle');
+  });
+
+  it('ok: çok uzaktayken gizlenir (far), varınca arrived olur', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    w.emit({
+      coords: { latitude: 21.5, longitude: 39.9, accuracy: 10 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWrap')!.getAttribute('data-state')).toBe('far');
+    expect(document.getElementById('say')!.textContent).toContain("Kral Abdullah Kapısı'ndan");
+    expect(document.getElementById('dist')!.textContent).toMatch(/Uzaklık: \d+ km/);
+    w.emit({
+      coords: { latitude: sample.outsideLat, longitude: sample.outsideLng, accuracy: 5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWrap')!.getAttribute('data-state')).toBe('arrived');
+    document.getElementById('btnStop')!.click();
   });
 });

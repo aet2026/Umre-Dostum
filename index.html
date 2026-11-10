@@ -81,9 +81,16 @@
 <section id="guide" class="screen hide">
   <div class="calm">😌 Sakin olun, sizi kapıya götürüyorum.</div>
   <div id="warn" class="warn hide" role="alert"></div>
-  <div id="map" role="img" aria-label="Kapıya giden yol haritası"></div>
+  <div id="arrowWrap" class="arrow-wrap" data-state="idle" aria-hidden="true">
+    <svg id="arrow" viewBox="0 0 100 100" width="170" height="170">
+      <polygon points="50,3 95,54 66,54 66,97 34,97 34,54 5,54" class="arrow-shape"/>
+    </svg>
+    <div id="arrowOk" class="arrow-ok">✅</div>
+    <div id="arrowNote" class="arrow-note"></div>
+  </div>
   <div id="say" aria-live="polite" aria-atomic="true">…</div>
   <div id="dist" aria-hidden="true">—</div>
+  <div id="map" role="img" aria-label="Kapıya giden yol haritası"></div>
   <div class="row">
     <button class="btn b" id="btnRepeat">🔊 TEKRAR</button>
     <button class="btn x" id="btnStop">DURDUR</button>

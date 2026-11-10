@@ -32,6 +32,13 @@ function arriveRadius(accuracyM?: number | null): number {
   return Math.min(Math.max(accuracyM, ARRIVE_RADIUS_M), MAX_ARRIVE_RADIUS_M);
 }
 
+/** 2,5 km / 250 km biçiminde (Türkçe ondalık virgül) */
+export function formatKm(meters: number): string {
+  const km = meters / 1000;
+  if (km >= 10) return `${Math.round(km)} km`;
+  return `${km.toFixed(1).replace('.', ',')} km`;
+}
+
 function formatDistance(d: number): string {
   if (d < 50) return `${Math.round(d)} metre`;
   const r = Math.round(d / 10) * 10;
@@ -57,7 +64,28 @@ export function computeNavigation(
       ? normalizeSigned(bearingDegVal - deviceHeading)
       : undefined;
 
-  if (distance > MAX_ALLOWED_DISTANCE_M) {
+  // Kayıtlı (katalogdaki) kapı: Mescid-i Haram'a uzaklık, kapının gerçek konumundan ölçülür.
+  // Kullanıcının kendi yazdığı kapı: önceki davranış (kayıtlı noktaya uzaklık).
+  const catalogDoor = findDoor(saved.doorId);
+  if (catalogDoor) {
+    const farDistance = distanceM(current, {
+      lat: catalogDoor.outsideLat,
+      lng: catalogDoor.outsideLng,
+    });
+    if (farDistance > MAX_ALLOWED_DISTANCE_M) {
+      return {
+        distance: farDistance,
+        bearingDeg: bearingDeg(current, { lat: catalogDoor.outsideLat, lng: catalogDoor.outsideLng }),
+        arrived: false,
+        isTooFar: true,
+        approximate,
+        relativeBearing,
+        instruction:
+          `${catalogDoor.name} Kapısı'ndan kuş uçuşu yaklaşık ${formatKm(farDistance)} uzaktasınız. ` +
+          "Bu mesafe yürümek için uygun değil. Mescid-i Haram'a yaklaşınca tekrar deneyin.",
+      };
+    }
+  } else if (distance > MAX_ALLOWED_DISTANCE_M) {
     return {
       distance,
       bearingDeg: bearingDegVal,

@@ -78,14 +78,22 @@ export function setCurrent(lat: number, lng: number): void {
 
 export function drawLineToTarget(
   from: { lat: number; lng: number },
-  to: { lat: number; lng: number }
+  to: { lat: number; lng: number },
+  label?: string
 ): void {
   if (!mapInstance) return;
   if (lineToTarget) mapInstance.removeLayer(lineToTarget);
   lineToTarget = L.polyline(
     [[from.lat, from.lng], [to.lat, to.lng]],
-    { color: '#0a7a3d', weight: 4, dashArray: '10,8' }
+    { color: '#0a7a3d', weight: 7, dashArray: '14,10', opacity: 0.95 }
   ).addTo(mapInstance);
+  if (label) {
+    lineToTarget.bindTooltip(label, {
+      permanent: true,
+      direction: 'center',
+      className: 'line-label',
+    });
+  }
 }
 
 export function fitToAll(): void {

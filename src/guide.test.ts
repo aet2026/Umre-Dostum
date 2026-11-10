@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { computeNavigation, resolveTarget } from './guide';
+import { computeNavigation, resolveTarget, formatKm } from './guide';
 import type { SavedGate } from './types';
 
 const mockSaved: SavedGate = {
@@ -181,5 +181,59 @@ describe('computeNavigation — güvenlik', () => {
   it('995 m "1000 metre" değil kilometre olarak okunur', () => {
     const nav = computeNavigation(mockSaved, { lat: 21.42355 - 0.00895, lng: 39.82590 });
     expect(nav.instruction).not.toMatch(/1000 metre/);
+  });
+});
+
+describe('2 km kuralı: kayıtlı ve elle yazılan kapı', () => {
+  const far = { lat: 21.50, lng: 39.90 }; // ~11 km
+
+  it('kayıtlı kapıda: kapı adı, km ve "yürümek için uygun değil" söylenir', () => {
+    const nav = computeNavigation(mockSaved, far); // mockSaved = 100 Kral Abdullah
+    expect(nav.isTooFar).toBe(true);
+    expect(nav.instruction).toContain("Kral Abdullah Kapısı'ndan");
+    expect(nav.instruction).toMatch(/\d+ km uzaktasınız/);
+    expect(nav.instruction).toContain('yürümek için uygun değil');
+    expect(nav.instruction).toContain('yaklaşınca tekrar deneyin');
+  });
+
+  it('kayıtlı kapıda uzaklık katalogdaki kapı konumundan ölçülür (250 km örneği)', () => {
+    // Kral Abdullah kapısı ~ (21.4254, 39.8241); ~250 km güneyde
+    const nav = computeNavigation(mockSaved, { lat: 21.4254 - 2.25, lng: 39.8241 });
+    expect(nav.instruction).toMatch(/2[45]\d km uzaktasınız/);
+    expect(Math.round(nav.distance / 1000)).toBeGreaterThan(240);
+  });
+
+  it('elle yazılan kapıda eski davranış korunur', () => {
+    const custom: SavedGate = { ...mockSaved, doorId: 9999, doorName: '' };
+    const nav = computeNavigation(custom, far);
+    expect(nav.isTooFar).toBe(true);
+    expect(nav.instruction).toBe(
+      "Mescid-i Haram'ın dışındasınız. Lütfen Harem bölgesine yaklaşıp tekrar deneyin."
+    );
+  });
+
+  it('kayıtlı kapıda 2 km içindeyse yönlendirme başlar', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.4254 - 0.01, lng: 39.8241 });
+    expect(nav.isTooFar).toBe(false);
+  });
+
+  it('formatKm: 250 km, 11 km, 2,5 km', () => {
+    expect(formatKm(250_000)).toBe('250 km');
+    expect(formatKm(11_400)).toBe('11 km');
+    expect(formatKm(2_500)).toBe('2,5 km');
+  });
+
+  it('söylenen rakam ölçülen gerçek uzaklıktır: Ankara ~2160 km, Medine ~340 km', () => {
+    const ankara = computeNavigation(mockSaved, { lat: 39.9334, lng: 32.8597 });
+    const km1 = Math.round(ankara.distance / 1000);
+    expect(km1).toBeGreaterThan(2100);
+    expect(km1).toBeLessThan(2250);
+    expect(ankara.instruction).toContain(`${km1} km uzaktasınız`);
+
+    const medine = computeNavigation(mockSaved, { lat: 24.4672, lng: 39.6111 });
+    const km2 = Math.round(medine.distance / 1000);
+    expect(km2).toBeGreaterThan(300);
+    expect(km2).toBeLessThan(380);
+    expect(medine.instruction).toContain(`${km2} km uzaktasınız`);
   });
 });
