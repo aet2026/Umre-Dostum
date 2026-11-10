@@ -56,6 +56,22 @@ Uygulamayı yaşlı birinin telefonuna kurmak için internete yüklemeniz gereki
 - Eski sürümden kalan kayıtlar "yaklaşık" sayılır: rehberde uyarı bandı çıkar, varışta "kapı numarasını tabeladan kontrol edin" denir.
 - Kapı numaraları kaynaklara göre değişebiliyor (ör. Umre kapısı 62/63, Ajyad 2/5). Yayına almadan önce numaraları sahadaki tabelalarla doğrulayın.
 
+## 🛠 Kapı koordinatlarını sahada kesinleştirme
+
+Katalog koordinatları (OpenStreetMap) ±10–20 m hata taşıyabilir. Kesinleştirmek için:
+
+1. Uygulamayı `…/Umre-Dostum/?verify=1` adresiyle açın; ana ekranda **🛠 Kapı doğrulama** düğmesi çıkar.
+2. Kapının **tam önünde**, açık alanda sabit durun; kapıyı seçip **ÖLÇÜMÜ BAŞLAT**'a basın. 30 sn boyunca hassas (≤30 m) okumalar toplanır, **medyanı** alınır; yayılım 25 m'den büyükse ölçüm reddedilir.
+3. Sonuç katalogla karşılaştırılır; **KAYDET** ile saklayın. Her kapıyı farklı saatlerde, mümkünse farklı telefonlarla 3+ kez ölçün.
+4. **TÜMÜNÜ KOPYALA** ile JSON'u alın, dosyaya yapıştırın ve birleştirin:
+   `node tools/merge-measurements.mjs olcum1.json olcum2.json`
+   Çıktıdaki `outsideLat/outsideLng/verification` değerlerini `src/doors.ts` içine yazın.
+
+## 📍 Kayıt kuralları
+
+- **Kayıtlı (listedeki) kapı:** Konum kapıdan 2 km'den uzaksa kayıt yapılmaz; "…Kapısı'ndan X km uzakta, Mescid-i Haram'a yaklaşınca kaydedin" denir.
+- **Kullanıcının yazdığı kapı:** Mesafe kuralı yoktur; yalnızca kaydedilen nokta esastır.
+
 ## ⚠️ Önemli Notlar
 - Uygulamanın doğru çalışması için telefonun **GPS (Konum)** ayarlarının açık olması şarttır.
 - Kapalı alanlarda (bodrum, tünel vb.) GPS sinyali zayıflayabilir.

@@ -69,14 +69,14 @@ export function startCompass(
       return;
     }
 
-    // Android: alpha (0-360, saat yönünün tersi) + absolute
-    if (typeof e.alpha === 'number' && !Number.isNaN(e.alpha)) {
-      // alpha 0 = kuzey, ama saat yönünün tersi → 360 - alpha
-      callback(normalize(360 - e.alpha));
+    // Android: yalnızca MUTLAK (kuzeye göre) yönelim güvenilir; göreli alpha yanlış yön verir
+    const absolute =
+      (e as DeviceOrientationEvent & { absolute?: boolean }).absolute === true;
+    if (absolute && typeof e.alpha === 'number' && !Number.isNaN(e.alpha)) {
+      callback(headingFromOrientation(e.alpha, e.beta ?? 0, e.gamma ?? 0));
       return;
     }
 
-    // Beta/gamma ile hesaplanabilir ama basit tutuyoruz
     onError?.('no-heading');
   };
 
@@ -93,6 +93,35 @@ export function startCompass(
     },
     isActive: () => active,
   };
+}
+
+/**
+ * alpha/beta/gamma (W3C, mutlak) → pusula yönü (0=kuzey, saat yönünde).
+ * Telefon yataya yakınsa üst kenarın, dik tutuluyorsa arka yüzün (kamera) baktığı yönü verir.
+ * Böylece yalnızca "360 - alpha" kullanıldığında dik tutulan telefonda oluşan sapma önlenir.
+ */
+export function headingFromOrientation(alpha: number, beta: number, gamma: number): number {
+  const d = Math.PI / 180;
+  const a = alpha * d;
+  const b = beta * d;
+  const g = gamma * d;
+  const cA = Math.cos(a), sA = Math.sin(a);
+  const cB = Math.cos(b), sB = Math.sin(b);
+  const cG = Math.cos(g), sG = Math.sin(g);
+
+  const facingUp = Math.abs(cB * cG); // 1 = tam yatay, 0 = dik
+  let east: number;
+  let north: number;
+  if (facingUp > 0.7) {
+    // yatay: cihazın üst kenarı
+    east = -sA * cB;
+    north = cA * cB;
+  } else {
+    // dik: arka yüz
+    east = -cA * sG - sA * sB * cG;
+    north = -sA * sG + cA * sB * cG;
+  }
+  return normalize((Math.atan2(east, north) * 180) / Math.PI);
 }
 
 function normalize(deg: number): number {

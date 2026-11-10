@@ -1,4 +1,4 @@
-const SCREENS = ['home', 'pickDoor', 'confirm', 'saving', 'guide', 'help'] as const;
+const SCREENS = ['home', 'pickDoor', 'confirm', 'saving', 'guide', 'help', 'verify'] as const;
 export type ScreenId = typeof SCREENS[number];
 
 export function show(id: ScreenId): void {

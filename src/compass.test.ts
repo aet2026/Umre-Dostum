@@ -3,6 +3,7 @@ import {
   isCompassSupported,
   requestCompassPermission,
   startCompass,
+  headingFromOrientation,
 } from './compass';
 
 describe('compass', () => {
@@ -87,7 +88,7 @@ describe('compass', () => {
     (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
     const cb = vi.fn();
     const handle = startCompass(cb);
-    emit('deviceorientation', { alpha: 90 } as unknown as DeviceOrientationEvent);
+    emit('deviceorientation', { alpha: 90, absolute: true } as unknown as DeviceOrientationEvent);
     expect(cb).toHaveBeenCalledWith(270);
     handle.stop();
   });
@@ -109,5 +110,29 @@ describe('compass', () => {
     emit('deviceorientation', { webkitCompassHeading: 450 } as unknown as DeviceOrientationEvent);
     expect(cb).toHaveBeenCalledWith(90);
     handle.stop();
+  });
+
+  it('startCompass: mutlak olmayan (göreli) alpha yok sayılır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const onErr = vi.fn();
+    const handle = startCompass(cb, onErr);
+    emit('deviceorientation', { alpha: 90 } as unknown as DeviceOrientationEvent);
+    expect(cb).not.toHaveBeenCalled();
+    expect(onErr).toHaveBeenCalledWith('no-heading');
+    handle.stop();
+  });
+
+  it('headingFromOrientation: yatay telefon, alpha 90 → 270 (batı)', () => {
+    expect(Math.round(headingFromOrientation(90, 0, 0))).toBe(270);
+  });
+
+  it('headingFromOrientation: dik telefon doğuya bakıyor → 90', () => {
+    expect(Math.round(headingFromOrientation(270, 90, 0))).toBe(90);
+  });
+
+  it('headingFromOrientation: dik telefon kuzeye bakıyor → 0', () => {
+    const h = Math.round(headingFromOrientation(0, 90, 0));
+    expect(h === 0 || h === 360).toBe(true);
   });
 });

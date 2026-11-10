@@ -17,6 +17,7 @@ import {
 } from './map';
 import { speak, speakArabic, speakHelp, repeatLast, stopSpeech, initSpeech } from './speech';
 import { show } from './ui';
+import { initVerifyUI } from './verify-ui';
 import { getHelpMessages } from './help-i18n';
 
 // ---------- State ----------
@@ -35,6 +36,8 @@ let compass: CompassHandle | null = null;
 let deviceHeading: number | null = null;
 let lastAccuracy: number | null = null;
 let lastBearing: number | null = null;
+let gpsHeading: number | null = null;
+let gpsHeadingAt = 0;
 type ArrowState = 'idle' | 'go' | 'far' | 'arrived';
 let arrowState: ArrowState = 'idle';
 let arrowRot = 0; // birikimli açı: 359°→1° geçişinde ok geri sarmasın
@@ -43,6 +46,8 @@ let guideStarting = false;
 
 const MAX_SAVE_ACCURACY_M = 100;
 const MISMATCH_DISTANCE_M = 300;
+/** Kayıtlı (katalog) kapı için: bu mesafeden uzakta kayıt yapılmaz */
+const MAX_SAVE_DISTANCE_M = 2000;
 
 // ---------- Init ----------
 initSpeech();
@@ -51,6 +56,7 @@ renderSavedCard();
 bind();
 
 const params = new URLSearchParams(window.location.search);
+if (params.has('verify')) initVerifyUI();
 if (params.get('debug') === '1') {
   show('guide');
   initMap('map');
@@ -275,13 +281,26 @@ async function onSaveConfirm(): Promise<void> {
     return;
   }
 
-  // Seçilen numara, ölçülen konumla uyuşuyor mu? (katalog yalnızca bu denetim için)
-  const mismatch = catalog
+  // Kayıtlı (katalog) kapı: Mescid-i Haram'dan 2 km'den uzakta kayıt yapılmaz.
+  // Kullanıcının kendi yazdığı kapıda yalnızca ölçülen konum esastır (eski davranış).
+  const gateDistance = catalog
     ? distanceM(
         { lat: pos.coords.latitude, lng: pos.coords.longitude },
         { lat: catalog.outsideLat, lng: catalog.outsideLng }
-      ) > MISMATCH_DISTANCE_M
-    : false;
+      )
+    : null;
+  if (catalog && gateDistance !== null && gateDistance > MAX_SAVE_DISTANCE_M) {
+    const msg =
+      `Bulunduğunuz konum ${catalog.name} Kapısı'ndan ${formatKm(gateDistance)} uzakta. ` +
+      "Lütfen Mescid-i Haram'a yaklaşınca kaydedin.";
+    if (fix) fix.textContent = msg;
+    retry?.classList.remove('hide');
+    speak(msg, true);
+    return;
+  }
+
+  // Seçilen numara, ölçülen konumla uyuşuyor mu? (katalog yalnızca bu denetim için)
+  const mismatch = gateDistance !== null && gateDistance > MISMATCH_DISTANCE_M;
 
   recorder.stop();
   recorder.start();
@@ -346,6 +365,7 @@ async function onGuide(): Promise<void> {
     hasFittedMap = false;
     lastAccuracy = null;
     lastBearing = null;
+    gpsHeading = null;
     arrowState = 'idle';
     updateArrow();
 
@@ -371,10 +391,7 @@ async function onGuide(): Promise<void> {
     deviceHeading = null;
     if (await compassPermission) {
       compass = startCompass(
-        h => {
-          deviceHeading = h;
-          updateArrow();
-        },
+        onHeading,
         () => {
           // Pusula olmadan da çalışır
         }
@@ -414,9 +431,17 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
   lastAccuracy = pos.coords.accuracy;
 
+  // Yürürken GPS yönü (pusula yoksa veya şaşarsa yedek)
+  const hd = pos.coords.heading;
+  const spd = pos.coords.speed;
+  if (typeof hd === 'number' && Number.isFinite(hd) && typeof spd === 'number' && spd >= 0.8) {
+    gpsHeading = hd;
+    gpsHeadingAt = Date.now();
+  }
+
   setCurrent(cur.lat, cur.lng);
 
-  const nav: NavResult = computeNavigation(savedGate, cur, deviceHeading, lastAccuracy);
+  const nav: NavResult = computeNavigation(savedGate, cur, effectiveHeading()?.value ?? null, lastAccuracy);
   drawLineToTarget(cur, { lat: tLat, lng: tLng }, nav.isTooFar ? formatKm(nav.distance) : undefined);
 
   if (!hasFittedMap) {
@@ -474,27 +499,75 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   }
 }
 
-/** Büyük yön oku: pusula varsa telefona göre, yoksa kuzeye göre döner */
+/** Pusula yönünü yumuşat (titremeyi azaltır; 359°→1° geçişinde doğru çalışır) */
+function onHeading(h: number): void {
+  if (deviceHeading === null) {
+    deviceHeading = h;
+  } else {
+    const d = ((h - deviceHeading + 540) % 360) - 180;
+    deviceHeading = (deviceHeading + 0.3 * d + 360) % 360;
+  }
+  updateArrow();
+}
+
+/** Önce pusula; yoksa son birkaç saniyedeki yürüyüş (GPS) yönü */
+function effectiveHeading(): { value: number; source: 'compass' | 'gps' } | null {
+  if (deviceHeading !== null) return { value: deviceHeading, source: 'compass' };
+  if (gpsHeading !== null && Date.now() - gpsHeadingAt < 8000) {
+    return { value: gpsHeading, source: 'gps' };
+  }
+  return null;
+}
+
+function turnWord(rel: number): { text: string; tone: 'ok' | 'turn' | 'back' } {
+  const abs = Math.abs(rel);
+  if (abs <= 20) return { text: 'DÜZ İLERLEYİN', tone: 'ok' };
+  if (abs <= 45) return { text: rel > 0 ? 'HAFİF SAĞA' : 'HAFİF SOLA', tone: 'turn' };
+  if (abs <= 135) return { text: rel > 0 ? 'SAĞA DÖNÜN' : 'SOLA DÖNÜN', tone: 'turn' };
+  return { text: 'ARKANIZA DÖNÜN', tone: 'back' };
+}
+
+/** Yön göstergesi: ok + açık kelime (düz / sağa / sola / arkanıza) */
 function updateArrow(): void {
   const wrap = document.getElementById('arrowWrap');
   const svg = document.getElementById('arrow');
+  const word = document.getElementById('arrowWord');
   const note = document.getElementById('arrowNote');
   if (!wrap || !svg) return;
-  wrap.setAttribute('data-state', arrowState);
-  if (arrowState !== 'go' || lastBearing === null) {
-    svg.style.transform = '';
-    if (note) note.textContent = '';
+
+  const heading = effectiveHeading();
+  let state: string = arrowState;
+  if (arrowState === 'go' && (heading === null || lastBearing === null)) state = 'nohead';
+  wrap.setAttribute('data-state', state);
+
+  if (state === 'go' && heading !== null && lastBearing !== null) {
+    const rel = ((lastBearing - heading.value + 540) % 360) - 180; // -180..180
+    const delta = ((((rel - arrowRot) % 360) + 540) % 360) - 180; // en kısa dönüş
+    arrowRot += delta;
+    svg.style.transform = `rotate(${arrowRot.toFixed(0)}deg)`;
+    const w = turnWord(rel);
+    wrap.setAttribute('data-tone', w.tone);
+    if (word) word.textContent = w.text;
+    if (note) {
+      note.textContent =
+        heading.source === 'compass'
+          ? '🧭 Ok, telefonun baktığı yöne göre gösterir'
+          : '📍 Ok, yürüdüğünüz yöne göre gösterir';
+    }
     return;
   }
-  let rot = deviceHeading !== null ? lastBearing - deviceHeading : lastBearing;
-  const delta = ((((rot - arrowRot) % 360) + 540) % 360) - 180; // en kısa dönüş
-  arrowRot += delta;
-  svg.style.transform = `rotate(${arrowRot.toFixed(0)}deg)`;
-  if (note) {
-    note.textContent =
-      deviceHeading !== null
-        ? 'Ok, telefonun baktığı yöne göre gösterir'
-        : 'Pusula yok: ok kuzeye göre gösterir';
+
+  svg.style.transform = '';
+  if (state === 'nohead') {
+    if (word) word.textContent = 'YÖN BULUNUYOR';
+    if (note) note.textContent = 'Telefonu yatay tutun veya birkaç adım yürüyün';
+  } else if (state === 'arrived') {
+    wrap.setAttribute('data-tone', 'ok');
+    if (word) word.textContent = 'VARDINIZ';
+    if (note) note.textContent = '';
+  } else {
+    if (word) word.textContent = '';
+    if (note) note.textContent = '';
   }
 }
 
@@ -524,6 +597,7 @@ function onStopGuide(): void {
   releaseAwake();
   arrowState = 'idle';
   lastBearing = null;
+  gpsHeading = null;
   updateArrow();
   hasWarnedTooFar = false;
   hasFittedMap = false;
@@ -542,6 +616,11 @@ function onHelp(): void {
   if (titleAr) titleAr.textContent = msgs.arabicTitle;
   if (bodyAr) bodyAr.textContent = msgs.arabicBody;
   if (bodyTr) bodyTr.textContent = msgs.turkishBody;
+  const doorBig = document.getElementById('hDoor');
+  if (doorBig) {
+    doorBig.textContent = savedGate ? `🚪 ${savedGate.doorId}` : '';
+    doorBig.classList.toggle('hide', !savedGate);
+  }
 
   show('help');
 

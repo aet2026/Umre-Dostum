@@ -50,7 +50,7 @@ function setupDOM(): void {
       <button id="btnSaveBack"></button><button id="btnSaveRetry" class="hide"></button>
     </section>
     <section id="guide" class="screen hide">
-      <div id="warn" class="hide"></div><div id="arrowWrap" data-state="idle"><svg id="arrow"></svg><div id="arrowNote"></div></div><div id="map"></div><div id="say"></div><div id="dist"></div>
+      <div id="warn" class="hide"></div><div id="arrowWrap" data-state="idle"><svg id="arrow"></svg><div id="arrowWord"></div><div id="arrowNote"></div></div><div id="map"></div><div id="say"></div><div id="dist"></div>
       <button id="btnRepeat"></button><button id="btnStop"></button>
       <a id="gm"></a>
     </section>
@@ -513,25 +513,52 @@ describe('main.ts entegrasyon', () => {
     expect(saved.numberMismatch).toBe(false);
   });
 
-  it('ok: yürüyüş sırasında görünür ve hedef yönüne döner (pusulasız: kuzeye göre)', async () => {
+  it('ok: yön kaynağı yoksa "nohead" (yön bulunuyor), yürüyünce GPS yönüyle döner', async () => {
     localStorage.setItem('savedGate.v1', JSON.stringify(sample));
     mockGeoOK();
     const w = mockWatch();
     await loadMain();
     document.getElementById('btnGuide')!.click();
     await new Promise(r => setTimeout(r, 50));
-    // kullanıcı hedefin ~150 m batısında → hedef doğuda (~90°)
+    // 1) duran kullanıcı, pusula yok → yön bilinmiyor; ok uydurulmaz
     w.emit({
-      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10 } as GeolocationCoordinates,
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: null, speed: 0 } as GeolocationCoordinates,
       timestamp: Date.now(),
     } as GeolocationPosition);
     const wrap = document.getElementById('arrowWrap')!;
+    expect(wrap.getAttribute('data-state')).toBe('nohead');
+    expect(document.getElementById('arrowWord')!.textContent).toBe('YÖN BULUNUYOR');
+
+    // 2) kuzeye yürüyor (heading 0, hız 1.5 m/s); hedef doğuda (~90°) → ok ~90°, "SAĞA DÖNÜN"
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 0, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
     expect(wrap.getAttribute('data-state')).toBe('go');
     const deg = parseFloat(
       /rotate\((-?\d+)deg\)/.exec((document.getElementById('arrow') as unknown as HTMLElement).style.transform)![1]!
     );
     expect(deg).toBeGreaterThan(80);
     expect(deg).toBeLessThan(100);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('SAĞA DÖNÜN');
+    expect(wrap.getAttribute('data-tone')).toBe('turn');
+
+    // 3) doğuya dönünce (heading 90) ok yukarı, "DÜZ İLERLEYİN", yeşil ton
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 90, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('DÜZ İLERLEYİN');
+    expect(wrap.getAttribute('data-tone')).toBe('ok');
+
+    // 4) batıya yürürken (heading 270) hedef arkada → "ARKANIZA DÖNÜN"
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 270, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('ARKANIZA DÖNÜN');
+    expect(wrap.getAttribute('data-tone')).toBe('back');
+
     document.getElementById('btnStop')!.click();
     expect(wrap.getAttribute('data-state')).toBe('idle');
   });
@@ -556,5 +583,49 @@ describe('main.ts entegrasyon', () => {
     } as GeolocationPosition);
     expect(document.getElementById('arrowWrap')!.getAttribute('data-state')).toBe('arrived');
     document.getElementById('btnStop')!.click();
+  });
+
+  it('kayıt: kayıtlı kapıda Mescid-i Haram\'dan 2 km uzakta kayıt YAPILMAZ, mesafe söylenir', async () => {
+    mockGeoOK(39.9334, 32.8597); // Ankara
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    const txt = document.getElementById('fix')!.textContent!;
+    expect(txt).toContain("Kral Abdullah Kapısı'ndan");
+    expect(txt).toMatch(/\d+ km uzakta/);
+    expect(txt).toContain('yaklaşınca kaydedin');
+    expect(document.getElementById('btnSaveRetry')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('kayıt: kayıtlı kapıda 2 km içindeyse kayıt yapılır', async () => {
+    mockGeoOK(21.4254 - 0.01, 39.8241); // ~1.1 km
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).not.toBeNull();
+  });
+
+  it('kayıt: kullanıcının yazdığı kapıda uzak olsa da kayıt yapılır (yalnızca kaydedilen nokta esas)', async () => {
+    mockGeoOK(39.9334, 32.8597); // Ankara
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '80';
+    document.getElementById('btnCustomDoor')!.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.doorId).toBe(80);
+    expect(saved.outsideLat).toBe(39.9334);
   });
 });

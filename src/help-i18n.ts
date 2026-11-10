@@ -27,15 +27,14 @@ const SPEAK_TR = 'Bu ekranı görevliye gösterin.';
 export function getHelpMessages(saved: {
   doorId: number;
   doorName: string;
-  numberMismatch?: boolean;
 } | null): HelpMessages {
-  // Kapı numarası konumla uyuşmuyorsa yanlış numara söylemeyelim: genel mesaj
-  if (!saved || saved.numberMismatch) {
-    const body = 'هل يمكنك أن تساعدني؟';
+  // Kayıt yoksa genel yardım mesajı
+  if (!saved) {
+    const body = 'أنا تائه. هل يمكنك أن تساعدني؟';
     return {
       arabicTitle: TITLE_AR,
       arabicBody: body,
-      turkishBody: 'Yardıma ihtiyacım var. Bana yardım edebilir misiniz?',
+      turkishBody: 'Yolumu kaybettim. Bana yardım edebilir misiniz?',
       speakArabic: `${TITLE_AR}. ${body}`,
       speakTurkish: SPEAK_TR,
     };
@@ -46,12 +45,12 @@ export function getHelpMessages(saved: {
   const target = arName
     ? `${arName}، الباب رقم ${saved.doorId}`
     : `الباب رقم ${saved.doorId}`;
-  const arabicBody = `أريد الذهاب إلى ${target}. هل يمكنك أن تدلّني على الطريق؟`;
+  const arabicBody = `أريد الذهاب إلى ${target}. هل يمكنك أن تخبرني في أي جهة يقع؟`;
   const turkishTarget = saved.doorName
     ? `${saved.doorId} numaralı ${saved.doorName} Kapısı'na`
     : `${saved.doorId} numaralı kapıya`;
   const turkishBody =
-    `${turkishTarget} gitmek istiyorum. Bana yolu tarif edebilir misiniz?`;
+    `${turkishTarget} gitmek istiyorum. Ne tarafta olduğunu söyler misiniz?`;
 
   return {
     arabicTitle: TITLE_AR,

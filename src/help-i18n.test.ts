@@ -12,9 +12,10 @@ describe('help-i18n', () => {
     expect(msgs.arabicBody).toContain('باب العمرة');
     expect(msgs.arabicBody).toContain('الباب رقم 62');
     expect(msgs.arabicBody).toContain('أريد الذهاب إلى');
-    expect(msgs.arabicBody).toContain('تدلّني على الطريق');
+    expect(msgs.arabicBody).toContain('في أي جهة يقع');
     expect(msgs.turkishBody).toContain('62 numaralı Umre Kapısı');
     expect(msgs.turkishBody).toContain('gitmek istiyorum');
+    expect(msgs.turkishBody).toContain('Ne tarafta');
     expect(msgs.speakArabic).toBe(`${msgs.arabicTitle}. ${msgs.arabicBody}`);
     expect(msgs.speakTurkish).toBe('Bu ekranı görevliye gösterin.');
   });
@@ -34,8 +35,8 @@ describe('help-i18n', () => {
   it('kayıt yoksa genel yardım mesajı döner', () => {
     const msgs = getHelpMessages(null);
     expect(msgs.arabicTitle).toBe('أحتاج مساعدة');
-    expect(msgs.arabicBody).toBe('هل يمكنك أن تساعدني؟');
-    expect(msgs.turkishBody).toContain('Yardıma ihtiyacım var');
+    expect(msgs.arabicBody).toBe('أنا تائه. هل يمكنك أن تساعدني؟');
+    expect(msgs.turkishBody).toContain('Yolumu kaybettim');
     expect(msgs.speakArabic).toContain(msgs.arabicBody);
   });
 
@@ -70,10 +71,11 @@ describe('help-i18n', () => {
     }
   });
 
-  it('numara konumla uyuşmuyorsa yanlış kapı numarası söylenmez (genel mesaj)', () => {
-    const msgs = getHelpMessages({ doorId: 62, doorName: 'Umre', numberMismatch: true });
-    expect(msgs.arabicBody).toBe('هل يمكنك أن تساعدني؟');
-    expect(msgs.arabicBody).not.toContain('62');
+  it('numara konumla uyuşmasa bile kayıtlı kapı numarası söylenir', () => {
+    const msgs = getHelpMessages({ doorId: 80, doorName: '', numberMismatch: true } as never);
+    expect(msgs.arabicBody).toContain('الباب رقم 80');
+    expect(msgs.arabicBody).toContain('في أي جهة يقع');
+    expect(msgs.turkishBody).toContain('80 numaralı kapıya gitmek istiyorum');
   });
 
   it('adsız (elle girilen) kapıda yalnızca numara kullanılır', () => {
