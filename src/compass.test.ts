@@ -4,6 +4,8 @@ import {
   requestCompassPermission,
   startCompass,
   headingFromOrientation,
+  applyDeclination,
+  MAGNETIC_DECLINATION_DEG,
 } from './compass';
 
 describe('compass', () => {
@@ -28,11 +30,16 @@ describe('compass', () => {
     delete (window as unknown as { DeviceOrientationEvent?: unknown }).DeviceOrientationEvent;
   });
 
-  function emit(type: string, event: Partial<DeviceOrientationEvent>): void {
+  function emit(
+    type: string,
+    event: Partial<DeviceOrientationEvent> | Record<string, unknown>
+  ): void {
     for (const fn of listeners[type] ?? []) {
       fn(event as unknown as Event);
     }
   }
+
+  // ---- mevcut testler (değişmedi) ----
 
   it('isCompassSupported: DeviceOrientationEvent yoksa false', () => {
     expect(isCompassSupported()).toBe(false);
@@ -134,5 +141,69 @@ describe('compass', () => {
   it('headingFromOrientation: dik telefon kuzeye bakıyor → 0', () => {
     const h = Math.round(headingFromOrientation(0, 90, 0));
     expect(h === 0 || h === 360).toBe(true);
+  });
+
+  // ---- yeni testler ----
+
+  it('startCompass: iOS kalibre değilse (webkitCompassAccuracy=-1) onError("uncalibrated")', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const onErr = vi.fn();
+    const handle = startCompass(cb, onErr);
+    emit('deviceorientation', {
+      webkitCompassHeading: 90,
+      webkitCompassAccuracy: -1,
+    } as unknown as DeviceOrientationEvent);
+    expect(cb).not.toHaveBeenCalled();
+    expect(onErr).toHaveBeenCalledWith('uncalibrated');
+    handle.stop();
+  });
+
+  it('startCompass: iOS kalibre ise (webkitCompassAccuracy=10) normal çalışır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const handle = startCompass(cb);
+    emit('deviceorientation', {
+      webkitCompassHeading: 90,
+      webkitCompassAccuracy: 10,
+    } as unknown as DeviceOrientationEvent);
+    expect(cb).toHaveBeenCalledWith(90);
+    handle.stop();
+  });
+
+  it('startCompass: compassneedscalibration olayı onError("calibration-needed")', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const onErr = vi.fn();
+    const handle = startCompass(() => {}, onErr);
+    emit('compassneedscalibration', { preventDefault: () => {} });
+    expect(onErr).toHaveBeenCalledWith('calibration-needed');
+    handle.stop();
+  });
+
+  it('startCompass: stop() kalibrasyon dinleyicisini de kaldırır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const onErr = vi.fn();
+    const handle = startCompass(() => {}, onErr);
+    handle.stop();
+    emit('compassneedscalibration', { preventDefault: () => {} });
+    expect(onErr).not.toHaveBeenCalled();
+  });
+
+  describe('applyDeclination', () => {
+    it('Mekke declination (+3.5°) ekler', () => {
+      expect(applyDeclination(0)).toBeCloseTo(MAGNETIC_DECLINATION_DEG, 5);
+      expect(applyDeclination(90)).toBeCloseTo(93.5, 1);
+      expect(applyDeclination(270)).toBeCloseTo(273.5, 1);
+    });
+
+    it('360° döngüsünü normalize eder', () => {
+      expect(applyDeclination(358)).toBeCloseTo(1.5, 1);
+      expect(applyDeclination(0, 10)).toBeCloseTo(10, 1);
+    });
+
+    it('özel declination değeri kullanılabilir (test ve farklı şehirler)', () => {
+      expect(applyDeclination(0, 0)).toBe(0);
+      expect(applyDeclination(90, -5)).toBeCloseTo(85, 1);
+    });
   });
 });

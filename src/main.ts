@@ -2,7 +2,13 @@ import './style.css';
 import type { SavedGate, NavUpdate } from './types';
 import { DOORS, findDoor, mainDoors, doorLabel } from './doors';
 import { loadGate, saveGate, clearGate } from './storage';
-import { startCompass, requestCompassPermission, type CompassHandle } from './compass';
+import {
+  startCompass,
+  requestCompassPermission,
+  applyDeclination,
+  type CompassHandle,
+} from './compass';
+import { PositionSmoother } from './guide-smoother';
 import { TrailRecorder, distanceM } from './trail';
 import { computeNavigation, resolveTarget, formatKm, type NavResult } from './guide';
 import {
@@ -23,11 +29,12 @@ import { getHelpMessages } from './help-i18n';
 // ---------- State ----------
 interface PendingDoor {
   id: number;
-  name: string; // listede yoksa boş
+  name: string;
 }
 let pendingDoor: PendingDoor | null = null;
 let savedGate: SavedGate | null = null;
 const recorder = new TrailRecorder();
+const smoother = new PositionSmoother();
 let guideWatchId: number | null = null;
 let hasWarnedTooFar = false;
 let hasFittedMap = false;
@@ -38,14 +45,22 @@ let lastAccuracy: number | null = null;
 let lastBearing: number | null = null;
 let gpsHeading: number | null = null;
 let gpsHeadingAt = 0;
+let lastSpeed = 0;
+let calibrationWarned = false;
+const recentAccuracies: number[] = [];
+let gpsUnstableWarned = false;
+
 type ArrowState = 'idle' | 'go' | 'far' | 'arrived';
 let arrowState: ArrowState = 'idle';
-let arrowRot = 0; // birikimli açı: 359°→1° geçişinde ok geri sarmasın
+let arrowRot = 0;
 let saveToken = 0;
 let guideStarting = false;
 
 const MAX_SAVE_ACCURACY_M = 100;
+/** verified kapılarda numara–konum uyuşmazlık eşiği */
 const MISMATCH_DISTANCE_M = 300;
+/** approximate/unverified kapılarda koordinat hatası daha büyük olabilir */
+const MISMATCH_DISTANCE_APPROX_M = 400;
 /** Kayıtlı (katalog) kapı için: bu mesafeden uzakta kayıt yapılmaz */
 const MAX_SAVE_DISTANCE_M = 2000;
 
@@ -73,6 +88,14 @@ function escapeHtml(s: string): string {
   );
 }
 
+function median(values: number[]): number {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[mid]!
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
 // ---------- Saved card ----------
 function renderSavedCard(): void {
   const el = document.getElementById('saved');
@@ -95,7 +118,6 @@ function renderSavedCard(): void {
 }
 
 // ---------- Door picker ----------
-
 function chooseDoor(door: PendingDoor): void {
   pendingDoor = door;
   const label = doorLabel(door.id, door.name);
@@ -144,7 +166,6 @@ function renderDoorPicker(): void {
   }
 }
 
-/** Listede olmayan kapı: kullanıcı tabeladaki numarayı yazar */
 function onCustomDoor(): void {
   const input = document.getElementById('customDoor') as HTMLInputElement | null;
   const n = Math.round(Number(input?.value));
@@ -155,6 +176,7 @@ function onCustomDoor(): void {
   const known = findDoor(n);
   chooseDoor({ id: n, name: known?.name ?? '' });
 }
+
 // ---------- Bind ----------
 function bind(): void {
   document.getElementById('btnSave')?.addEventListener('click', () => {
@@ -178,7 +200,7 @@ function bind(): void {
   document.getElementById('btnConfirmYes')?.addEventListener('click', onSaveConfirm);
 
   document.getElementById('btnSaveBack')?.addEventListener('click', () => {
-    saveToken++; // süren kayıt işlemini iptal et
+    saveToken++;
     recorder.stop();
     show('home');
   });
@@ -227,7 +249,6 @@ function bind(): void {
 
   window.addEventListener('resize', () => invalidateSize());
   document.addEventListener('visibilitychange', () => {
-    // Ekran kilitlenince wake lock düşer; rehber açıksa geri al
     if (document.visibilityState === 'visible' && guideWatchId !== null) void keepAwake();
   });
   window.addEventListener('pagehide', () => {
@@ -249,28 +270,39 @@ async function onSaveConfirm(): Promise<void> {
   retry?.classList.add('hide');
   show('saving');
   const fix = document.getElementById('fix');
-  if (fix) fix.textContent = 'Konum aranıyor…';
-  speak('Kapı kaydediliyor. Lütfen birkaç saniye bekleyin.', true);
+  if (fix) fix.textContent = 'Konum ölçülüyor… (birkaç saniye)';
+  speak('Konum ölçülüyor. Lütfen birkaç saniye bekleyin.', true);
 
-  // Doğrulanmamış katalog koordinatı ASLA kaydedilmez: yalnızca kullanıcının
-  // kapının önündeyken ölçülen gerçek GPS konumu. Yoksa kayıt yapılmaz.
-  let pos: GeolocationPosition | null = null;
+  // 1–3 ardışık GPS okuması topla, medyanı al. Tek ölçüm GPS gürültüsüne açıktır;
+  // ilk okuma ≤20 m ise erken çıkılır.
+  const fixes: Array<{ lat: number; lng: number; accuracy: number }> = [];
   let errCode = 0;
-  for (let attempt = 0; attempt < 2; attempt++) {
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (token !== saveToken) return;
     try {
-      const p = await getCurrentPosition(10000);
+      const p = await getCurrentPosition(8000);
       if (token !== saveToken) return;
-      if (!pos || p.coords.accuracy < pos.coords.accuracy) pos = p;
-      if (p.coords.accuracy <= 30) break;
+      if (
+        Number.isFinite(p.coords.accuracy) &&
+        p.coords.accuracy <= MAX_SAVE_ACCURACY_M
+      ) {
+        fixes.push({
+          lat: p.coords.latitude,
+          lng: p.coords.longitude,
+          accuracy: p.coords.accuracy,
+        });
+      }
+      if (p.coords.accuracy <= 20) break;
     } catch (e) {
       if (token !== saveToken) return;
       errCode = (e as { code?: number })?.code ?? 0;
-      if (errCode === 1) break; // izin reddedildi, tekrar denemenin anlamı yok
+      if (errCode === 1) break;
     }
   }
   if (token !== saveToken) return;
 
-  if (!pos || pos.coords.accuracy > MAX_SAVE_ACCURACY_M) {
+  if (fixes.length === 0) {
     const msg =
       errCode === 1
         ? 'Konum izni verilmedi. Tarayıcı ayarlarından konum iznini açın.'
@@ -281,13 +313,22 @@ async function onSaveConfirm(): Promise<void> {
     return;
   }
 
-  // Kayıtlı (katalog) kapı: Mescid-i Haram'dan 2 km'den uzakta kayıt yapılmaz.
-  // Kullanıcının kendi yazdığı kapıda yalnızca ölçülen konum esastır (eski davranış).
+  const lat = fixes.length === 1 ? fixes[0]!.lat : median(fixes.map(f => f.lat));
+  const lng = fixes.length === 1 ? fixes[0]!.lng : median(fixes.map(f => f.lng));
+  const accuracy =
+    fixes.length === 1 ? fixes[0]!.accuracy : median(fixes.map(f => f.accuracy));
+
+  if (accuracy > MAX_SAVE_ACCURACY_M) {
+    const msg = 'Konum hassas alınamadı. Açık alana çıkıp tekrar deneyin.';
+    if (fix) fix.textContent = msg;
+    retry?.classList.remove('hide');
+    speak(msg, true);
+    return;
+  }
+
+  // Kayıtlı kapı: Mescid-i Haram'dan 2 km'den uzakta kayıt yapılmaz.
   const gateDistance = catalog
-    ? distanceM(
-        { lat: pos.coords.latitude, lng: pos.coords.longitude },
-        { lat: catalog.outsideLat, lng: catalog.outsideLng }
-      )
+    ? distanceM({ lat, lng }, { lat: catalog.outsideLat, lng: catalog.outsideLng })
     : null;
   if (catalog && gateDistance !== null && gateDistance > MAX_SAVE_DISTANCE_M) {
     const msg =
@@ -299,8 +340,12 @@ async function onSaveConfirm(): Promise<void> {
     return;
   }
 
-  // Seçilen numara, ölçülen konumla uyuşuyor mu? (katalog yalnızca bu denetim için)
-  const mismatch = gateDistance !== null && gateDistance > MISMATCH_DISTANCE_M;
+  // Numara–konum uyuşmazlığı: verified kapılarda 300 m, approximate'da 400 m
+  const mismatchThreshold =
+    catalog?.verification === 'verified'
+      ? MISMATCH_DISTANCE_M
+      : MISMATCH_DISTANCE_APPROX_M;
+  const mismatch = gateDistance !== null && gateDistance > mismatchThreshold;
 
   recorder.stop();
   recorder.start();
@@ -308,12 +353,12 @@ async function onSaveConfirm(): Promise<void> {
   savedGate = {
     doorId: door.id,
     doorName: door.name,
-    outsideLat: pos.coords.latitude,
-    outsideLng: pos.coords.longitude,
+    outsideLat: lat,
+    outsideLng: lng,
     savedAt: Date.now(),
     trail: [],
     locationSource: 'gps',
-    accuracy: pos.coords.accuracy,
+    accuracy,
     numberMismatch: mismatch,
   };
   saveGate(savedGate);
@@ -366,7 +411,14 @@ async function onGuide(): Promise<void> {
     lastAccuracy = null;
     lastBearing = null;
     gpsHeading = null;
+    gpsHeadingAt = 0;
+    lastSpeed = 0;
     arrowState = 'idle';
+    arrowRot = 0;
+    smoother.reset();
+    recentAccuracies.length = 0;
+    gpsUnstableWarned = false;
+    calibrationWarned = false;
     updateArrow();
 
     show('guide');
@@ -385,15 +437,27 @@ async function onGuide(): Promise<void> {
 
     await keepAwake();
 
-    // Pusula
+    // Pusula — kalibrasyon uyarılarını yakala
     compass?.stop();
     compass = null;
     deviceHeading = null;
     if (await compassPermission) {
       compass = startCompass(
         onHeading,
-        () => {
-          // Pusula olmadan da çalışır
+        (reason) => {
+          if (
+            (reason === 'uncalibrated' || reason === 'calibration-needed') &&
+            !calibrationWarned
+          ) {
+            calibrationWarned = true;
+            deviceHeading = null; // GPS yedeğine düş
+            const msg =
+              'Pusula kalibrasyonu gerekiyor. Telefonu havada 8 şeklinde hareket ettirin.';
+            const say = document.getElementById('say');
+            if (say) say.textContent = msg;
+            speak(msg, true);
+          }
+          // 'no-heading' ve 'unsupported' sessizce yoksayılır (GPS yedeği devreye girer)
         }
       );
     }
@@ -428,21 +492,52 @@ async function onGuide(): Promise<void> {
 
 function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void {
   if (!savedGate) return;
-  const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  const raw = { lat: pos.coords.latitude, lng: pos.coords.longitude };
   lastAccuracy = pos.coords.accuracy;
 
-  // Yürürken GPS yönü (pusula yoksa veya şaşarsa yedek)
+  // GPS sağlık izleme: son 4 okumanın yayılımı >50 m ise uyar
+  recentAccuracies.push(pos.coords.accuracy);
+  if (recentAccuracies.length > 4) recentAccuracies.shift();
+  if (!gpsUnstableWarned && recentAccuracies.length >= 3) {
+    const spread =
+      Math.max(...recentAccuracies) - Math.min(...recentAccuracies);
+    if (spread > 50) {
+      gpsUnstableWarned = true;
+      const warn = document.getElementById('warn');
+      if (warn) {
+        const approx = savedGate.locationSource !== 'gps';
+        warn.classList.remove('hide');
+        warn.textContent = approx
+          ? '⚠️ Kayıtlı konum yaklaşık + GPS sinyali kararsız. Açık alana çıkın ve tabelayı kontrol edin.'
+          : '⚠️ GPS sinyali kararsız. Açık alana çıkın.';
+      }
+    }
+  }
+
+  // Hız ve GPS yönü (pusula yoksa veya şaşarsa yedek)
   const hd = pos.coords.heading;
   const spd = pos.coords.speed;
+  if (typeof spd === 'number' && spd >= 0) lastSpeed = spd;
   if (typeof hd === 'number' && Number.isFinite(hd) && typeof spd === 'number' && spd >= 0.8) {
     gpsHeading = hd;
     gpsHeadingAt = Date.now();
   }
 
+  // Konumu yumuşat
+  const cur = smoother.update(raw, pos.coords.accuracy);
   setCurrent(cur.lat, cur.lng);
 
-  const nav: NavResult = computeNavigation(savedGate, cur, effectiveHeading()?.value ?? null, lastAccuracy);
-  drawLineToTarget(cur, { lat: tLat, lng: tLng }, nav.isTooFar ? formatKm(nav.distance) : undefined);
+  const nav: NavResult = computeNavigation(
+    savedGate,
+    cur,
+    effectiveHeading()?.value ?? null,
+    lastAccuracy
+  );
+  drawLineToTarget(
+    cur,
+    { lat: tLat, lng: tLng },
+    nav.isTooFar ? formatKm(nav.distance) : undefined
+  );
 
   if (!hasFittedMap) {
     fitToAll();
@@ -499,24 +594,46 @@ function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void 
   }
 }
 
-/** Pusula yönünü yumuşat (titremeyi azaltır; 359°→1° geçişinde doğru çalışır) */
-function onHeading(h: number): void {
+/**
+ * Pusula heading'ini alır:
+ *  1) manyetik → gerçek kuzeye çevirir (`applyDeclination`)
+ *  2) adaptif üstel yumuşatma (hızlı dönüşte çabuk, yavaşta sakin)
+ */
+function onHeading(rawH: number): void {
+  const h = applyDeclination(rawH);
   if (deviceHeading === null) {
     deviceHeading = h;
   } else {
     const d = ((h - deviceHeading + 540) % 360) - 180;
-    deviceHeading = (deviceHeading + 0.3 * d + 360) % 360;
+    const absD = Math.abs(d);
+    const alpha = absD > 30 ? 0.6 : absD > 10 ? 0.4 : 0.25;
+    deviceHeading = (deviceHeading + alpha * d + 360) % 360;
   }
   updateArrow();
 }
 
-/** Önce pusula; yoksa son birkaç saniyedeki yürüyüş (GPS) yönü */
-function effectiveHeading(): { value: number; source: 'compass' | 'gps' } | null {
-  if (deviceHeading !== null) return { value: deviceHeading, source: 'compass' };
-  if (gpsHeading !== null && Date.now() - gpsHeadingAt < 8000) {
-    return { value: gpsHeading, source: 'gps' };
-  }
-  return null;
+/**
+ * Etkin yön:
+ *  - yalnız pusula → pusula
+ *  - yalnız GPS   → GPS
+ *  - ikisi de taze → hıza göre ağırlıklı füzyon (yavaşta pusula, hızlıda GPS)
+ */
+function effectiveHeading(): {
+  value: number;
+  source: 'compass' | 'gps' | 'fused';
+} | null {
+  const hasCompass = deviceHeading !== null;
+  const gpsFresh = gpsHeading !== null && Date.now() - gpsHeadingAt < 8000;
+
+  if (!hasCompass && !gpsFresh) return null;
+  if (hasCompass && !gpsFresh) return { value: deviceHeading!, source: 'compass' };
+  if (!hasCompass && gpsFresh) return { value: gpsHeading!, source: 'gps' };
+
+  const speed = lastSpeed ?? 0;
+  const wCompass = Math.max(0.2, 1 - speed / 3);
+  const diff = ((gpsHeading! - deviceHeading! + 540) % 360) - 180;
+  const fused = (deviceHeading! + (1 - wCompass) * diff + 360) % 360;
+  return { value: fused, source: 'fused' };
 }
 
 function turnWord(rel: number): { text: string; tone: 'ok' | 'turn' | 'back' } {
@@ -527,7 +644,6 @@ function turnWord(rel: number): { text: string; tone: 'ok' | 'turn' | 'back' } {
   return { text: 'ARKANIZA DÖNÜN', tone: 'back' };
 }
 
-/** Yön göstergesi: ok + açık kelime (düz / sağa / sola / arkanıza) */
 function updateArrow(): void {
   const wrap = document.getElementById('arrowWrap');
   const svg = document.getElementById('arrow');
@@ -541,8 +657,8 @@ function updateArrow(): void {
   wrap.setAttribute('data-state', state);
 
   if (state === 'go' && heading !== null && lastBearing !== null) {
-    const rel = ((lastBearing - heading.value + 540) % 360) - 180; // -180..180
-    const delta = ((((rel - arrowRot) % 360) + 540) % 360) - 180; // en kısa dönüş
+    const rel = ((lastBearing - heading.value + 540) % 360) - 180;
+    const delta = ((((rel - arrowRot) % 360) + 540) % 360) - 180;
     arrowRot += delta;
     svg.style.transform = `rotate(${arrowRot.toFixed(0)}deg)`;
     const w = turnWord(rel);
@@ -550,9 +666,9 @@ function updateArrow(): void {
     if (word) word.textContent = w.text;
     if (note) {
       note.textContent =
-        heading.source === 'compass'
-          ? '🧭 Ok, telefonun baktığı yöne göre gösterir'
-          : '📍 Ok, yürüdüğünüz yöne göre gösterir';
+        heading.source === 'gps'
+          ? '📍 Ok, yürüdüğünüz yöne göre gösterir'
+          : '🧭 Ok, telefonun baktığı yöne göre gösterir';
     }
     return;
   }
@@ -598,6 +714,10 @@ function onStopGuide(): void {
   arrowState = 'idle';
   lastBearing = null;
   gpsHeading = null;
+  gpsHeadingAt = 0;
+  lastSpeed = 0;
+  smoother.reset();
+  recentAccuracies.length = 0;
   updateArrow();
   hasWarnedTooFar = false;
   hasFittedMap = false;
@@ -624,7 +744,6 @@ function onHelp(): void {
 
   show('help');
 
-  // Önce Arapça (görevliye), bittikten sonra Türkçe (kullanıcıya) — tek kuyrukta
   const hasArabicVoice = speakHelp(msgs.speakArabic, msgs.speakTurkish);
   if (note) {
     note.classList.toggle('hide', hasArabicVoice);

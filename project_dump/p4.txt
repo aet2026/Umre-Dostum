@@ -1,0 +1,2874 @@
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(256 262) scale(0.9) translate(-256 -256)">
+    <!-- hilal -->
+    <path d="M266.19 37.16 A18 18 0 1 0 266.19 66.84 A15 15 0 1 1 266.19 37.16Z" fill="#f2c14e"/>
+    <polygon points="283.0,45.0 284.8,49.6 289.7,49.8 285.9,52.9 287.1,57.7 283.0,55.0 278.9,57.7 280.1,52.9 276.3,49.8 281.2,49.6" fill="#f2c14e"/>
+    <!-- dış çerçeve -->
+    <path d="M122 442 V258 Q122 160 256 66 Q390 160 390 258 V442" fill="none" stroke="#d4a537" stroke-width="4"/>
+    <!-- kapı çerçevesi (sivri kemer) -->
+    <path d="M136 442 V258 Q136 172 256 84 Q376 172 376 258 V442 Z" fill="#fbf3dc" stroke="#d4a537" stroke-width="8" stroke-linejoin="round"/>
+    <polygon points="150.0,283.0 151.5,288.3 156.4,285.6 153.7,290.5 159.0,292.0 153.7,293.5 156.4,298.4 151.5,295.7 150.0,301.0 148.5,295.7 143.6,298.4 146.3,293.5 141.0,292.0 146.3,290.5 143.6,285.6 148.5,288.3" fill="#d4a537"/><polygon points="150.0,329.0 151.5,334.3 156.4,331.6 153.7,336.5 159.0,338.0 153.7,339.5 156.4,344.4 151.5,341.7 150.0,347.0 148.5,341.7 143.6,344.4 146.3,339.5 141.0,338.0 146.3,336.5 143.6,331.6 148.5,334.3" fill="#d4a537"/><polygon points="150.0,375.0 151.5,380.3 156.4,377.6 153.7,382.5 159.0,384.0 153.7,385.5 156.4,390.4 151.5,387.7 150.0,393.0 148.5,387.7 143.6,390.4 146.3,385.5 141.0,384.0 146.3,382.5 143.6,377.6 148.5,380.3" fill="#d4a537"/><polygon points="362.0,283.0 363.5,288.3 368.4,285.6 365.7,290.5 371.0,292.0 365.7,293.5 368.4,298.4 363.5,295.7 362.0,301.0 360.5,295.7 355.6,298.4 358.3,293.5 353.0,292.0 358.3,290.5 355.6,285.6 360.5,288.3" fill="#d4a537"/><polygon points="362.0,329.0 363.5,334.3 368.4,331.6 365.7,336.5 371.0,338.0 365.7,339.5 368.4,344.4 363.5,341.7 362.0,347.0 360.5,341.7 355.6,344.4 358.3,339.5 353.0,338.0 358.3,336.5 355.6,331.6 360.5,334.3" fill="#d4a537"/><polygon points="362.0,375.0 363.5,380.3 368.4,377.6 365.7,382.5 371.0,384.0 365.7,385.5 368.4,390.4 363.5,387.7 362.0,393.0 360.5,387.7 355.6,390.4 358.3,385.5 353.0,384.0 358.3,382.5 355.6,377.6 360.5,380.3" fill="#d4a537"/>
+    <!-- iç kemer (turkuaz) -->
+    <path d="M164 442 V264 Q164 194 256 122 Q348 194 348 264 V442 Z" fill="#13857e" stroke="#0b5f5a" stroke-width="4"/>
+    <!-- sekiz köşeli yıldız -->
+    <polygon points="256.0,146.0 260.6,158.9 273.0,153.0 267.1,165.4 280.0,170.0 267.1,174.6 273.0,187.0 260.6,181.1 256.0,194.0 251.4,181.1 239.0,187.0 244.9,174.6 232.0,170.0 244.9,165.4 239.0,153.0 251.4,158.9" fill="#f2c14e" stroke="#b8860b" stroke-width="2"/>
+    <circle cx="256" cy="170" r="6" fill="#c8302b"/>
+    <!-- kapı kanatları -->
+    <path d="M190 442 V304 Q190 262 256 214 Q322 262 322 304 V442 Z" fill="url(#wood)" stroke="#2c180a" stroke-width="3"/>
+    <path d="M256 214 V442" stroke="#d4a537" stroke-width="4"/>
+    <path d="M208 442 V312 Q208 282 232 262 M304 442 V312 Q304 282 280 262" stroke="#d4a537" stroke-width="2.5" fill="none" opacity="0.7"/>
+    <circle cx="236" cy="380" r="6" fill="#f2c14e"/>
+    <circle cx="276" cy="380" r="6" fill="#f2c14e"/>
+    <circle cx="236" cy="330" r="4" fill="#f2c14e"/>
+    <circle cx="276" cy="330" r="4" fill="#f2c14e"/>
+    <!-- basamaklar -->
+    <rect x="124" y="442" width="264" height="10" rx="2" fill="#d4a537"/>
+    <rect x="112" y="452" width="288" height="8" rx="2" fill="#0a2550"/>
+    <!-- laleler -->
+    <g transform="translate(96 376)"><g class="tulip">
+  <path d="M0 6 C0 40 -2 60 -2 72" stroke="#2e8b57" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M-1 58 C-22 50 -30 34 -26 22 C-12 28 -3 42 -1 58Z" fill="#2e8b57"/>
+  <path d="M-19 -46 C-28 -24 -21 -4 0 6 C21 -4 28 -24 19 -46 L9 -30 L0 -50 L-9 -30 Z" fill="#c8302b"/>
+  <path d="M0 -50 L9 -30 C6 -14 3 -2 0 6 C-3 -2 -6 -14 -9 -30Z" fill="#e8574f"/>
+</g></g>
+    <g transform="translate(416 376) scale(-1 1)"><g class="tulip">
+  <path d="M0 6 C0 40 -2 60 -2 72" stroke="#2e8b57" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M-1 58 C-22 50 -30 34 -26 22 C-12 28 -3 42 -1 58Z" fill="#2e8b57"/>
+  <path d="M-19 -46 C-28 -24 -21 -4 0 6 C21 -4 28 -24 19 -46 L9 -30 L0 -50 L-9 -30 Z" fill="#c8302b"/>
+  <path d="M0 -50 L9 -30 C6 -14 3 -2 0 6 C-3 -2 -6 -14 -9 -30Z" fill="#e8574f"/>
+</g></g>
+  </g>
+</svg>
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/public/icons/icon.svg =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/public/manifest.webmanifest =====
+{
+  "name": "Umre Dostum",
+  "short_name": "Umre Dostum",
+  "description": "Umre Dostum — Mescid-i Haram'da giriş kapınızı kaydedin, kaybolmayın: sesli yönlendirme ve Arapça yardım.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fffdf5",
+  "theme_color": "#0f3470",
+  "lang": "tr",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "id": "./"
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/public/manifest.webmanifest =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/compass.test.ts =====
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  isCompassSupported,
+  requestCompassPermission,
+  startCompass,
+  headingFromOrientation,
+} from './compass';
+
+describe('compass', () => {
+  let listeners: Record<string, EventListener[]> = {};
+
+  beforeEach(() => {
+    listeners = {};
+    vi.spyOn(window, 'addEventListener').mockImplementation(
+      (type: string, fn: EventListenerOrEventListenerObject) => {
+        (listeners[type] ??= []).push(fn as EventListener);
+      }
+    );
+    vi.spyOn(window, 'removeEventListener').mockImplementation(
+      (type: string, fn: EventListenerOrEventListenerObject) => {
+        listeners[type] = (listeners[type] ?? []).filter(f => f !== fn);
+      }
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete (window as unknown as { DeviceOrientationEvent?: unknown }).DeviceOrientationEvent;
+  });
+
+  function emit(type: string, event: Partial<DeviceOrientationEvent>): void {
+    for (const fn of listeners[type] ?? []) {
+      fn(event as unknown as Event);
+    }
+  }
+
+  it('isCompassSupported: DeviceOrientationEvent yoksa false', () => {
+    expect(isCompassSupported()).toBe(false);
+  });
+
+  it('isCompassSupported: DeviceOrientationEvent varsa true', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    expect(isCompassSupported()).toBe(true);
+  });
+
+  it('requestCompassPermission: desteklenmiyorsa false', async () => {
+    expect(await requestCompassPermission()).toBe(false);
+  });
+
+  it('requestCompassPermission: Android gibi doğrudan true döner', async () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    expect(await requestCompassPermission()).toBe(true);
+  });
+
+  it('requestCompassPermission: iOS izin granted ise true', async () => {
+    const cls = class {};
+    (cls as unknown as { requestPermission: () => Promise<'granted'> }).requestPermission =
+      () => Promise.resolve('granted');
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = cls;
+    expect(await requestCompassPermission()).toBe(true);
+  });
+
+  it('requestCompassPermission: iOS izin denied ise false', async () => {
+    const cls = class {};
+    (cls as unknown as { requestPermission: () => Promise<'denied'> }).requestPermission =
+      () => Promise.resolve('denied');
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = cls;
+    expect(await requestCompassPermission()).toBe(false);
+  });
+
+  it('startCompass: desteklenmiyorsa hata callback çağırır', () => {
+    const errCb = vi.fn();
+    const handle = startCompass(() => {}, errCb);
+    expect(errCb).toHaveBeenCalledWith('unsupported');
+    handle.stop();
+  });
+
+  it('startCompass: webkitCompassHeading değerini kullanır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const handle = startCompass(cb);
+    emit('deviceorientation', { webkitCompassHeading: 90 } as unknown as DeviceOrientationEvent);
+    expect(cb).toHaveBeenCalledWith(90);
+    handle.stop();
+  });
+
+  it('startCompass: Android alpha değerini tersine çevirir', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const handle = startCompass(cb);
+    emit('deviceorientation', { alpha: 90, absolute: true } as unknown as DeviceOrientationEvent);
+    expect(cb).toHaveBeenCalledWith(270);
+    handle.stop();
+  });
+
+  it('startCompass: stop() dinleyiciyi kaldırır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const handle = startCompass(cb);
+    handle.stop();
+    expect(handle.isActive()).toBe(false);
+    emit('deviceorientation', { webkitCompassHeading: 90 } as unknown as DeviceOrientationEvent);
+    expect(cb).not.toHaveBeenCalled();
+  });
+
+  it('startCompass: normalize 0-360 aralığı', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const handle = startCompass(cb);
+    emit('deviceorientation', { webkitCompassHeading: 450 } as unknown as DeviceOrientationEvent);
+    expect(cb).toHaveBeenCalledWith(90);
+    handle.stop();
+  });
+
+  it('startCompass: mutlak olmayan (göreli) alpha yok sayılır', () => {
+    (window as unknown as { DeviceOrientationEvent: unknown }).DeviceOrientationEvent = class {};
+    const cb = vi.fn();
+    const onErr = vi.fn();
+    const handle = startCompass(cb, onErr);
+    emit('deviceorientation', { alpha: 90 } as unknown as DeviceOrientationEvent);
+    expect(cb).not.toHaveBeenCalled();
+    expect(onErr).toHaveBeenCalledWith('no-heading');
+    handle.stop();
+  });
+
+  it('headingFromOrientation: yatay telefon, alpha 90 → 270 (batı)', () => {
+    expect(Math.round(headingFromOrientation(90, 0, 0))).toBe(270);
+  });
+
+  it('headingFromOrientation: dik telefon doğuya bakıyor → 90', () => {
+    expect(Math.round(headingFromOrientation(270, 90, 0))).toBe(90);
+  });
+
+  it('headingFromOrientation: dik telefon kuzeye bakıyor → 0', () => {
+    const h = Math.round(headingFromOrientation(0, 90, 0));
+    expect(h === 0 || h === 360).toBe(true);
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/compass.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/compass.ts =====
+/**
+ * Cihazın baktığı yönü (heading) ölçer.
+ * - iOS: DeviceOrientationEvent.requestPermission() gerekir (kullanıcı jesti ile)
+ * - Android: doğrudan deviceorientationabsolute çalışır
+ * - Masaüstü: desteklenmez, null döner
+ *
+ * Heading = 0 → kuzey, 90 → doğu, 180 → güney, 270 → batı
+ */
+
+export type CompassCallback = (heading: number) => void;
+
+export interface CompassHandle {
+  stop: () => void;
+  isActive: () => boolean;
+}
+
+type IOSDeviceOrientationEvent = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<'granted' | 'denied'>;
+};
+
+export function isCompassSupported(): boolean {
+  if (typeof window === 'undefined') return false;
+  return 'DeviceOrientationEvent' in window;
+}
+
+/**
+ * iOS 13+ için izin ister. Android'de doğrudan 'granted' döner.
+ * Kullanıcı jesti (buton tıklaması) içinde çağrılmalı.
+ */
+export async function requestCompassPermission(): Promise<boolean> {
+  if (!isCompassSupported()) return false;
+
+  const DOE = window.DeviceOrientationEvent as IOSDeviceOrientationEvent;
+  if (typeof DOE.requestPermission === 'function') {
+    try {
+      const result = await DOE.requestPermission();
+      return result === 'granted';
+    } catch {
+      return false;
+    }
+  }
+  // Android ve masaüstü: izin istemez
+  return true;
+}
+
+/**
+ * Pusulayı başlatır. Her yön değişiminde callback çağrılır.
+ * Not: callback sık çağrılır (saniyede ~10 kez) — debounce çağıranda.
+ */
+export function startCompass(
+  callback: CompassCallback,
+  onError?: (reason: string) => void
+): CompassHandle {
+  if (!isCompassSupported()) {
+    onError?.('unsupported');
+    return { stop: () => {}, isActive: () => false };
+  }
+
+  let active = true;
+
+  const handler = (e: DeviceOrientationEvent) => {
+    if (!active) return;
+
+    // iOS: webkitCompassHeading (0-360, saat yönünde)
+    const webkit = (e as DeviceOrientationEvent & { webkitCompassHeading?: number })
+      .webkitCompassHeading;
+    if (typeof webkit === 'number' && !Number.isNaN(webkit)) {
+      callback(normalize(webkit));
+      return;
+    }
+
+    // Android: yalnızca MUTLAK (kuzeye göre) yönelim güvenilir; göreli alpha yanlış yön verir
+    const absolute =
+      (e as DeviceOrientationEvent & { absolute?: boolean }).absolute === true;
+    if (absolute && typeof e.alpha === 'number' && !Number.isNaN(e.alpha)) {
+      callback(headingFromOrientation(e.alpha, e.beta ?? 0, e.gamma ?? 0));
+      return;
+    }
+
+    onError?.('no-heading');
+  };
+
+  // Absolute varsa onu tercih et
+  const useAbsolute = 'ondeviceorientationabsolute' in window;
+  const eventName = useAbsolute ? 'deviceorientationabsolute' : 'deviceorientation';
+
+  window.addEventListener(eventName, handler as EventListener, true);
+
+  return {
+    stop: () => {
+      active = false;
+      window.removeEventListener(eventName, handler as EventListener, true);
+    },
+    isActive: () => active,
+  };
+}
+
+/**
+ * alpha/beta/gamma (W3C, mutlak) → pusula yönü (0=kuzey, saat yönünde).
+ * Telefon yataya yakınsa üst kenarın, dik tutuluyorsa arka yüzün (kamera) baktığı yönü verir.
+ * Böylece yalnızca "360 - alpha" kullanıldığında dik tutulan telefonda oluşan sapma önlenir.
+ */
+export function headingFromOrientation(alpha: number, beta: number, gamma: number): number {
+  const d = Math.PI / 180;
+  const a = alpha * d;
+  const b = beta * d;
+  const g = gamma * d;
+  const cA = Math.cos(a), sA = Math.sin(a);
+  const cB = Math.cos(b), sB = Math.sin(b);
+  const cG = Math.cos(g), sG = Math.sin(g);
+
+  const facingUp = Math.abs(cB * cG); // 1 = tam yatay, 0 = dik
+  let east: number;
+  let north: number;
+  if (facingUp > 0.7) {
+    // yatay: cihazın üst kenarı
+    east = -sA * cB;
+    north = cA * cB;
+  } else {
+    // dik: arka yüz
+    east = -cA * sG - sA * sB * cG;
+    north = -sA * sG + cA * sB * cG;
+  }
+  return normalize((Math.atan2(east, north) * 180) / Math.PI);
+}
+
+function normalize(deg: number): number {
+  return ((deg % 360) + 360) % 360;
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/compass.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/doors.test.ts =====
+import { describe, it, expect } from 'vitest';
+import {
+  DOORS,
+  findDoor,
+  mainDoors,
+  popularDoors,
+  unverifiedDoors,
+  doorLabel,
+} from './doors';
+
+describe('doors', () => {
+  it('en az bir ana kapı var', () => {
+    expect(mainDoors().length).toBeGreaterThan(0);
+  });
+
+  it('mainDoors sadece isMain=true döner', () => {
+    expect(mainDoors().every(d => d.isMain)).toBe(true);
+  });
+
+  it('mainDoors tüm DOORS içinden seçer', () => {
+    for (const m of mainDoors()) {
+      expect(DOORS).toContain(m);
+    }
+  });
+
+  it('unverifiedDoors sadece doğrulanmamışları döner', () => {
+    expect(unverifiedDoors().every(d => d.verification !== 'verified')).toBe(true);
+  });
+
+  it('unverifiedDoors doğrulanmışları içermez', () => {
+    const unv = unverifiedDoors();
+    const verified = DOORS.filter(d => d.verification === 'verified');
+    for (const v of verified) {
+      expect(unv).not.toContain(v);
+    }
+  });
+
+  it('findDoor var olan id için kapı döner', () => {
+    const first = DOORS[0]!;
+    expect(findDoor(first.id)).toBe(first);
+  });
+
+  it('findDoor olmayan id için undefined döner', () => {
+    expect(findDoor(999999)).toBeUndefined();
+  });
+
+  it('her kapının geçerli koordinatı var', () => {
+    for (const d of DOORS) {
+      expect(d.outsideLat).toBeGreaterThan(-90);
+      expect(d.outsideLat).toBeLessThan(90);
+      expect(d.outsideLng).toBeGreaterThan(-180);
+      expect(d.outsideLng).toBeLessThan(180);
+    }
+  });
+
+  // ---- yeni fonksiyonlar ----
+
+  it('popularDoors sadece popularity=high döner', () => {
+    const p = popularDoors();
+    expect(p.length).toBeGreaterThan(0);
+    expect(p.every(d => d.popularity === 'high')).toBe(true);
+  });
+
+  it('en az 5 popüler kapı var', () => {
+    expect(popularDoors().length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('tüm ana kapılar popüler', () => {
+    for (const m of mainDoors()) {
+      expect(m.popularity).toBe('high');
+    }
+  });
+
+  it('yeni eklenen kapılar mevcut', () => {
+    for (const id of [13, 19, 64]) {
+      expect(findDoor(id)).toBeDefined();
+    }
+  });
+
+  it('resmî ana kapı numaraları katalogda: 1, 45, 62, 79, 100', () => {
+    for (const id of [1, 45, 62, 79, 100]) {
+      expect(findDoor(id)?.isMain).toBe(true);
+    }
+  });
+
+  it('doğrulanamayan eski numaralar katalogda yok: 2, 37, 60, 86, 90', () => {
+    for (const id of [2, 37, 60, 86, 90]) {
+      expect(findDoor(id)).toBeUndefined();
+    }
+  });
+
+  it('her kapının koordinatı Mescid-i Haram çevresinde (Kâbe\'ye 100-500 m)', () => {
+    const K = { lat: 21.42249, lng: 39.82618 };
+    for (const d of DOORS) {
+      const dy = (d.outsideLat - K.lat) * 111320;
+      const dx = (d.outsideLng - K.lng) * 111320 * Math.cos((K.lat * Math.PI) / 180);
+      const dist = Math.hypot(dx, dy);
+      expect(dist).toBeGreaterThan(100);
+      expect(dist).toBeLessThan(500);
+    }
+  });
+
+  it('bilinen kaynak koordinatları (hajjmap/OSM) birebir', () => {
+    expect(findDoor(1)).toMatchObject({ outsideLat: 21.4210447, outsideLng: 39.8258406 });
+    expect(findDoor(79)).toMatchObject({ outsideLat: 21.421232, outsideLng: 39.8240461 });
+    expect(findDoor(62)).toMatchObject({ outsideLat: 21.4228378, outsideLng: 39.8245696 });
+    expect(findDoor(45)).toMatchObject({ outsideLat: 21.4240151, outsideLng: 39.8265147 });
+    expect(findDoor(100)).toMatchObject({ outsideLat: 21.4253914, outsideLng: 39.824132 });
+  });
+
+  it('doorLabel: adlı kapı ve numara-only kapı', () => {
+    expect(doorLabel(62, 'Umre')).toBe("Umre Kapısı");
+    expect(doorLabel(84, '')).toBe('84 numaralı kapı');
+  });
+
+  it('kapı id\'leri benzersiz', () => {
+    expect(new Set(DOORS.map(d => d.id)).size).toBe(DOORS.length);
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/doors.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/doors.ts =====
+import type { DoorInfo } from './types';
+
+/**
+ * KAPI KATALOĞU — kapı numaraları Suudi Basın Ajansı'nın (SPA) 2025 resmî numaralarıdır;
+ * koordinatlar OpenStreetMap kapı noktalarıdır (kapının kendi konumu, caminin duvarında).
+ * Kaynak sayfaları: hajjmap.com (SPA + OSM'e atıf) ve maps.umrahcore.com (OSM).
+ *
+ * Doğrulanamayan kapılar (eski listedeki 2, 37, 60, 86, 90) BİLEREK çıkarıldı:
+ * numaraları kaynaklara göre değişiyor. Bu kapılar için kullanıcı numarayı elle girer.
+ *
+ * Rehberlik yine de kullanıcının kapının önünde ölçtüğü GPS konumuna yapılır;
+ * katalog, seçilen numaranın konumla uyuşup uyuşmadığını denetlemek için kullanılır.
+ * Not: Mescid-i Haram'da numaralandırma değişebilir (Şubat 2026'da yeni tabelalar asıldı).
+ */
+export const DOORS: DoorInfo[] = [
+  {
+    id: 1,
+    name: 'Kral Abdülaziz',
+    area: 'güney',
+    outsideLat: 21.4210447,
+    outsideLng: 39.8258406,
+    isMain: true,
+    verification: 'verified',
+    source: 'Saudi Press Agency (resmî numara) + OpenStreetMap node 4755914231; UmrahMap ile aynı konum',
+    hint: "Güney yüzü, Saat Kulesi'nin karşısı",
+    popularity: 'high',
+  },
+  {
+    id: 79,
+    name: 'Kral Fahd',
+    area: 'batı',
+    outsideLat: 21.421232,
+    outsideLng: 39.8240461,
+    isMain: true,
+    verification: 'verified',
+    source: 'SPA (resmî numara) + OpenStreetMap node 3210622327; UmrahMap ile aynı konum',
+    hint: "Batı yüzü, Kral Fahd genişlemesi",
+    popularity: 'high',
+  },
+  {
+    id: 100,
+    name: 'Kral Abdullah',
+    area: 'kuzey',
+    outsideLat: 21.4253914,
+    outsideLng: 39.824132,
+    isMain: true,
+    verification: 'approximate',
+    source: 'SPA (resmî numara) + OpenStreetMap node 5875587679 (tek kaynak)',
+    hint: "Kuzey yüzü, Üçüncü Suudi genişlemesi",
+    popularity: 'high',
+  },
+  {
+    id: 62,
+    name: 'Umre',
+    area: 'batı',
+    outsideLat: 21.4228378,
+    outsideLng: 39.8245696,
+    isMain: true,
+    verification: 'verified',
+    source: 'SPA (resmî numara 62; eski haritalarda 40) + OpenStreetMap node 4318154228; UmrahMap "Gate 40" ile aynı konum',
+    hint: "Batı yüzü, Kral Fahd Kapısı'nın kuzeyi",
+    popularity: 'high',
+  },
+  {
+    id: 45,
+    name: 'Fetih',
+    area: 'kuzey',
+    outsideLat: 21.4240151,
+    outsideLng: 39.8265147,
+    isMain: true,
+    verification: 'verified',
+    source: 'SPA (resmî numara 45; eski haritalarda 30) + OpenStreetMap node 4318154227; UmrahMap "Gate 30" ile aynı konum',
+    hint: "Kuzey yüzü, iki minareli",
+    popularity: 'high',
+  },
+  {
+    id: 19,
+    name: 'Selam',
+    area: 'doğu',
+    outsideLat: 21.4230322,
+    outsideLng: 39.8275662,
+    isMain: false,
+    verification: 'approximate',
+    source: 'SPA (resmî numara) + OpenStreetMap node 4562384977 (tek kaynak)',
+    hint: "Doğu yüzü, Mesa (Sa'y) altı, tavafa açılır",
+    popularity: 'high',
+  },
+  {
+    id: 13,
+    name: 'Safa',
+    area: 'doğu',
+    outsideLat: 21.4219351,
+    outsideLng: 39.8276581,
+    isMain: false,
+    verification: 'approximate',
+    source: 'OpenStreetMap node 6955934980 (tek kaynak)',
+    hint: "Doğu yüzü, Safa ucu — Sa'y çıkış kapısı",
+    popularity: 'medium',
+  },
+  {
+    id: 64,
+    name: 'Şubeyke Köprüsü',
+    area: 'batı',
+    outsideLat: 21.4225597,
+    outsideLng: 39.8245256,
+    isMain: false,
+    verification: 'approximate',
+    source: 'SPA (resmî numara) + OpenStreetMap node 5295574674 (tek kaynak)',
+    hint: "Batı yüzü, 1. kat, Şubeyke köprüsü",
+    popularity: 'medium',
+  },
+];
+
+export function findDoor(id: number): DoorInfo | undefined {
+  return DOORS.find(d => d.id === id);
+}
+
+export function mainDoors(): DoorInfo[] {
+  return DOORS.filter(d => d.isMain);
+}
+
+export function popularDoors(): DoorInfo[] {
+  return DOORS.filter(d => d.popularity === 'high');
+}
+
+export function unverifiedDoors(): DoorInfo[] {
+  return DOORS.filter(d => d.verification !== 'verified');
+}
+
+/** Kapının ekranda/sesle söylenen adı. Listede olmayan numaralar için ad boştur. */
+export function doorLabel(id: number, name: string): string {
+  return name ? `${name} Kapısı` : `${id} numaralı kapı`;
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/doors.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/guide.test.ts =====
+import { describe, it, expect } from 'vitest';
+import { computeNavigation, resolveTarget, formatKm } from './guide';
+import type { SavedGate } from './types';
+
+const mockSaved: SavedGate = {
+  doorId: 100,
+  doorName: 'Kral Abdullah',
+  outsideLat: 21.42355,
+  outsideLng: 39.82590,
+  savedAt: Date.now(),
+  trail: [],
+  locationSource: 'gps',
+};
+
+describe('computeNavigation', () => {
+  it('hedefe çok yakınken arrived döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42355, lng: 39.82590 });
+    expect(nav.arrived).toBe(true);
+    expect(nav.distance).toBeLessThan(20);
+    expect(nav.instruction).toMatch(/önündesiniz/);
+  });
+
+  it('uzaktayken arrived false döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82000 });
+    expect(nav.arrived).toBe(false);
+    expect(nav.distance).toBeGreaterThan(100);
+  });
+
+  it('yön talimatı Türkçe yön içerir', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82000 });
+    expect(nav.instruction).toMatch(/kuzey|güney|doğu|batı/);
+  });
+
+  it('2 km dışındaysa isTooFar true döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.50, lng: 39.90 });
+    expect(nav.isTooFar).toBe(true);
+    expect(nav.instruction).toMatch(/Mescid-i Haram/);
+  });
+
+  it('2 km içindeyse isTooFar false döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42355, lng: 39.82590 });
+    expect(nav.isTooFar).toBe(false);
+  });
+
+  it('1000m üstü mesafe kilometre formatında', () => {
+    // ~1.1 km kuzey
+    const nav = computeNavigation(mockSaved, { lat: 21.43355, lng: 39.82590 });
+    expect(nav.instruction).toMatch(/kilometre/);
+  });
+
+  it('1000m altı mesafe metre formatında', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42455, lng: 39.82590 });
+    expect(nav.instruction).toMatch(/metre/);
+  });
+
+  it('50m altı mesafe tam metre olarak okunur', () => {
+    // ~30m kuzey
+    const nav = computeNavigation(mockSaved, { lat: 21.42382, lng: 39.82590 });
+    expect(nav.instruction).toMatch(/\d+ metre/);
+  });
+
+  it('kuzeyde kullanıcı için "kuzey" yönü döner', () => {
+    // kullanıcı güneyde, hedef kuzeyde → kuzey yönü
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82590 });
+    expect(nav.instruction).toMatch(/kuzey/);
+  });
+
+  it('doğudaki kullanıcı için "batı" yönü döner', () => {
+    // kullanıcı doğuda (lng daha büyük), hedef batıda
+    const nav = computeNavigation(mockSaved, { lat: 21.42355, lng: 39.83000 });
+    expect(nav.instruction).toMatch(/batı/);
+  });
+
+  it('kapı verisi yoksa saved koordinatlarına düşer', () => {
+    const orphan: SavedGate = {
+      doorId: 9999,
+      doorName: 'Bilinmeyen',
+      outsideLat: 21.42355,
+      outsideLng: 39.82590,
+      savedAt: Date.now(),
+      trail: [],
+      locationSource: 'gps',
+    };
+    const nav = computeNavigation(orphan, { lat: 21.42355, lng: 39.82590 });
+    expect(nav.arrived).toBe(true);
+    expect(nav.instruction).toMatch(/Bilinmeyen/);
+  });
+
+  it('bearingDeg 0-360 aralığında döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82000 });
+    expect(nav.bearingDeg).toBeGreaterThanOrEqual(0);
+    expect(nav.bearingDeg).toBeLessThan(360);
+  });
+});
+describe('computeNavigation — pusula', () => {
+  it('cihaz yönü verilmezse kuzey referanslı tarif döner', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82590 });
+    expect(nav.relativeBearing).toBeUndefined();
+    expect(nav.instruction).toMatch(/kuzey/);
+  });
+
+  it('cihaz hedefe bakıyorsa "düz yürüyün"', () => {
+    // hedef kuzeyde, cihaz kuzeye bakıyor
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      0
+    );
+    expect(nav.relativeBearing).toBeDefined();
+    expect(nav.instruction).toContain('düz yürüyün');
+  });
+
+  it('hedef sağda ise "sağa dönüp yürüyün"', () => {
+    // hedef kuzeyde, cihaz doğuya bakıyor (90) → hedef solda (-90) → sola dön
+    // hedef kuzeyde, cihaz batıya bakıyor (270) → hedef sağda (90) → sağa dön
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      270
+    );
+    expect(nav.instruction).toContain('sağa');
+  });
+
+  it('hedef solda ise "sola dönüp yürüyün"', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      90
+    );
+    expect(nav.instruction).toContain('sola');
+  });
+
+  it('hedef arkada ise "arkanıza dönüp yürüyün"', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      180
+    );
+    expect(nav.instruction).toContain('arkanıza dönüp');
+  });
+
+  it('relativeBearing -180..180 aralığında', () => {
+    const nav = computeNavigation(
+      mockSaved,
+      { lat: 21.42000, lng: 39.82590 },
+      300
+    );
+    expect(nav.relativeBearing).toBeGreaterThanOrEqual(-180);
+    expect(nav.relativeBearing).toBeLessThanOrEqual(180);
+  });
+});
+describe('computeNavigation — güvenlik', () => {
+  it('hedef katalog değil, kaydedilen GPS konumudur', () => {
+    const gps: SavedGate = { ...mockSaved, outsideLat: 21.4300, outsideLng: 39.8300 };
+    const t = resolveTarget(gps);
+    expect(t.lat).toBe(21.4300);
+    expect(t.lng).toBe(39.8300);
+    const nav = computeNavigation(gps, { lat: 21.4300, lng: 39.8300 });
+    expect(nav.arrived).toBe(true);
+  });
+
+  it('yaklaşık (katalog) kayıtta approximate=true ve varışta tabela uyarısı verir', () => {
+    const old: SavedGate = { ...mockSaved, locationSource: 'catalog' };
+    const nav = computeNavigation(old, { lat: 21.42355, lng: 39.82590 });
+    expect(nav.approximate).toBe(true);
+    expect(nav.instruction).toMatch(/tabeladan/);
+  });
+
+  it('GPS kaydında approximate=false', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42000, lng: 39.82590 });
+    expect(nav.approximate).toBe(false);
+  });
+
+  it('düşük hassasiyette varış yarıçapı büyür (en çok 40 m)', () => {
+    // ~33 m kuzey
+    const cur = { lat: 21.42385, lng: 39.82590 };
+    expect(computeNavigation(mockSaved, cur).arrived).toBe(false);
+    expect(computeNavigation(mockSaved, cur, null, 35).arrived).toBe(true);
+  });
+
+  it('995 m "1000 metre" değil kilometre olarak okunur', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.42355 - 0.00895, lng: 39.82590 });
+    expect(nav.instruction).not.toMatch(/1000 metre/);
+  });
+});
+
+describe('2 km kuralı: kayıtlı ve elle yazılan kapı', () => {
+  const far = { lat: 21.50, lng: 39.90 }; // ~11 km
+
+  it('kayıtlı kapıda: kapı adı, km ve "yürümek için uygun değil" söylenir', () => {
+    const nav = computeNavigation(mockSaved, far); // mockSaved = 100 Kral Abdullah
+    expect(nav.isTooFar).toBe(true);
+    expect(nav.instruction).toContain("Kral Abdullah Kapısı'ndan");
+    expect(nav.instruction).toMatch(/\d+ km uzaktasınız/);
+    expect(nav.instruction).toContain('yürümek için uygun değil');
+    expect(nav.instruction).toContain('yaklaşınca tekrar deneyin');
+  });
+
+  it('kayıtlı kapıda uzaklık katalogdaki kapı konumundan ölçülür (250 km örneği)', () => {
+    // Kral Abdullah kapısı ~ (21.4254, 39.8241); ~250 km güneyde
+    const nav = computeNavigation(mockSaved, { lat: 21.4254 - 2.25, lng: 39.8241 });
+    expect(nav.instruction).toMatch(/2[45]\d km uzaktasınız/);
+    expect(Math.round(nav.distance / 1000)).toBeGreaterThan(240);
+  });
+
+  it('elle yazılan kapıda eski davranış korunur', () => {
+    const custom: SavedGate = { ...mockSaved, doorId: 9999, doorName: '' };
+    const nav = computeNavigation(custom, far);
+    expect(nav.isTooFar).toBe(true);
+    expect(nav.instruction).toBe(
+      "Mescid-i Haram'ın dışındasınız. Lütfen Harem bölgesine yaklaşıp tekrar deneyin."
+    );
+  });
+
+  it('kayıtlı kapıda 2 km içindeyse yönlendirme başlar', () => {
+    const nav = computeNavigation(mockSaved, { lat: 21.4254 - 0.01, lng: 39.8241 });
+    expect(nav.isTooFar).toBe(false);
+  });
+
+  it('formatKm: 250 km, 11 km, 2,5 km', () => {
+    expect(formatKm(250_000)).toBe('250 km');
+    expect(formatKm(11_400)).toBe('11 km');
+    expect(formatKm(2_500)).toBe('2,5 km');
+  });
+
+  it('söylenen rakam ölçülen gerçek uzaklıktır: Ankara ~2160 km, Medine ~340 km', () => {
+    const ankara = computeNavigation(mockSaved, { lat: 39.9334, lng: 32.8597 });
+    const km1 = Math.round(ankara.distance / 1000);
+    expect(km1).toBeGreaterThan(2100);
+    expect(km1).toBeLessThan(2250);
+    expect(ankara.instruction).toContain(`${km1} km uzaktasınız`);
+
+    const medine = computeNavigation(mockSaved, { lat: 24.4672, lng: 39.6111 });
+    const km2 = Math.round(medine.distance / 1000);
+    expect(km2).toBeGreaterThan(300);
+    expect(km2).toBeLessThan(380);
+    expect(medine.instruction).toContain(`${km2} km uzaktasınız`);
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/guide.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/guide.ts =====
+import type { SavedGate, NavUpdate } from './types';
+import { findDoor, doorLabel } from './doors';
+import { distanceM, bearingDeg } from './trail';
+
+const ARRIVE_RADIUS_M = 20;
+const MAX_ALLOWED_DISTANCE_M = 2000;
+const MAX_ARRIVE_RADIUS_M = 40;
+
+export interface NavResult extends NavUpdate {
+  isTooFar: boolean;
+  /** Konum kullanıcı ölçümü değil, doğrulanmamış katalogdan geliyorsa true */
+  approximate: boolean;
+  /** Pusula varsa: hedef yönü ile cihaz yönü arasındaki fark (-180..180) */
+  relativeBearing?: number;
+}
+
+/**
+ * Hedef HER ZAMAN kullanıcının kapının önündeyken kaydettiği konumdur.
+ * (Katalog koordinatları doğrulanmadığı için hedef olarak kullanılmaz.)
+ */
+export function resolveTarget(saved: SavedGate): { lat: number; lng: number; name: string } {
+  const door = findDoor(saved.doorId);
+  return {
+    lat: saved.outsideLat,
+    lng: saved.outsideLng,
+    name: door?.name ?? saved.doorName,
+  };
+}
+
+function arriveRadius(accuracyM?: number | null): number {
+  if (typeof accuracyM !== 'number' || !Number.isFinite(accuracyM)) return ARRIVE_RADIUS_M;
+  return Math.min(Math.max(accuracyM, ARRIVE_RADIUS_M), MAX_ARRIVE_RADIUS_M);
+}
+
+/** 2,5 km / 250 km biçiminde (Türkçe ondalık virgül) */
+export function formatKm(meters: number): string {
+  const km = meters / 1000;
+  if (km >= 10) return `${Math.round(km)} km`;
+  return `${km.toFixed(1).replace('.', ',')} km`;
+}
+
+function formatDistance(d: number): string {
+  if (d < 50) return `${Math.round(d)} metre`;
+  const r = Math.round(d / 10) * 10;
+  if (r < 1000) return `${r} metre`;
+  return `${(d / 1000).toFixed(1)} kilometre`;
+}
+
+export function computeNavigation(
+  saved: SavedGate,
+  current: { lat: number; lng: number },
+  deviceHeading?: number | null,
+  accuracyM?: number | null
+): NavResult {
+  const { lat: targetLat, lng: targetLng, name: doorName } = resolveTarget(saved);
+  const approximate = saved.locationSource !== 'gps';
+
+  const distance = distanceM(current, { lat: targetLat, lng: targetLng });
+  const bearingDegVal = bearingDeg(current, { lat: targetLat, lng: targetLng });
+
+  // relative bearing: hedef yönü - cihaz yönü
+  const relativeBearing =
+    typeof deviceHeading === 'number' && !Number.isNaN(deviceHeading)
+      ? normalizeSigned(bearingDegVal - deviceHeading)
+      : undefined;
+
+  // Kayıtlı (katalogdaki) kapı: Mescid-i Haram'a uzaklık, kapının gerçek konumundan ölçülür.
+  // Kullanıcının kendi yazdığı kapı: önceki davranış (kayıtlı noktaya uzaklık).
+  const catalogDoor = findDoor(saved.doorId);
+  if (catalogDoor) {
+    const farDistance = distanceM(current, {
+      lat: catalogDoor.outsideLat,
+      lng: catalogDoor.outsideLng,
+    });
+    if (farDistance > MAX_ALLOWED_DISTANCE_M) {
+      return {
+        distance: farDistance,
+        bearingDeg: bearingDeg(current, { lat: catalogDoor.outsideLat, lng: catalogDoor.outsideLng }),
+        arrived: false,
+        isTooFar: true,
+        approximate,
+        relativeBearing,
+        instruction:
+          `${catalogDoor.name} Kapısı'ndan kuş uçuşu yaklaşık ${formatKm(farDistance)} uzaktasınız. ` +
+          "Bu mesafe yürümek için uygun değil. Mescid-i Haram'a yaklaşınca tekrar deneyin.",
+      };
+    }
+  } else if (distance > MAX_ALLOWED_DISTANCE_M) {
+    return {
+      distance,
+      bearingDeg: bearingDegVal,
+      arrived: false,
+      isTooFar: true,
+      approximate,
+      relativeBearing,
+      instruction:
+        "Mescid-i Haram'ın dışındasınız. Lütfen Harem bölgesine yaklaşıp tekrar deneyin.",
+    };
+  }
+
+  if (distance < arriveRadius(accuracyM)) {
+    return {
+      distance,
+      bearingDeg: bearingDegVal,
+      arrived: true,
+      isTooFar: false,
+      approximate,
+      relativeBearing,
+      instruction:
+        `Giriş kapınızın önündesiniz (${doorLabel(saved.doorId, doorName)}). Hedefe ulaştınız.` +
+        (approximate ? ' Kapı numarasını tabeladan kontrol edin.' : ''),
+    };
+  }
+
+  const distStr = formatDistance(distance);
+
+  // Pusula varsa göreli yön tarifi, yoksa kuzey referanslı
+  const dirInstruction =
+    relativeBearing !== undefined
+      ? relativeTurnInstruction(relativeBearing)
+      : `${bearingToTurkish(bearingDegVal)} yönünde yürüyün`;
+
+  return {
+    distance,
+    bearingDeg: bearingDegVal,
+    arrived: false,
+    isTooFar: false,
+    approximate,
+    relativeBearing,
+    instruction: `${distStr} ${dirInstruction}.`,
+  };
+}
+
+/**
+ * Göreli yöne göre "düz yürü / sağa dön / arkanı dön" tarifi üretir.
+ * -45..45 → düz yürü
+ * 45..135 → sağa dön
+ * 135..180 veya -180..-135 → arkanı dön
+ * -135..-45 → sola dön
+ */
+function relativeTurnInstruction(relative: number): string {
+  const abs = Math.abs(relative);
+
+  if (abs <= 20) return 'düz yürüyün';
+  if (abs <= 45) {
+    return relative > 0 ? 'hafifçe sağa dönüp yürüyün' : 'hafifçe sola dönüp yürüyün';
+  }
+  if (abs <= 135) {
+    return relative > 0 ? 'sağa dönüp yürüyün' : 'sola dönüp yürüyün';
+  }
+  return 'arkanıza dönüp yürüyün';
+}
+
+function normalizeSigned(deg: number): number {
+  // -180..180 aralığına indir
+  let d = ((deg + 180) % 360 + 360) % 360 - 180;
+  if (d === -180) d = 180;
+  return d;
+}
+
+function bearingToTurkish(b: number): string {
+  const sectors = [
+    'kuzey', 'kuzeydoğu', 'doğu', 'güneydoğu',
+    'güney', 'güneybatı', 'batı', 'kuzeybatı',
+  ] as const;
+  return sectors[Math.round(b / 45) % 8]!;
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/guide.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/help-i18n.test.ts =====
+import { describe, it, expect } from 'vitest';
+import {
+  getHelpMessages,
+  getArabicDoorName,
+  hasArabicTranslation,
+} from './help-i18n';
+
+describe('help-i18n', () => {
+  it('bilinen kapı için Arapça ve Türkçe mesaj üretir', () => {
+    const msgs = getHelpMessages({ doorId: 62, doorName: 'Umre' });
+    expect(msgs.arabicTitle).toBe('أحتاج مساعدة');
+    expect(msgs.arabicBody).toContain('باب العمرة');
+    expect(msgs.arabicBody).toContain('الباب رقم 62');
+    expect(msgs.arabicBody).toContain('أريد الذهاب إلى');
+    expect(msgs.arabicBody).toContain('في أي جهة يقع');
+    expect(msgs.turkishBody).toContain('62 numaralı Umre Kapısı');
+    expect(msgs.turkishBody).toContain('gitmek istiyorum');
+    expect(msgs.turkishBody).toContain('Ne tarafta');
+    expect(msgs.speakArabic).toBe(`${msgs.arabicTitle}. ${msgs.arabicBody}`);
+    expect(msgs.speakTurkish).toBe('Bu ekranı görevliye gösterin.');
+  });
+
+  it('Arapça ve Türkçe aynı kapı numarasını içerir (senkron)', () => {
+    const msgs = getHelpMessages({ doorId: 79, doorName: 'Kral Fahd' });
+    expect(msgs.arabicBody).toContain('79');
+    expect(msgs.turkishBody).toContain('79');
+  });
+
+  it('Kral Abdullah kapısı "باب" ile başlayan doğru Arapça ad kullanır', () => {
+    const msgs = getHelpMessages({ doorId: 100, doorName: 'Kral Abdullah' });
+    expect(msgs.arabicBody).toContain('باب الملك عبد الله');
+    expect(msgs.turkishBody).toContain('Kral Abdullah');
+  });
+
+  it('kayıt yoksa genel yardım mesajı döner', () => {
+    const msgs = getHelpMessages(null);
+    expect(msgs.arabicTitle).toBe('أحتاج مساعدة');
+    expect(msgs.arabicBody).toBe('أنا تائه. هل يمكنك أن تساعدني؟');
+    expect(msgs.turkishBody).toContain('Yolumu kaybettim');
+    expect(msgs.speakArabic).toContain(msgs.arabicBody);
+  });
+
+  it('bilinmeyen kapıda Türkçe (Latin) ad Arapça cümleye girmez, numara kullanılır', () => {
+    const msgs = getHelpMessages({ doorId: 9999, doorName: 'Test Kapı' });
+    expect(msgs.arabicBody).not.toContain('Test Kapı');
+    expect(msgs.arabicBody).toContain('الباب رقم 9999');
+    expect(msgs.turkishBody).toContain('Test Kapı');
+  });
+
+  it('getArabicDoorName bilinen kapılar için Arapça ad döner', () => {
+    expect(getArabicDoorName(62)).toBe('باب العمرة');
+    expect(getArabicDoorName(100)).toBe('باب الملك عبد الله');
+    expect(getArabicDoorName(45)).toBe('باب الفتح');
+  });
+
+  it('getArabicDoorName bilinmeyen kapı için null döner', () => {
+    expect(getArabicDoorName(9999)).toBeNull();
+  });
+
+  it('hasArabicTranslation doğru cevap verir', () => {
+    expect(hasArabicTranslation(62)).toBe(true);
+    expect(hasArabicTranslation(100)).toBe(true);
+    expect(hasArabicTranslation(9999)).toBe(false);
+  });
+
+  it('tüm kapıların Arapça çevirisi var; köprü dışındakiler "باب" ile başlar', async () => {
+    const { DOORS } = await import('./doors');
+    for (const door of DOORS) {
+      expect(hasArabicTranslation(door.id)).toBe(true);
+      if (door.id !== 64) expect(getArabicDoorName(door.id)!.startsWith('باب')).toBe(true);
+    }
+  });
+
+  it('numara konumla uyuşmasa bile kayıtlı kapı numarası söylenir', () => {
+    const msgs = getHelpMessages({ doorId: 80, doorName: '', numberMismatch: true } as never);
+    expect(msgs.arabicBody).toContain('الباب رقم 80');
+    expect(msgs.arabicBody).toContain('في أي جهة يقع');
+    expect(msgs.turkishBody).toContain('80 numaralı kapıya gitmek istiyorum');
+  });
+
+  it('adsız (elle girilen) kapıda yalnızca numara kullanılır', () => {
+    const msgs = getHelpMessages({ doorId: 84, doorName: '' });
+    expect(msgs.arabicBody).toContain('الباب رقم 84');
+    expect(msgs.turkishBody).toContain('84 numaralı kapıya');
+  });
+
+  it('Arapça metinde parantez yok (TTS düzgün okusun)', async () => {
+    const { DOORS } = await import('./doors');
+    for (const door of DOORS) {
+      expect(getArabicDoorName(door.id)).not.toMatch(/[()]/);
+    }
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/help-i18n.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/help-i18n.ts =====
+import { findDoor } from './doors';
+
+export interface HelpMessages {
+  arabicTitle: string;
+  arabicBody: string;
+  turkishBody: string;
+  /** Hoparlörden okunacak Arapça metin (başlık + gövde) */
+  speakArabic: string;
+  /** Kullanıcıya Türkçe söylenecek yönerge */
+  speakTurkish: string;
+}
+
+const DOOR_AR: Record<number, string> = {
+  1: 'باب الملك عبد العزيز',
+  79: 'باب الملك فهد',
+  100: 'باب الملك عبد الله',
+  62: 'باب العمرة',
+  45: 'باب الفتح',
+  19: 'باب السلام',
+  13: 'باب الصفا',
+  64: 'جسر الشبيكة',
+};
+
+const TITLE_AR = 'أحتاج مساعدة';
+const SPEAK_TR = 'Bu ekranı görevliye gösterin.';
+
+export function getHelpMessages(saved: {
+  doorId: number;
+  doorName: string;
+} | null): HelpMessages {
+  // Kayıt yoksa genel yardım mesajı
+  if (!saved) {
+    const body = 'أنا تائه. هل يمكنك أن تساعدني؟';
+    return {
+      arabicTitle: TITLE_AR,
+      arabicBody: body,
+      turkishBody: 'Yolumu kaybettim. Bana yardım edebilir misiniz?',
+      speakArabic: `${TITLE_AR}. ${body}`,
+      speakTurkish: SPEAK_TR,
+    };
+  }
+
+  // Kapı numarası evrenseldir: ad çevirisi yanlış/eksik olsa bile görevli numarayı anlar.
+  const arName = DOOR_AR[saved.doorId];
+  const target = arName
+    ? `${arName}، الباب رقم ${saved.doorId}`
+    : `الباب رقم ${saved.doorId}`;
+  const arabicBody = `أريد الذهاب إلى ${target}. هل يمكنك أن تخبرني في أي جهة يقع؟`;
+  const turkishTarget = saved.doorName
+    ? `${saved.doorId} numaralı ${saved.doorName} Kapısı'na`
+    : `${saved.doorId} numaralı kapıya`;
+  const turkishBody =
+    `${turkishTarget} gitmek istiyorum. Ne tarafta olduğunu söyler misiniz?`;
+
+  return {
+    arabicTitle: TITLE_AR,
+    arabicBody,
+    turkishBody,
+    speakArabic: `${TITLE_AR}. ${arabicBody}`,
+    speakTurkish: SPEAK_TR,
+  };
+}
+
+export function getArabicDoorName(doorId: number): string | null {
+  return DOOR_AR[doorId] ?? null;
+}
+
+export function hasArabicTranslation(doorId: number): boolean {
+  return doorId in DOOR_AR;
+}
+
+export { findDoor };
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/help-i18n.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/main.test.ts =====
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { SavedGate } from './types';
+
+// --- map modülünü tamamen mock'la (Leaflet jsdom'da sorun çıkarır) ---
+vi.mock('./map', () => ({
+  initMap: vi.fn(),
+  drawTrail: vi.fn(),
+  setCurrent: vi.fn(),
+  setTarget: vi.fn(),
+  drawLineToTarget: vi.fn(),
+  fitToAll: vi.fn(),
+  invalidateSize: vi.fn(),
+  showAllDoorsDebug: vi.fn(),
+}));
+
+// --- speech modülünü mock'la (ses çıkmasın) ---
+vi.mock('./speech', () => ({
+  initSpeech: vi.fn(),
+  speak: vi.fn(),
+  speakArabic: vi.fn(),
+  speakHelp: vi.fn(() => true),
+  repeatLast: vi.fn(),
+  stopSpeech: vi.fn(),
+}));
+
+const sample: SavedGate = {
+  doorId: 100,
+  doorName: 'Kral Abdullah',
+  outsideLat: 21.42355,
+  outsideLng: 39.82590,
+  savedAt: 1_700_000_000_000,
+  trail: [],
+  locationSource: 'gps',
+};
+
+function setupDOM(): void {
+  document.body.innerHTML = `
+    <div id="sr"></div>
+    <section id="home" class="screen"><div id="saved"></div>
+      <button id="btnSave"></button>
+      <button id="btnGuide"></button>
+      <button id="btnHelp"></button>
+    </section>
+    <section id="pickDoor" class="screen hide"><div id="doorList"></div><input id="customDoor"><button id="btnCustomDoor"></button></section>
+    <section id="confirm" class="screen hide"><div id="confirmText"></div>
+      <button id="btnConfirmYes"></button>
+      <button id="btnConfirmNo"></button>
+    </section>
+    <section id="saving" class="screen hide"><div id="fix"></div>
+      <button id="btnSaveBack"></button><button id="btnSaveRetry" class="hide"></button>
+    </section>
+    <section id="guide" class="screen hide">
+      <div id="warn" class="hide"></div><div id="arrowWrap" data-state="idle"><svg id="arrow"></svg><div id="arrowWord"></div><div id="arrowNote"></div></div><div id="map"></div><div id="say"></div><div id="dist"></div>
+      <button id="btnRepeat"></button><button id="btnStop"></button>
+      <a id="gm"></a>
+    </section>
+    <section id="help" class="screen hide">
+      <div id="hTitleAr"></div>
+      <div id="hBodyAr"></div>
+      <div id="hBodyTr"></div><div id="hNote" class="hide"></div>
+      <button id="btnSpeakAr"></button>
+      <button id="btnHelpBack"></button>
+    </section>
+  `;
+}
+
+async function loadMain(): Promise<void> {
+  await import('./main');
+}
+
+function mockWatch(): {
+  emit: (pos: GeolocationPosition) => void;
+  emitError: (err: GeolocationPositionError) => void;
+  clearSpy: ReturnType<typeof vi.fn>;
+} {
+  let okCb: PositionCallback | null = null;
+  let errCb: PositionErrorCallback | null = null;
+  const clearSpy = vi.fn();
+  vi.spyOn(navigator.geolocation, 'watchPosition').mockImplementation((ok, err) => {
+    okCb = ok;
+    errCb = err ?? null;
+    return 12345;
+  });
+  vi.spyOn(navigator.geolocation, 'clearWatch').mockImplementation(clearSpy);
+  return {
+    emit: (pos) => okCb?.(pos),
+    emitError: (err) => errCb?.(err),
+    clearSpy,
+  };
+}
+
+function mockGeoOK(lat = 21.42355, lng = 39.82590): void {
+  vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+    (ok: PositionCallback) => {
+      ok({
+        coords: {
+          latitude: lat,
+          longitude: lng,
+          accuracy: 10,
+        } as GeolocationCoordinates,
+        timestamp: Date.now(),
+      } as GeolocationPosition);
+    }
+  );
+}
+
+describe('main.ts entegrasyon', () => {
+  beforeEach(() => {
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    localStorage.clear();
+    setupDOM();
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
+  it('kayıt yoksa "Henüz kapı kaydedilmedi" gösterir', async () => {
+    await loadMain();
+    expect(document.getElementById('saved')!.textContent).toContain('Henüz kapı');
+  });
+
+  it('kayıt varsa kapı adı ve tarih gösterir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    await loadMain();
+    const text = document.getElementById('saved')!.textContent ?? '';
+    expect(text).toContain('Kral Abdullah');
+    expect(text).toContain('Kayıtlı Kapı');
+  });
+
+  it('kaydet düğmesi kapı seçimini açar', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    expect(document.getElementById('pickDoor')!.classList.contains('hide')).toBe(false);
+    const buttons = document.querySelectorAll('#doorList button');
+    expect(buttons.length).toBeGreaterThan(0);
+  });
+
+  it('kapı seçilince onay ekranı açılır', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const first = document.querySelector('#doorList button') as HTMLButtonElement;
+    first.click();
+    expect(document.getElementById('confirm')!.classList.contains('hide')).toBe(false);
+    expect(document.getElementById('confirmText')!.textContent).toContain(
+      'kaydetmek istiyor musunuz'
+    );
+  });
+
+  it('onayla düğmesi localStorage\'a yazar', async () => {
+    mockGeoOK();
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    const raw = localStorage.getItem('savedGate.v1');
+    expect(raw).toBeTruthy();
+    const saved = JSON.parse(raw!) as SavedGate;
+    expect(saved.doorId).toBeTypeOf('number');
+    expect(saved.doorName).toBeTruthy();
+  });
+
+  it('kayıt yokken rehbere basınca ana ekranda kalır', async () => {
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 10));
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+    expect(document.getElementById('guide')!.classList.contains('hide')).toBe(true);
+  });
+
+  it('yardım düğmesi yardım ekranını açar', async () => {
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+    expect(document.getElementById('help')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('yardım ekranı kayıtlı kapı adını Arapça ve Türkçe gösterir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+
+    expect(document.getElementById('hBodyTr')!.textContent).toContain('Kral Abdullah');
+    expect(document.getElementById('hBodyAr')!.textContent).toContain('باب الملك عبد الله');
+    expect(document.getElementById('hTitleAr')!.textContent).toContain('أحتاج مساعدة');
+  });
+
+  it('kayıt yokken yardım genel mesaj gösterir', async () => {
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+
+    expect(document.getElementById('hTitleAr')!.textContent).toContain('أحتاج مساعدة');
+    expect(document.getElementById('hBodyAr')!.textContent).toContain('هل يمكنك أن تساعدني');
+    expect(document.getElementById('hBodyTr')!.textContent).toContain('yardım');
+  });
+
+  it('onay ekranında vazgeç ana ekrana döner', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmNo')!.click();
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+  });
+
+  // ---------------- onGuide / onGuidePos / onGuideErr / onStopGuide ----------------
+
+  it('onGuide: kayıt varsa rehber ekranı açılır, setTarget ve Google Maps linki kurulur', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+
+    const map = await import('./map');
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    expect(document.getElementById('guide')!.classList.contains('hide')).toBe(false);
+    expect(map.setTarget).toHaveBeenCalled();
+    const gm = document.getElementById('gm') as HTMLAnchorElement;
+    expect(gm.href).toContain('google.com/maps');
+    expect(gm.href).toContain('destination=');
+
+    document.getElementById('btnStop')!.click();
+    expect(w.clearSpy).toHaveBeenCalled();
+  });
+
+  it('onGuidePos: konum gelince say ve dist güncellenir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    w.emit({
+      coords: {
+        latitude: 21.42255,
+        longitude: 39.82590,
+        accuracy: 10,
+      } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+
+    expect(document.getElementById('say')!.textContent).toContain('metre');
+    expect(document.getElementById('dist')!.textContent).toMatch(/metre|km/);
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('onGuidePos: 2 km dışındaysa "Mescid-i Haram" uyarısı gösterilir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    w.emit({
+      coords: {
+        latitude: 21.50,
+        longitude: 39.90,
+        accuracy: 10,
+      } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+
+    expect(document.getElementById('say')!.textContent).toContain('Mescid-i Haram');
+    expect(document.getElementById('dist')!.textContent).toContain('km');
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('onGuidePos: hedefe varınca watch temizlenir ve VARDINIZ gösterilir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    w.emit({
+      coords: {
+        latitude: 21.42355,
+        longitude: 39.82590,
+        accuracy: 5,
+      } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+
+    expect(document.getElementById('dist')!.textContent).toContain('VARDINIZ');
+    expect(w.clearSpy).toHaveBeenCalledWith(12345);
+  });
+
+  it('onGuideErr: konum izni reddedilirse mesaj gösterilir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (_ok, err) => {
+        err?.({
+          code: 1,
+          message: 'denied',
+          PERMISSION_DENIED: 1,
+          POSITION_UNAVAILABLE: 2,
+          TIMEOUT: 3,
+        } as GeolocationPositionError);
+      }
+    );
+    const w = mockWatch();
+
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+
+    w.emitError({
+      code: 1,
+      message: 'denied',
+      PERMISSION_DENIED: 1,
+      POSITION_UNAVAILABLE: 2,
+      TIMEOUT: 3,
+    } as GeolocationPositionError);
+
+    expect(document.getElementById('say')!.textContent).toContain('Konum izni');
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('btnStop: rehberden çıkınca ana ekrana döner ve watch temizlenir', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    document.getElementById('btnStop')!.click();
+
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+    expect(w.clearSpy).toHaveBeenCalled();
+  });
+
+  it('kayıt: GPS konumu kaydedilir (katalog koordinatı değil) ve source=gps', async () => {
+    mockGeoOK(21.4300, 39.8300);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.outsideLat).toBe(21.4300);
+    expect(saved.outsideLng).toBe(39.8300);
+    expect(saved.locationSource).toBe('gps');
+  });
+
+  it('kayıt: GPS hassasiyeti kötüyse (>100 m) kayıt YAPILMAZ ve tekrar dene görünür', async () => {
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (ok: PositionCallback) => {
+        ok({
+          coords: { latitude: 21.4, longitude: 39.8, accuracy: 500 } as GeolocationCoordinates,
+          timestamp: Date.now(),
+        } as GeolocationPosition);
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('btnSaveRetry')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('kayıt: konum izni reddedilirse kayıt yapılmaz', async () => {
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (_ok, err) => {
+        err?.({ code: 1, message: 'denied' } as GeolocationPositionError);
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('fix')!.textContent).toContain('izni');
+  });
+
+  it('kayıt sürerken VAZGEÇ → sonradan kayıt yazılmaz', async () => {
+    let resolveGeo: PositionCallback | null = null;
+    vi.spyOn(navigator.geolocation, 'getCurrentPosition').mockImplementation(
+      (ok: PositionCallback) => {
+        resolveGeo = ok;
+      }
+    );
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.querySelector('#doorList button') as HTMLButtonElement).click();
+    document.getElementById('btnConfirmYes')!.click();
+    document.getElementById('btnSaveBack')!.click();
+    resolveGeo!({
+      coords: { latitude: 21.4, longitude: 39.8, accuracy: 5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('rehber: hedef kayıtlı GPS konumudur (katalog değil)', async () => {
+    const custom = { ...sample, outsideLat: 21.4400, outsideLng: 39.8400 };
+    localStorage.setItem('savedGate.v1', JSON.stringify(custom));
+    mockGeoOK();
+    mockWatch();
+    const map = await import('./map');
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(map.setTarget).toHaveBeenCalledWith(21.44, 39.84, expect.any(String));
+    expect((document.getElementById('gm') as HTMLAnchorElement).href).toContain('21.44,39.84');
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('rehber: eski/yaklaşık kayıtta uyarı bandı görünür', async () => {
+    const old = { ...sample } as Partial<SavedGate>;
+    delete old.locationSource;
+    localStorage.setItem('savedGate.v1', JSON.stringify(old));
+    mockGeoOK();
+    mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(document.getElementById('warn')!.classList.contains('hide')).toBe(false);
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('yardım: Arapça→Türkçe tek kuyrukta (speakHelp) çağrılır, geri dönünce konuşma durur', async () => {
+    const speech = await import('./speech');
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+    expect(speech.speakHelp).toHaveBeenCalledTimes(1);
+    document.getElementById('btnHelpBack')!.click();
+    expect(speech.stopSpeech).toHaveBeenCalled();
+    expect(document.getElementById('home')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('yardım: Arapça ses yoksa not gösterilir', async () => {
+    const speech = await import('./speech');
+    (speech.speakHelp as ReturnType<typeof vi.fn>).mockReturnValueOnce(false);
+    await loadMain();
+    document.getElementById('btnHelp')!.click();
+    expect(document.getElementById('hNote')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('seçici: ana kapılar listelenir, doğrulanamayan eski numaralar listelenmez', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const labels = Array.from(document.querySelectorAll('#doorList button')).map(
+      b => b.firstChild?.textContent
+    );
+    for (const id of ['1', '45', '62', '79', '100']) expect(labels).toContain(id);
+    for (const id of ['2', '37', '60', '86', '90']) expect(labels).not.toContain(id);
+  });
+
+  it('elle numara girilince onay ekranı açılır ve kayıt adsız kapı olarak yapılır', async () => {
+    mockGeoOK(21.4220, 39.8290);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '84';
+    document.getElementById('btnCustomDoor')!.click();
+    expect(document.getElementById('confirm')!.classList.contains('hide')).toBe(false);
+    expect(document.getElementById('confirmText')!.textContent).toContain('84 numaralı kapı');
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.doorId).toBe(84);
+    expect(saved.doorName).toBe('');
+    expect(saved.numberMismatch).toBe(false); // katalogda olmayan numara denetlenemez
+  });
+
+  it('geçersiz numara kabul edilmez', async () => {
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '9999';
+    document.getElementById('btnCustomDoor')!.click();
+    expect(document.getElementById('confirm')!.classList.contains('hide')).toBe(true);
+  });
+
+  it('numara–konum uyuşmazlığı (>300 m): GPS kaydedilir ama numberMismatch=true', async () => {
+    // Kapı 100 (kuzeybatı, 21.42539, 39.82413) seçilip güneyde (Gate 1 yakını) kaydediliyor
+    mockGeoOK(21.42104, 39.82584);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.outsideLat).toBe(21.42104);
+    expect(saved.numberMismatch).toBe(true);
+    expect(document.getElementById('saved')!.textContent).toContain('uyuşmuyor');
+  });
+
+  it('numara–konum uyumluysa (Gate 1 önünde) numberMismatch=false', async () => {
+    mockGeoOK(21.42104, 39.82584);
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '1'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.numberMismatch).toBe(false);
+  });
+
+  it('ok: yön kaynağı yoksa "nohead" (yön bulunuyor), yürüyünce GPS yönüyle döner', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    // 1) duran kullanıcı, pusula yok → yön bilinmiyor; ok uydurulmaz
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: null, speed: 0 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    const wrap = document.getElementById('arrowWrap')!;
+    expect(wrap.getAttribute('data-state')).toBe('nohead');
+    expect(document.getElementById('arrowWord')!.textContent).toBe('YÖN BULUNUYOR');
+
+    // 2) kuzeye yürüyor (heading 0, hız 1.5 m/s); hedef doğuda (~90°) → ok ~90°, "SAĞA DÖNÜN"
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 0, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(wrap.getAttribute('data-state')).toBe('go');
+    const deg = parseFloat(
+      /rotate\((-?\d+)deg\)/.exec((document.getElementById('arrow') as unknown as HTMLElement).style.transform)![1]!
+    );
+    expect(deg).toBeGreaterThan(80);
+    expect(deg).toBeLessThan(100);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('SAĞA DÖNÜN');
+    expect(wrap.getAttribute('data-tone')).toBe('turn');
+
+    // 3) doğuya dönünce (heading 90) ok yukarı, "DÜZ İLERLEYİN", yeşil ton
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 90, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('DÜZ İLERLEYİN');
+    expect(wrap.getAttribute('data-tone')).toBe('ok');
+
+    // 4) batıya yürürken (heading 270) hedef arkada → "ARKANIZA DÖNÜN"
+    w.emit({
+      coords: { latitude: 21.42355, longitude: 39.8245, accuracy: 10, heading: 270, speed: 1.5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWord')!.textContent).toBe('ARKANIZA DÖNÜN');
+    expect(wrap.getAttribute('data-tone')).toBe('back');
+
+    document.getElementById('btnStop')!.click();
+    expect(wrap.getAttribute('data-state')).toBe('idle');
+  });
+
+  it('ok: çok uzaktayken gizlenir (far), varınca arrived olur', async () => {
+    localStorage.setItem('savedGate.v1', JSON.stringify(sample));
+    mockGeoOK();
+    const w = mockWatch();
+    await loadMain();
+    document.getElementById('btnGuide')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    w.emit({
+      coords: { latitude: 21.5, longitude: 39.9, accuracy: 10 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWrap')!.getAttribute('data-state')).toBe('far');
+    expect(document.getElementById('say')!.textContent).toContain("Kral Abdullah Kapısı'ndan");
+    expect(document.getElementById('dist')!.textContent).toMatch(/Uzaklık: \d+ km/);
+    w.emit({
+      coords: { latitude: sample.outsideLat, longitude: sample.outsideLng, accuracy: 5 } as GeolocationCoordinates,
+      timestamp: Date.now(),
+    } as GeolocationPosition);
+    expect(document.getElementById('arrowWrap')!.getAttribute('data-state')).toBe('arrived');
+    document.getElementById('btnStop')!.click();
+  });
+
+  it('kayıt: kayıtlı kapıda Mescid-i Haram\'dan 2 km uzakta kayıt YAPILMAZ, mesafe söylenir', async () => {
+    mockGeoOK(39.9334, 32.8597); // Ankara
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).toBeNull();
+    const txt = document.getElementById('fix')!.textContent!;
+    expect(txt).toContain("Kral Abdullah Kapısı'ndan");
+    expect(txt).toMatch(/\d+ km uzakta/);
+    expect(txt).toContain('yaklaşınca kaydedin');
+    expect(document.getElementById('btnSaveRetry')!.classList.contains('hide')).toBe(false);
+  });
+
+  it('kayıt: kayıtlı kapıda 2 km içindeyse kayıt yapılır', async () => {
+    mockGeoOK(21.4254 - 0.01, 39.8241); // ~1.1 km
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    const btn = Array.from(document.querySelectorAll('#doorList button')).find(
+      b => b.firstChild?.textContent === '100'
+    ) as HTMLButtonElement;
+    btn.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    expect(localStorage.getItem('savedGate.v1')).not.toBeNull();
+  });
+
+  it('kayıt: kullanıcının yazdığı kapıda uzak olsa da kayıt yapılır (yalnızca kaydedilen nokta esas)', async () => {
+    mockGeoOK(39.9334, 32.8597); // Ankara
+    await loadMain();
+    document.getElementById('btnSave')!.click();
+    (document.getElementById('customDoor') as HTMLInputElement).value = '80';
+    document.getElementById('btnCustomDoor')!.click();
+    document.getElementById('btnConfirmYes')!.click();
+    await new Promise(r => setTimeout(r, 50));
+    const saved = JSON.parse(localStorage.getItem('savedGate.v1')!) as SavedGate;
+    expect(saved.doorId).toBe(80);
+    expect(saved.outsideLat).toBe(39.9334);
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/main.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/main.ts =====
+import './style.css';
+import type { SavedGate, NavUpdate } from './types';
+import { DOORS, findDoor, mainDoors, doorLabel } from './doors';
+import { loadGate, saveGate, clearGate } from './storage';
+import { startCompass, requestCompassPermission, type CompassHandle } from './compass';
+import { TrailRecorder, distanceM } from './trail';
+import { computeNavigation, resolveTarget, formatKm, type NavResult } from './guide';
+import {
+  initMap,
+  drawTrail,
+  setCurrent,
+  setTarget,
+  drawLineToTarget,
+  fitToAll,
+  invalidateSize,
+  showAllDoorsDebug,
+} from './map';
+import { speak, speakArabic, speakHelp, repeatLast, stopSpeech, initSpeech } from './speech';
+import { show } from './ui';
+import { initVerifyUI } from './verify-ui';
+import { getHelpMessages } from './help-i18n';
+
+// ---------- State ----------
+interface PendingDoor {
+  id: number;
+  name: string; // listede yoksa boş
+}
+let pendingDoor: PendingDoor | null = null;
+let savedGate: SavedGate | null = null;
+const recorder = new TrailRecorder();
+let guideWatchId: number | null = null;
+let hasWarnedTooFar = false;
+let hasFittedMap = false;
+let wakeLock: WakeLockSentinel | null = null;
+let compass: CompassHandle | null = null;
+let deviceHeading: number | null = null;
+let lastAccuracy: number | null = null;
+let lastBearing: number | null = null;
+let gpsHeading: number | null = null;
+let gpsHeadingAt = 0;
+type ArrowState = 'idle' | 'go' | 'far' | 'arrived';
+let arrowState: ArrowState = 'idle';
+let arrowRot = 0; // birikimli açı: 359°→1° geçişinde ok geri sarmasın
+let saveToken = 0;
+let guideStarting = false;
+
+const MAX_SAVE_ACCURACY_M = 100;
+const MISMATCH_DISTANCE_M = 300;
+/** Kayıtlı (katalog) kapı için: bu mesafeden uzakta kayıt yapılmaz */
+const MAX_SAVE_DISTANCE_M = 2000;
+
+// ---------- Init ----------
+initSpeech();
+savedGate = loadGate();
+renderSavedCard();
+bind();
+
+const params = new URLSearchParams(window.location.search);
+if (params.has('verify')) initVerifyUI();
+if (params.get('debug') === '1') {
+  show('guide');
+  initMap('map');
+  setTimeout(() => {
+    invalidateSize();
+    showAllDoorsDebug();
+  }, 100);
+}
+
+// ---------- Helpers ----------
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string)
+  );
+}
+
+// ---------- Saved card ----------
+function renderSavedCard(): void {
+  const el = document.getElementById('saved');
+  if (!el) return;
+  if (!savedGate) {
+    el.textContent = 'Henüz kapı kaydedilmedi.';
+    return;
+  }
+  const dateStr = new Date(savedGate.savedAt).toLocaleString('tr-TR');
+  el.innerHTML =
+    `🚪 <b>Kayıtlı Kapı</b><br>` +
+    `<b>${escapeHtml(doorLabel(savedGate.doorId, savedGate.doorName))}</b><br>` +
+    `<span class="muted">${escapeHtml(dateStr)}</span>` +
+    (savedGate.locationSource === 'gps'
+      ? ''
+      : `<br><span class="warn-text">⚠️ Konum yaklaşık. Kapıyı yeniden kaydedin.</span>`) +
+    (savedGate.numberMismatch
+      ? `<br><span class="warn-text">⚠️ Kapı numarası bulunduğunuz yerle uyuşmuyor olabilir. Tabeladaki numarayı kontrol edip yeniden kaydedin.</span>`
+      : '');
+}
+
+// ---------- Door picker ----------
+
+function chooseDoor(door: PendingDoor): void {
+  pendingDoor = door;
+  const label = doorLabel(door.id, door.name);
+  const ct = document.getElementById('confirmText');
+  if (ct) {
+    ct.innerHTML =
+      `<b>${door.id} — ${escapeHtml(label)}</b><br>` +
+      `Burayı giriş kapısı olarak kaydetmek istiyor musunuz?`;
+  }
+  show('confirm');
+  speak(`${label} seçildi. Onaylıyor musunuz?`, true);
+}
+
+function renderDoorPicker(): void {
+  const list = document.getElementById('doorList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const main = mainDoors();
+  const mainIds = new Set(main.map(d => d.id));
+  const others = DOORS.filter(d => !mainIds.has(d.id));
+
+  const addHeader = (text: string) => {
+    const h = document.createElement('div');
+    h.className = 'door-section-header';
+    h.textContent = text;
+    list.appendChild(h);
+  };
+
+  const addDoor = (d: typeof DOORS[number]) => {
+    const b = document.createElement('button');
+    b.className = 'btn b';
+    const hint = d.hint ? `<small style="opacity:0.8">${escapeHtml(d.hint)}</small>` : '';
+    b.innerHTML = `${d.id}<small>${escapeHtml(d.name)}</small>${hint}`;
+    b.addEventListener('click', () => chooseDoor({ id: d.id, name: d.name }));
+    list.appendChild(b);
+  };
+
+  if (main.length > 0) {
+    addHeader('⭐ Ana kapılar');
+    main.forEach(addDoor);
+  }
+  if (others.length > 0) {
+    addHeader('Diğer kapılar');
+    others.forEach(addDoor);
+  }
+}
+
+/** Listede olmayan kapı: kullanıcı tabeladaki numarayı yazar */
+function onCustomDoor(): void {
+  const input = document.getElementById('customDoor') as HTMLInputElement | null;
+  const n = Math.round(Number(input?.value));
+  if (!Number.isFinite(n) || n < 1 || n > 300) {
+    speak('Lütfen kapının üzerindeki numarayı yazın.', true);
+    return;
+  }
+  const known = findDoor(n);
+  chooseDoor({ id: n, name: known?.name ?? '' });
+}
+// ---------- Bind ----------
+function bind(): void {
+  document.getElementById('btnSave')?.addEventListener('click', () => {
+    renderDoorPicker();
+    show('pickDoor');
+    speak('Hangi kapıdan girdiniz? Kapının numarasına bakın.', true);
+  });
+
+  document.getElementById('btnCustomDoor')?.addEventListener('click', onCustomDoor);
+  document.getElementById('btnGuide')?.addEventListener('click', onGuide);
+  document.getElementById('btnHelp')?.addEventListener('click', onHelp);
+  document.getElementById('btnSpeakAr')?.addEventListener('click', () => {
+    const msgs = getHelpMessages(savedGate);
+    speakArabic(msgs.speakArabic);
+  });
+
+  document.getElementById('btnConfirmNo')?.addEventListener('click', () => {
+    show('home');
+  });
+
+  document.getElementById('btnConfirmYes')?.addEventListener('click', onSaveConfirm);
+
+  document.getElementById('btnSaveBack')?.addEventListener('click', () => {
+    saveToken++; // süren kayıt işlemini iptal et
+    recorder.stop();
+    show('home');
+  });
+
+  document.getElementById('btnStop')?.addEventListener('click', onStopGuide);
+  document.getElementById('btnRepeat')?.addEventListener('click', () => repeatLast());
+  document.getElementById('btnHelpBack')?.addEventListener('click', () => {
+    stopSpeech();
+    show('home');
+  });
+  document.getElementById('btnSaveRetry')?.addEventListener('click', () => {
+    void onSaveConfirm();
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-action="home"]').forEach(el => {
+    el.addEventListener('click', () => show('home'));
+  });
+
+  const savedEl = document.getElementById('saved');
+  if (savedEl) {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const start = (e: Event) => {
+      if (!savedGate) return;
+      e.preventDefault();
+      timer = setTimeout(() => {
+        timer = null;
+        clearGate();
+        savedGate = null;
+        renderSavedCard();
+        speak('Kapı kaydı silindi.', true);
+      }, 3000);
+    };
+    const cancel = () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
+    };
+    savedEl.addEventListener('mousedown', start);
+    savedEl.addEventListener('touchstart', start, { passive: false });
+    savedEl.addEventListener('mouseup', cancel);
+    savedEl.addEventListener('mouseleave', cancel);
+    savedEl.addEventListener('touchend', cancel);
+    savedEl.addEventListener('touchmove', cancel);
+  }
+
+  window.addEventListener('resize', () => invalidateSize());
+  document.addEventListener('visibilitychange', () => {
+    // Ekran kilitlenince wake lock düşer; rehber açıksa geri al
+    if (document.visibilityState === 'visible' && guideWatchId !== null) void keepAwake();
+  });
+  window.addEventListener('pagehide', () => {
+    if (guideWatchId !== null || recorder.getPoints().length > 0) {
+      recorder.stop();
+      onStopGuide();
+    }
+  });
+}
+
+// ---------- Save flow ----------
+async function onSaveConfirm(): Promise<void> {
+  if (pendingDoor === null) return;
+  const door = pendingDoor;
+  const catalog = findDoor(door.id);
+
+  const token = ++saveToken;
+  const retry = document.getElementById('btnSaveRetry');
+  retry?.classList.add('hide');
+  show('saving');
+  const fix = document.getElementById('fix');
+  if (fix) fix.textContent = 'Konum aranıyor…';
+  speak('Kapı kaydediliyor. Lütfen birkaç saniye bekleyin.', true);
+
+  // Doğrulanmamış katalog koordinatı ASLA kaydedilmez: yalnızca kullanıcının
+  // kapının önündeyken ölçülen gerçek GPS konumu. Yoksa kayıt yapılmaz.
+  let pos: GeolocationPosition | null = null;
+  let errCode = 0;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const p = await getCurrentPosition(10000);
+      if (token !== saveToken) return;
+      if (!pos || p.coords.accuracy < pos.coords.accuracy) pos = p;
+      if (p.coords.accuracy <= 30) break;
+    } catch (e) {
+      if (token !== saveToken) return;
+      errCode = (e as { code?: number })?.code ?? 0;
+      if (errCode === 1) break; // izin reddedildi, tekrar denemenin anlamı yok
+    }
+  }
+  if (token !== saveToken) return;
+
+  if (!pos || pos.coords.accuracy > MAX_SAVE_ACCURACY_M) {
+    const msg =
+      errCode === 1
+        ? 'Konum izni verilmedi. Tarayıcı ayarlarından konum iznini açın.'
+        : 'Konum hassas alınamadı. Açık alana çıkıp tekrar deneyin.';
+    if (fix) fix.textContent = msg;
+    retry?.classList.remove('hide');
+    speak(msg, true);
+    return;
+  }
+
+  // Kayıtlı (katalog) kapı: Mescid-i Haram'dan 2 km'den uzakta kayıt yapılmaz.
+  // Kullanıcının kendi yazdığı kapıda yalnızca ölçülen konum esastır (eski davranış).
+  const gateDistance = catalog
+    ? distanceM(
+        { lat: pos.coords.latitude, lng: pos.coords.longitude },
+        { lat: catalog.outsideLat, lng: catalog.outsideLng }
+      )
+    : null;
+  if (catalog && gateDistance !== null && gateDistance > MAX_SAVE_DISTANCE_M) {
+    const msg =
+      `Bulunduğunuz konum ${catalog.name} Kapısı'ndan ${formatKm(gateDistance)} uzakta. ` +
+      "Lütfen Mescid-i Haram'a yaklaşınca kaydedin.";
+    if (fix) fix.textContent = msg;
+    retry?.classList.remove('hide');
+    speak(msg, true);
+    return;
+  }
+
+  // Seçilen numara, ölçülen konumla uyuşuyor mu? (katalog yalnızca bu denetim için)
+  const mismatch = gateDistance !== null && gateDistance > MISMATCH_DISTANCE_M;
+
+  recorder.stop();
+  recorder.start();
+
+  savedGate = {
+    doorId: door.id,
+    doorName: door.name,
+    outsideLat: pos.coords.latitude,
+    outsideLng: pos.coords.longitude,
+    savedAt: Date.now(),
+    trail: [],
+    locationSource: 'gps',
+    accuracy: pos.coords.accuracy,
+    numberMismatch: mismatch,
+  };
+  saveGate(savedGate);
+  renderSavedCard();
+  if (mismatch) {
+    speak(
+      'Konumunuz kaydedildi, ancak seçtiğiniz kapı numarası bulunduğunuz yerle uyuşmuyor olabilir. Kapının üzerindeki numarayı kontrol edin.',
+      true
+    );
+  } else {
+    speak(`${doorLabel(door.id, door.name)} kaydedildi. İyi ziyaretler.`, true);
+  }
+  show('home');
+}
+
+function getCurrentPosition(timeoutMs: number): Promise<GeolocationPosition> {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('no-geo'));
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: timeoutMs,
+    });
+  });
+}
+
+// ---------- Guide flow ----------
+async function onGuide(): Promise<void> {
+  if (guideStarting) return;
+  // iOS: pusula izni kullanıcı jesti içinde, İLK await'ten önce istenmeli
+  const compassPermission = requestCompassPermission().catch(() => false);
+
+  savedGate = loadGate();
+  if (!savedGate) {
+    speak('Önce giriş kapınızı kaydedin.', true);
+    show('home');
+    return;
+  }
+  guideStarting = true;
+
+  try {
+    const trail = recorder.stop();
+    if (trail.length > 0) {
+      savedGate.trail = trail;
+      saveGate(savedGate);
+    }
+
+    hasWarnedTooFar = false;
+    hasFittedMap = false;
+    lastAccuracy = null;
+    lastBearing = null;
+    gpsHeading = null;
+    arrowState = 'idle';
+    updateArrow();
+
+    show('guide');
+    initMap('map');
+    setTimeout(() => invalidateSize(), 50);
+
+    // Konum doğrulanmamışsa (eski kayıt) açıkça uyar
+    const warn = document.getElementById('warn');
+    if (warn) {
+      const approx = savedGate.locationSource !== 'gps';
+      warn.classList.toggle('hide', !approx);
+      warn.textContent = approx
+        ? '⚠️ Kayıtlı konum yaklaşık. Kapı numarasını tabeladan kontrol edin.'
+        : '';
+    }
+
+    await keepAwake();
+
+    // Pusula
+    compass?.stop();
+    compass = null;
+    deviceHeading = null;
+    if (await compassPermission) {
+      compass = startCompass(
+        onHeading,
+        () => {
+          // Pusula olmadan da çalışır
+        }
+      );
+    }
+
+    speak('Konumunuz alınıyor. Lütfen bekleyin.', true);
+
+    try {
+      await getCurrentPosition(8000);
+    } catch {}
+
+    const target = resolveTarget(savedGate);
+    setTarget(target.lat, target.lng, doorLabel(savedGate.doorId, target.name));
+    drawTrail(savedGate.trail);
+
+    if (guideWatchId !== null) {
+      navigator.geolocation.clearWatch(guideWatchId);
+    }
+    guideWatchId = navigator.geolocation.watchPosition(
+      pos => onGuidePos(pos, target.lat, target.lng),
+      err => onGuideErr(err),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
+    );
+
+    const gm = document.getElementById('gm') as HTMLAnchorElement | null;
+    if (gm) {
+      gm.href = `https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}&travelmode=walking`;
+    }
+  } finally {
+    guideStarting = false;
+  }
+}
+
+function onGuidePos(pos: GeolocationPosition, tLat: number, tLng: number): void {
+  if (!savedGate) return;
+  const cur = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+  lastAccuracy = pos.coords.accuracy;
+
+  // Yürürken GPS yönü (pusula yoksa veya şaşarsa yedek)
+  const hd = pos.coords.heading;
+  const spd = pos.coords.speed;
+  if (typeof hd === 'number' && Number.isFinite(hd) && typeof spd === 'number' && spd >= 0.8) {
+    gpsHeading = hd;
+    gpsHeadingAt = Date.now();
+  }
+
+  setCurrent(cur.lat, cur.lng);
+
+  const nav: NavResult = computeNavigation(savedGate, cur, effectiveHeading()?.value ?? null, lastAccuracy);
+  drawLineToTarget(cur, { lat: tLat, lng: tLng }, nav.isTooFar ? formatKm(nav.distance) : undefined);
+
+  if (!hasFittedMap) {
+    fitToAll();
+    hasFittedMap = true;
+  }
+
+  lastBearing = nav.bearingDeg;
+  arrowState = nav.arrived ? 'arrived' : nav.isTooFar ? 'far' : 'go';
+  updateArrow();
+  const say = document.getElementById('say');
+  const dist = document.getElementById('dist');
+
+  if (say) say.textContent = nav.instruction;
+
+  if (dist) {
+    const weak = lastAccuracy > 100 ? ' (GPS zayıf)' : '';
+    if (nav.isTooFar) {
+      dist.textContent = `Uzaklık: ${formatKm(nav.distance)}`;
+      dist.style.color = 'var(--r)';
+    } else {
+      dist.textContent =
+        (nav.distance < 1000
+          ? `${Math.round(nav.distance)} metre`
+          : `${(nav.distance / 1000).toFixed(1)} km`) + weak;
+      dist.style.color = '';
+    }
+  }
+
+  if (nav.isTooFar) {
+    if (!hasWarnedTooFar) {
+      speak(nav.instruction, true);
+      hasWarnedTooFar = true;
+    }
+    return;
+  }
+  hasWarnedTooFar = false;
+
+  speak(nav.instruction, nav.arrived);
+
+  if (nav.arrived && guideWatchId !== null) {
+    navigator.geolocation.clearWatch(guideWatchId);
+    guideWatchId = null;
+    fitToAll();
+    try {
+      navigator.vibrate?.([200, 100, 200]);
+    } catch {}
+    if (say) say.style.color = 'var(--g)';
+    if (dist) {
+      dist.textContent = '✅ VARDINIZ';
+      dist.style.color = 'var(--g)';
+    }
+    stopCompass();
+    releaseAwake();
+  }
+}
+
+/** Pusula yönünü yumuşat (titremeyi azaltır; 359°→1° geçişinde doğru çalışır) */
+function onHeading(h: number): void {
+  if (deviceHeading === null) {
+    deviceHeading = h;
+  } else {
+    const d = ((h - deviceHeading + 540) % 360) - 180;
+    deviceHeading = (deviceHeading + 0.3 * d + 360) % 360;
+  }
+  updateArrow();
+}
+
+/** Önce pusula; yoksa son birkaç saniyedeki yürüyüş (GPS) yönü */
+function effectiveHeading(): { value: number; source: 'compass' | 'gps' } | null {
+  if (deviceHeading !== null) return { value: deviceHeading, source: 'compass' };
+  if (gpsHeading !== null && Date.now() - gpsHeadingAt < 8000) {
+    return { value: gpsHeading, source: 'gps' };
+  }
+  return null;
+}
+
+function turnWord(rel: number): { text: string; tone: 'ok' | 'turn' | 'back' } {
+  const abs = Math.abs(rel);
+  if (abs <= 20) return { text: 'DÜZ İLERLEYİN', tone: 'ok' };
+  if (abs <= 45) return { text: rel > 0 ? 'HAFİF SAĞA' : 'HAFİF SOLA', tone: 'turn' };
+  if (abs <= 135) return { text: rel > 0 ? 'SAĞA DÖNÜN' : 'SOLA DÖNÜN', tone: 'turn' };
+  return { text: 'ARKANIZA DÖNÜN', tone: 'back' };
+}
+
+/** Yön göstergesi: ok + açık kelime (düz / sağa / sola / arkanıza) */
+function updateArrow(): void {
+  const wrap = document.getElementById('arrowWrap');
+  const svg = document.getElementById('arrow');
+  const word = document.getElementById('arrowWord');
+  const note = document.getElementById('arrowNote');
+  if (!wrap || !svg) return;
+
+  const heading = effectiveHeading();
+  let state: string = arrowState;
+  if (arrowState === 'go' && (heading === null || lastBearing === null)) state = 'nohead';
+  wrap.setAttribute('data-state', state);
+
+  if (state === 'go' && heading !== null && lastBearing !== null) {
+    const rel = ((lastBearing - heading.value + 540) % 360) - 180; // -180..180
+    const delta = ((((rel - arrowRot) % 360) + 540) % 360) - 180; // en kısa dönüş
+    arrowRot += delta;
+    svg.style.transform = `rotate(${arrowRot.toFixed(0)}deg)`;
+    const w = turnWord(rel);
+    wrap.setAttribute('data-tone', w.tone);
+    if (word) word.textContent = w.text;
+    if (note) {
+      note.textContent =
+        heading.source === 'compass'
+          ? '🧭 Ok, telefonun baktığı yöne göre gösterir'
+          : '📍 Ok, yürüdüğünüz yöne göre gösterir';
+    }
+    return;
+  }
+
+  svg.style.transform = '';
+  if (state === 'nohead') {
+    if (word) word.textContent = 'YÖN BULUNUYOR';
+    if (note) note.textContent = 'Telefonu yatay tutun veya birkaç adım yürüyün';
+  } else if (state === 'arrived') {
+    wrap.setAttribute('data-tone', 'ok');
+    if (word) word.textContent = 'VARDINIZ';
+    if (note) note.textContent = '';
+  } else {
+    if (word) word.textContent = '';
+    if (note) note.textContent = '';
+  }
+}
+
+function stopCompass(): void {
+  compass?.stop();
+  compass = null;
+  deviceHeading = null;
+}
+
+function onGuideErr(err: GeolocationPositionError): void {
+  let msg = 'Konum alınamıyor.';
+  if (err.code === 1) msg = 'Konum izni verilmedi. Lütfen tarayıcı ayarlarından izin verin.';
+  else if (err.code === 2) msg = 'Konum sinyali yok. Açık alana çıkın.';
+  else if (err.code === 3) msg = 'Konum zaman aşımı. Açık alana çıkın.';
+  const say = document.getElementById('say');
+  if (say) say.textContent = msg;
+  speak(msg);
+}
+
+function onStopGuide(): void {
+  if (guideWatchId !== null) {
+    navigator.geolocation.clearWatch(guideWatchId);
+    guideWatchId = null;
+  }
+  stopSpeech();
+  stopCompass();
+  releaseAwake();
+  arrowState = 'idle';
+  lastBearing = null;
+  gpsHeading = null;
+  updateArrow();
+  hasWarnedTooFar = false;
+  hasFittedMap = false;
+  show('home');
+}
+
+// ---------- Help (Arapça) ----------
+function onHelp(): void {
+  const msgs = getHelpMessages(savedGate);
+
+  const titleAr = document.getElementById('hTitleAr');
+  const bodyAr = document.getElementById('hBodyAr');
+  const bodyTr = document.getElementById('hBodyTr');
+  const note = document.getElementById('hNote');
+
+  if (titleAr) titleAr.textContent = msgs.arabicTitle;
+  if (bodyAr) bodyAr.textContent = msgs.arabicBody;
+  if (bodyTr) bodyTr.textContent = msgs.turkishBody;
+  const doorBig = document.getElementById('hDoor');
+  if (doorBig) {
+    doorBig.textContent = savedGate ? `🚪 ${savedGate.doorId}` : '';
+    doorBig.classList.toggle('hide', !savedGate);
+  }
+
+  show('help');
+
+  // Önce Arapça (görevliye), bittikten sonra Türkçe (kullanıcıya) — tek kuyrukta
+  const hasArabicVoice = speakHelp(msgs.speakArabic, msgs.speakTurkish);
+  if (note) {
+    note.classList.toggle('hide', hasArabicVoice);
+    note.textContent = hasArabicVoice
+      ? ''
+      : 'Bu cihazda Arapça ses yok. Lütfen ekrandaki yazıyı görevliye gösterin.';
+  }
+}
+
+// ---------- Wake Lock ----------
+async function keepAwake(): Promise<void> {
+  try {
+    if ('wakeLock' in navigator && !wakeLock) {
+      wakeLock = await (navigator as Navigator & { wakeLock: WakeLock }).wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => {
+        wakeLock = null;
+      });
+    }
+  } catch {}
+}
+
+function releaseAwake(): void {
+  if (wakeLock) {
+    try {
+      wakeLock.release();
+    } catch {}
+    wakeLock = null;
+  }
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/main.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/map.ts =====
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import type { TrailPoint } from './types';
+import { DOORS } from './doors';
+
+let mapInstance: L.Map | null = null;
+let trailLayer: L.LayerGroup | null = null;
+let currentMarker: L.CircleMarker | null = null;
+let targetMarker: L.CircleMarker | null = null;
+let lineToTarget: L.Polyline | null = null;
+
+export function initMap(containerId: string): L.Map {
+  if (mapInstance) return mapInstance;
+  mapInstance = L.map(containerId, {
+    center: [21.4225, 39.8261],
+    zoom: 17,
+    zoomControl: false,
+    attributionControl: true,
+  });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap',
+  }).addTo(mapInstance);
+  trailLayer = L.layerGroup().addTo(mapInstance);
+  return mapInstance;
+}
+
+export function drawTrail(trail: TrailPoint[]): void {
+  if (!mapInstance || !trailLayer) return;
+  trailLayer.clearLayers();
+  if (trail.length < 2) return;
+  const latlngs: L.LatLngExpression[] = trail.map(p => [p.lat, p.lng]);
+  L.polyline(latlngs, {
+    color: '#1257b5',
+    weight: 4,
+    opacity: 0.7,
+    dashArray: '8,6',
+  }).addTo(trailLayer);
+  const first = trail[0];
+  if (first) {
+    L.circleMarker([first.lat, first.lng], {
+      radius: 8,
+      color: '#0a7a3d',
+      fillColor: '#0a7a3d',
+      fillOpacity: 0.9,
+    })
+      .addTo(trailLayer)
+      .bindPopup('Giriş Kapısı');
+  }
+}
+
+export function setTarget(lat: number, lng: number, label: string): void {
+  if (!mapInstance) return;
+  if (targetMarker) mapInstance.removeLayer(targetMarker);
+  targetMarker = L.circleMarker([lat, lng], {
+    radius: 12,
+    color: '#b3261e',
+    fillColor: '#b3261e',
+    fillOpacity: 0.9,
+  })
+    .addTo(mapInstance)
+    .bindPopup(label);
+}
+
+export function setCurrent(lat: number, lng: number): void {
+  if (!mapInstance) return;
+  if (currentMarker) mapInstance.removeLayer(currentMarker);
+  currentMarker = L.circleMarker([lat, lng], {
+    radius: 10,
+    color: '#1257b5',
+    fillColor: '#1257b5',
+    fillOpacity: 0.9,
+  })
+    .addTo(mapInstance)
+    .bindPopup('Şu an buradasınız');
+  currentMarker.bringToFront();
+}
+
+export function drawLineToTarget(
+  from: { lat: number; lng: number },
+  to: { lat: number; lng: number },
+  label?: string
+): void {
+  if (!mapInstance) return;
+  if (lineToTarget) mapInstance.removeLayer(lineToTarget);
+  lineToTarget = L.polyline(
+    [[from.lat, from.lng], [to.lat, to.lng]],
+    { color: '#0a7a3d', weight: 7, dashArray: '14,10', opacity: 0.95 }
+  ).addTo(mapInstance);
+  if (label) {
+    lineToTarget.bindTooltip(label, {
+      permanent: true,
+      direction: 'center',
+      className: 'line-label',
+    });
+  }
+}
+
+export function fitToAll(): void {
+  if (!mapInstance) return;
+  const b = L.latLngBounds([]);
+  if (currentMarker) b.extend(currentMarker.getLatLng());
+  if (targetMarker) b.extend(targetMarker.getLatLng());
+  if (b.isValid()) mapInstance.fitBounds(b.pad(0.3));
+}
+
+export function invalidateSize(): void {
+  mapInstance?.invalidateSize();
+}
+
+export function showAllDoorsDebug(): void {
+  if (!mapInstance) return;
+  {
+    for (const door of DOORS) {
+      const color =
+        door.verification === 'verified'
+          ? '#0a7a3d'
+          : door.verification === 'approximate'
+          ? '#ffb300'
+          : '#b3261e';
+      L.circleMarker([door.outsideLat, door.outsideLng], {
+        radius: 10,
+        color,
+        fillColor: color,
+        fillOpacity: 0.7,
+      })
+        .addTo(mapInstance!)
+        .bindPopup(
+          `<b>${door.id} — ${door.name}</b><br>` +
+          `Durum: ${door.verification}<br>` +
+          `Koordinat: ${door.outsideLat}, ${door.outsideLng}<br>` +
+          (door.source ? `Kaynak: ${door.source}` : '')
+        );
+    }
+  }
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/map.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/speech.test.ts =====
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { speak, speakHelp, speakArabic, hasVoiceFor, repeatLast, stopSpeech, initSpeech } from './speech';
+
+describe('speech', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+    (speechSynthesis.speak as ReturnType<typeof vi.fn>).mockClear();
+    (speechSynthesis.cancel as ReturnType<typeof vi.fn>).mockClear();
+    stopSpeech();
+    vi.setSystemTime(new Date('2026-01-01T00:00:00Z'));
+  });
+
+  it('boş metin için konuşmaz', () => {
+    speak('');
+    expect(speechSynthesis.speak).not.toHaveBeenCalled();
+  });
+
+  it('ilk çağrıda konuşur', () => {
+    speak('Merhaba', true);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(1);
+  });
+
+  it('6 saniye içinde farklı metinleri tekrar okumaz (force değilse)', () => {
+    speak('birinci', true);
+    vi.advanceTimersByTime(2000);
+    speak('ikinci', false);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(1);
+  });
+
+  it('6 saniye sonra farklı metni okur', () => {
+    speak('birinci', true);
+    vi.advanceTimersByTime(7000);
+    speak('ikinci', false);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(2);
+  });
+
+  it('aynı metni force olmadan tekrar okumaz', () => {
+    speak('aynı cümle', true);
+    vi.advanceTimersByTime(10000);
+    speak('aynı cümle', false);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(1);
+  });
+
+  it('force=true ile aynı metni tekrar okur', () => {
+    speak('aynı cümle', true);
+    speak('aynı cümle', true);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(2);
+  });
+
+  it('repeatLast son metni force ile okur', () => {
+    speak('tekrar et beni', true);
+    repeatLast();
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(2);
+  });
+
+  it('stopSpeech konuşmayı iptal eder ve son metni temizler', () => {
+    speak('iptal', true);
+    stopSpeech();
+    expect(speechSynthesis.cancel).toHaveBeenCalled();
+    speak('iptal', false);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(2);
+  });
+
+  it('stopSpeech sonrası MIN_GAP sıfırlanır', () => {
+    speak('birinci', true);
+    vi.advanceTimersByTime(1000);
+    stopSpeech();
+    speak('ikinci', false);
+    expect(speechSynthesis.speak).toHaveBeenCalledTimes(2);
+  });
+
+  it('speechSynthesis.cancel hata atarsa stopSpeech crash etmez', () => {
+    (speechSynthesis.cancel as ReturnType<typeof vi.fn>).mockImplementationOnce(() => {
+      throw new Error('cancel failed');
+    });
+    expect(() => stopSpeech()).not.toThrow();
+  });
+
+  it('speechSynthesis.speak hata atarsa speak crash etmez', () => {
+    (speechSynthesis.speak as ReturnType<typeof vi.fn>).mockImplementationOnce(() => {
+      throw new Error('speak failed');
+    });
+    expect(() => speak('patlat', true)).not.toThrow();
+  });
+
+  it('initSpeech voiceschanged dinleyicisi ekler', () => {
+    initSpeech();
+    expect(speechSynthesis.addEventListener).toHaveBeenCalledWith(
+      'voiceschanged',
+      expect.any(Function)
+    );
+  });
+
+  it('Türkçe ses varsa utterance.voice olarak seçilir', () => {
+    speak('selam', true);
+    const call = (speechSynthesis.speak as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    expect(call).toBeTruthy();
+    expect(call.voice?.lang).toBe('tr-TR');
+  });
+
+  it('speakHelp önce Arapça sonra Türkçeyi KUYRUĞA koyar, aralarında cancel yok', () => {
+    const speakMock = speechSynthesis.speak as ReturnType<typeof vi.fn>;
+    const cancelMock = speechSynthesis.cancel as ReturnType<typeof vi.fn>;
+    cancelMock.mockClear(); // beforeEach'teki stopSpeech() çağrısını say
+    speakHelp('مرحبا', 'Merhaba');
+    expect(speakMock).toHaveBeenCalledTimes(2);
+    expect(speakMock.mock.calls[0]![0].lang).toBe('ar-SA');
+    expect(speakMock.mock.calls[1]![0].lang).toBe('tr-TR');
+    expect(speakMock.mock.calls[0]![0].voice?.lang).toBe('ar-SA');
+    expect(cancelMock).not.toHaveBeenCalled();
+  });
+
+  it('speakHelp zamanlayıcı kullanmaz (fake timer ilerletmeden ikisi de kuyrukta)', () => {
+    const speakMock = speechSynthesis.speak as ReturnType<typeof vi.fn>;
+    speakHelp('مرحبا', 'Merhaba');
+    expect(speakMock).toHaveBeenCalledTimes(2);
+    vi.advanceTimersByTime(5000);
+    expect(speakMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('speakArabic ar-SA ile konuşur', () => {
+    speakArabic('مرحبا');
+    const call = (speechSynthesis.speak as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+    expect(call.lang).toBe('ar-SA');
+  });
+
+  it('hasVoiceFor Arapça ses varsa true, olmayan dilde false', () => {
+    expect(hasVoiceFor('ar-SA')).toBe(true);
+    expect(hasVoiceFor('xx-XX')).toBe(false);
+  });
+
+  it('konuşma sürerken yeni konuşma önce eskiyi iptal eder', () => {
+    Object.defineProperty(speechSynthesis, 'speaking', { value: true, configurable: true });
+    speak('yeni', true);
+    expect(speechSynthesis.cancel).toHaveBeenCalled();
+    Object.defineProperty(speechSynthesis, 'speaking', { value: false, configurable: true });
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/speech.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/speech.ts =====
+let lastSpeak = 0;
+let lastFull = '';
+let lastSpokenText = '';
+let voicesReady = false;
+
+// Chrome'da utterance'lar çöp toplayıcıya kaybolup konuşma yarıda kesilebiliyor
+const alive = new Set<SpeechSynthesisUtterance>();
+
+const MIN_GAP_MS = 6000;
+
+function allVoices(): SpeechSynthesisVoice[] {
+  try {
+    return speechSynthesis.getVoices() ?? [];
+  } catch {
+    return [];
+  }
+}
+
+function pickVoice(lang: string): SpeechSynthesisVoice | undefined {
+  const vs = allVoices();
+  const lower = lang.toLowerCase();
+  const base = lower.split('-')[0]!;
+  return (
+    vs.find(v => v.lang?.toLowerCase().replace('_', '-') === lower) ??
+    vs.find(v => v.lang?.toLowerCase().replace('_', '-').startsWith(base))
+  );
+}
+
+/**
+ * Cihazda verilen dil için ses var mı?
+ * Ses listesi henüz yüklenmediyse (boş) true döner — bilinmiyor, engelleme.
+ */
+export function hasVoiceFor(lang: string): boolean {
+  if (allVoices().length === 0) return true;
+  return pickVoice(lang) !== undefined;
+}
+
+export function initSpeech(): void {
+  if (voicesReady) return;
+  const load = () => {
+    voicesReady = allVoices().length > 0;
+  };
+  load();
+  speechSynthesis.addEventListener('voiceschanged', load);
+}
+
+interface Part {
+  text: string;
+  lang: string;
+  rate: number;
+}
+
+/** Sıradaki parçaları KUYRUĞA koyar; sıra tarayıcı tarafından yönetilir (zamanlayıcı yok). */
+function speakParts(parts: Part[]): void {
+  try {
+    // Boştayken cancel() çağırmak Chrome'da sonraki speak()'i yutabiliyor
+    if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+    for (const p of parts) {
+      const u = new SpeechSynthesisUtterance(p.text);
+      u.lang = p.lang;
+      u.rate = p.rate;
+      u.pitch = 1;
+      const v = pickVoice(p.lang);
+      if (v) u.voice = v;
+      alive.add(u);
+      const done = () => alive.delete(u);
+      u.onend = done;
+      u.onerror = done;
+      speechSynthesis.speak(u);
+    }
+  } catch {}
+}
+
+export function speak(text: string, force = false): void {
+  if (!text) return;
+
+  if (!force && text === lastSpokenText) return;
+
+  const now = Date.now();
+  if (!force && now - lastSpeak < MIN_GAP_MS) return;
+
+  lastSpeak = now;
+  lastFull = text;
+  lastSpokenText = text;
+
+  speakParts([{ text, lang: 'tr-TR', rate: 0.9 }]);
+  announce(text, 'tr');
+}
+
+/** Arapça konuşma — görevliye hitap için. Ekran okuyucuya yazılmaz (üst üste binmesin). */
+export function speakArabic(text: string): void {
+  if (!text) return;
+  speakParts([{ text, lang: 'ar-SA', rate: 0.85 }]);
+}
+
+/**
+ * Yardım ekranı: önce Arapça (görevliye), SONRA Türkçe (kullanıcıya) — aynı kuyrukta,
+ * Arapça bitmeden Türkçe başlamaz ve onu kesmez.
+ * @returns Cihazda Arapça ses var mı
+ */
+export function speakHelp(arabic: string, turkish: string): boolean {
+  const parts: Part[] = [];
+  if (arabic) parts.push({ text: arabic, lang: 'ar-SA', rate: 0.85 });
+  if (turkish) parts.push({ text: turkish, lang: 'tr-TR', rate: 0.9 });
+  if (parts.length === 0) return true;
+  speakParts(parts);
+  return hasVoiceFor('ar-SA');
+}
+
+export function repeatLast(): void {
+  if (lastFull) speak(lastFull, true);
+}
+

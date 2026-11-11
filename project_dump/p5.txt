@@ -1,0 +1,1222 @@
+export function stopSpeech(): void {
+  try {
+    speechSynthesis.cancel();
+  } catch {}
+  alive.clear();
+  lastSpokenText = '';
+  lastSpeak = 0;
+}
+
+function announce(msg: string, lang: string): void {
+  const el = document.getElementById('sr');
+  if (!el) return;
+  el.setAttribute('lang', lang);
+  el.textContent = '';
+  setTimeout(() => {
+    el.textContent = msg;
+  }, 30);
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/speech.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/storage.test.ts =====
+import { describe, it, expect, beforeEach } from 'vitest';
+import { saveGate, loadGate, clearGate } from './storage';
+import type { SavedGate } from './types';
+
+const KEY = 'savedGate.v1';
+
+const sample: SavedGate = {
+  doorId: 100,
+  doorName: 'Kral Abdullah',
+  outsideLat: 21.42355,
+  outsideLng: 39.82590,
+  savedAt: 1_700_000_000_000,
+  trail: [
+    { lat: 21.42355, lng: 39.82590, accuracy: 10, timestamp: 1 },
+    { lat: 21.42360, lng: 39.82595, accuracy: 12, timestamp: 2 },
+  ],
+  locationSource: 'gps',
+  accuracy: 8,
+};
+
+describe('storage', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('boş localStorage\'da null döner', () => {
+    expect(loadGate()).toBeNull();
+  });
+
+  it('saveGate + loadGate roundtrip', () => {
+    saveGate(sample);
+    const loaded = loadGate();
+    expect(loaded).not.toBeNull();
+    expect(loaded!.doorId).toBe(sample.doorId);
+    expect(loaded!.doorName).toBe(sample.doorName);
+    expect(loaded!.outsideLat).toBeCloseTo(sample.outsideLat, 5);
+    expect(loaded!.trail).toHaveLength(2);
+  });
+
+  it('bozuk JSON için null döner (crash etmez)', () => {
+    localStorage.setItem(KEY, '{bad json');
+    expect(loadGate()).toBeNull();
+  });
+
+  it('doorId sayı değilse null döner', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, doorId: 'x' }));
+    expect(loadGate()).toBeNull();
+  });
+
+  it('outsideLat sayı değilse null döner', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, outsideLat: 'y' }));
+    expect(loadGate()).toBeNull();
+  });
+
+  it('outsideLng sayı değilse null döner', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, outsideLng: 'z' }));
+    expect(loadGate()).toBeNull();
+  });
+
+  it('trail yoksa boş dizi yapar', () => {
+    const noTrail = { ...sample } as Partial<SavedGate>;
+    delete noTrail.trail;
+    localStorage.setItem(KEY, JSON.stringify(noTrail));
+    const loaded = loadGate();
+    expect(loaded?.trail).toEqual([]);
+  });
+
+  it('trail dizi değilse boş dizi yapar', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, trail: 'oops' }));
+    expect(loadGate()?.trail).toEqual([]);
+  });
+
+  it('clearGate kaydı siler', () => {
+    saveGate(sample);
+    clearGate();
+    expect(loadGate()).toBeNull();
+  });
+
+  it('localStorage.setItem hata atarsa saveGate crash etmez', () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota');
+    });
+    expect(() => saveGate(sample)).not.toThrow();
+    spy.mockRestore();
+  });
+
+  it('localStorage.removeItem hata atarsa clearGate crash etmez', () => {
+    const spy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
+      throw new Error('remove failed');
+    });
+    expect(() => clearGate()).not.toThrow();
+    spy.mockRestore();
+  });
+
+  it('GPS kaynağı korunur', () => {
+    saveGate(sample);
+    expect(loadGate()?.locationSource).toBe('gps');
+    expect(loadGate()?.accuracy).toBe(8);
+  });
+
+  it('eski kayıt (locationSource yok) güvenilmez sayılır → catalog', () => {
+    const old = { ...sample } as Partial<SavedGate>;
+    delete old.locationSource;
+    localStorage.setItem(KEY, JSON.stringify(old));
+    expect(loadGate()?.locationSource).toBe('catalog');
+  });
+
+  it('geçersiz koordinat aralığı null döner', () => {
+    localStorage.setItem(KEY, JSON.stringify({ ...sample, outsideLat: 123 }));
+    expect(loadGate()).toBeNull();
+  });
+
+  it('numberMismatch bayrağı korunur', () => {
+    saveGate({ ...sample, numberMismatch: true });
+    expect(loadGate()?.numberMismatch).toBe(true);
+    saveGate(sample);
+    expect(loadGate()?.numberMismatch).toBe(false);
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/storage.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/storage.ts =====
+import type { SavedGate } from './types';
+
+const KEY = 'savedGate.v1';
+
+export function saveGate(g: SavedGate): void {
+  try { localStorage.setItem(KEY, JSON.stringify(g)); } catch {}
+}
+
+export function loadGate(): SavedGate | null {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<SavedGate> | null;
+    if (
+      !parsed ||
+      typeof parsed.doorId !== 'number' ||
+      typeof parsed.outsideLat !== 'number' ||
+      typeof parsed.outsideLng !== 'number' ||
+      !Number.isFinite(parsed.outsideLat) ||
+      !Number.isFinite(parsed.outsideLng) ||
+      Math.abs(parsed.outsideLat) > 90 ||
+      Math.abs(parsed.outsideLng) > 180
+    ) {
+      return null;
+    }
+    return {
+      doorId: parsed.doorId,
+      doorName: typeof parsed.doorName === 'string' ? parsed.doorName : String(parsed.doorId),
+      outsideLat: parsed.outsideLat,
+      outsideLng: parsed.outsideLng,
+      savedAt: typeof parsed.savedAt === 'number' ? parsed.savedAt : 0,
+      trail: Array.isArray(parsed.trail) ? parsed.trail : [],
+      // Eski kayıtların konumu GPS mi katalog mu bilinmez → güvenilmez say
+      locationSource: parsed.locationSource === 'gps' ? 'gps' : 'catalog',
+      accuracy: typeof parsed.accuracy === 'number' ? parsed.accuracy : undefined,
+      numberMismatch: parsed.numberMismatch === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function clearGate(): void {
+  try { localStorage.removeItem(KEY); } catch {}
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/storage.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/style.css =====
+:root{
+  --bg:#fffdf5; --fg:#111; --g:#0a7a3d; --b:#1257b5; --r:#b3261e;
+  --help:#8a4b00; --card:#ece9df; --ring:#999; --muted:#555;
+  --radius:22px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121212;--fg:#fff;--card:#262626;--ring:#777;--muted:#bbb;--help:#ffb74d;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  font-size:22px;line-height:1.35;
+  padding:calc(14px + var(--safe-top)) 14px calc(14px + var(--safe-bottom));
+  text-align:center;
+  -webkit-text-size-adjust:100%;
+  touch-action:manipulation;
+}
+.hide{display:none!important}
+.screen{min-height:100vh}
+.btn{
+  display:block;width:100%;border:0;border-radius:var(--radius);
+  padding:28px 12px;font-size:30px;font-weight:800;color:#fff;
+  margin:14px 0;min-height:64px;cursor:pointer;
+  box-shadow:0 2px 0 rgba(0,0,0,.08);
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:transform .08s ease;
+}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:4px solid #ffb300;outline-offset:3px}
+.btn small{display:block;font-size:18px;font-weight:500;margin-top:6px;opacity:.95}
+.g{background:var(--g)} .b{background:var(--b)} .r{background:var(--r)}
+.help{background:var(--help);color:#fff}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .help{color:#111}
+}
+.x{background:#5f5f5f;font-size:22px;padding:16px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin:12px 0}
+.big{font-size:34px;font-weight:800;line-height:1.2}
+.muted{color:var(--muted);font-size:20px}
+.calm{font-size:22px;margin:10px 0}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row .btn{flex:1 1 0;font-size:24px;padding:26px 4px;min-width:100px}
+a.btn{text-decoration:none;display:block}
+#map{width:100%;border-radius:16px;background:var(--card);display:block;margin:8px auto;height:38vh}
+#say{font-size:32px;font-weight:800;margin:8px 0;min-height:1.4em}
+#dist{font-size:44px;font-weight:900;margin:4px 0}
+#sr{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.door-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.door-grid .btn{font-size:26px;padding:22px 8px;margin:0}
+.door-grid .btn small{font-size:16px}
+
+/* ---------- Yardım Ekranı (Arapça) ---------- */
+.help-arabic{
+  background:#fff;
+  color:#111;
+  border-radius:22px;
+  padding:32px 20px;
+  margin:12px 0;
+  border:4px solid var(--r);
+  text-align:center;
+}
+.help-arabic-title{
+  font-size:30px;
+  font-weight:900;
+  color:var(--r);
+  margin-bottom:16px;
+  font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;
+}
+.help-arabic-body{
+  font-size:38px;
+  font-weight:800;
+  line-height:1.5;
+  font-family:"Noto Naskh Arabic","Amiri","Times New Roman",serif;
+  word-break:break-word;
+}
+.help-turkish{
+  background:var(--card);
+  border-radius:16px;
+  padding:14px;
+  margin:12px 0;
+}
+.help-turkish .calm{
+  font-size:20px;
+  color:var(--muted);
+}
+.door-section-header {
+  grid-column: 1 / -1;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--b);
+  margin: 16px 0 4px;
+  text-align: left;
+  padding: 4px 8px;
+  border-left: 5px solid var(--b);
+  background: var(--card);
+  border-radius: 6px;
+}
+@media (prefers-reduced-motion:reduce){
+  .btn{transition:none}.btn:active{transform:none}
+}
+@media (prefers-contrast:more){
+  .btn{border:2px solid currentColor}
+  .card{border:2px solid var(--fg)}
+  .help-arabic{border-width:6px}
+}
+.warn{background:#fff3cd;color:#5c3b00;border:3px solid #b26a00;border-radius:14px;padding:12px;margin:10px 0;font-size:19px;font-weight:700;text-align:center}
+.warn.hide{display:none}
+.warn-text{color:#b3261e;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{background:#3a2c00;color:#ffd98a;border-color:#ffb74d}}
+.custom-door label{display:block;font-size:19px;margin-bottom:10px;text-align:left}
+.custom-door input{width:100%;font-size:32px;padding:14px;border-radius:12px;border:3px solid var(--ring);background:var(--bg);color:var(--fg);text-align:center;margin-bottom:10px;box-sizing:border-box}
+.brand{display:flex;align-items:center;gap:14px;margin:4px 0 14px}
+.brand img{border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.brand b{display:block;font-size:28px;line-height:1.1}
+.brand small{display:block;font-size:16px;opacity:.75;margin-top:2px}
+.line-label{font-weight:900;font-size:18px;padding:4px 8px;border:2px solid #0a7a3d}
+.help-door{font-size:84px;font-weight:900;line-height:1.1;margin:6px 0;color:#0f3470}
+.help-door.hide{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .help-door{color:#8fb8ff}}
+
+/* ---- Yön göstergesi (pusula kadranı) ---- */
+.nav-card{--tone:#0a7a3d;display:flex;flex-direction:column;align-items:center;margin:6px 0 4px;padding:10px 8px 8px;border-radius:20px;background:var(--card);border:3px solid var(--tone)}
+.nav-card[data-tone="turn"]{--tone:#1257b5}
+.nav-card[data-tone="back"]{--tone:#b3261e}
+.nav-card[data-state="idle"],.nav-card[data-state="far"]{display:none}
+.dial{position:relative;width:min(62vw,230px);aspect-ratio:1}
+.dial-svg{width:100%;height:100%;display:block;overflow:visible}
+.dial-ring{fill:var(--bg);stroke:var(--tone);stroke-width:5}
+.dial-ticks path{stroke:var(--fg);stroke-width:4;stroke-linecap:round;opacity:.45;fill:none}
+.dial-ticks .minor{stroke-width:3;opacity:.25}
+.arrow-g{transform-box:view-box;transform-origin:100px 100px;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.arrow-shape{fill:var(--tone);stroke:#fff;stroke-width:6;stroke-linejoin:round;paint-order:stroke fill}
+.arrow-hub{fill:#fff}
+.dial-ok,.dial-wait{display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:96px;line-height:1}
+.nav-card[data-state="arrived"] .arrow-g,.nav-card[data-state="nohead"] .arrow-g{display:none}
+.nav-card[data-state="arrived"] .dial-ok{display:flex}
+.nav-card[data-state="nohead"] .dial-wait{display:flex;opacity:.55}
+.nav-card[data-state="nohead"]{--tone:#8a8a8a}
+.arrow-word{font-size:30px;font-weight:900;margin-top:8px;color:var(--tone);text-align:center;letter-spacing:.5px}
+.arrow-note{font-size:15px;opacity:.75;margin-top:2px;text-align:center;min-height:1.2em}
+.v-label{display:block;font-size:18px;font-weight:700;margin:10px 0 4px}
+.v-input{width:100%;font-size:24px;padding:12px;border-radius:12px;border:3px solid var(--ring);background:var(--bg);color:var(--fg);box-sizing:border-box;margin-bottom:6px}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/style.css =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/test/setup.ts =====
+import { vi, beforeEach, afterEach } from 'vitest';
+
+// jsdom window.scrollTo desteklemiyor → sessizce no-op
+if (typeof window !== 'undefined') {
+  window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
+}
+
+beforeEach(() => {
+  localStorage.clear();
+  sessionStorage.clear();
+  vi.clearAllMocks();
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+// ---------- speechSynthesis mock ----------
+if (!('speechSynthesis' in window) || !window.speechSynthesis) {
+  const voices: SpeechSynthesisVoice[] = [
+    { lang: 'tr-TR', name: 'Turkish', default: true, localService: true, voiceURI: 'tr' } as SpeechSynthesisVoice,
+    { lang: 'ar-SA', name: 'Arabic', default: false, localService: true, voiceURI: 'ar' } as SpeechSynthesisVoice,
+    { lang: 'en-US', name: 'English', default: false, localService: true, voiceURI: 'en' } as SpeechSynthesisVoice,
+  ];
+
+  Object.defineProperty(window, 'speechSynthesis', {
+    writable: true,
+    configurable: true,
+    value: {
+      getVoices: () => voices,
+      speak: vi.fn(),
+      cancel: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    },
+  });
+
+  Object.defineProperty(window, 'SpeechSynthesisUtterance', {
+    writable: true,
+    configurable: true,
+    value: class {
+      text: string;
+      lang = '';
+      rate = 1;
+      pitch = 1;
+      voice: SpeechSynthesisVoice | null = null;
+      constructor(text: string) { this.text = text; }
+    },
+  });
+}
+
+// ---------- geolocation mock ----------
+if (!navigator.geolocation) {
+  Object.defineProperty(navigator, 'geolocation', {
+    writable: true,
+    configurable: true,
+    value: {
+      getCurrentPosition: vi.fn(),
+      watchPosition: vi.fn(() => 0),
+      clearWatch: vi.fn(),
+    },
+  });
+}
+
+// ---------- vibrate mock ----------
+if (!('vibrate' in navigator)) {
+  Object.defineProperty(navigator, 'vibrate', {
+    writable: true,
+    configurable: true,
+    value: vi.fn(() => true),
+  });
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/test/setup.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/trail.test.ts =====
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { distanceM, bearingDeg, TrailRecorder } from './trail';
+
+describe('distanceM', () => {
+  it('aynı nokta için 0 döner', () => {
+    const p = { lat: 21.4225, lng: 39.8261 };
+    expect(distanceM(p, p)).toBeCloseTo(0, 1);
+  });
+
+  it('bilinen mesafeyi yaklaşık hesaplar (100m)', () => {
+    const a = { lat: 21.4225, lng: 39.8261 };
+    const b = { lat: 21.4234, lng: 39.8261 };
+    const d = distanceM(a, b);
+    expect(d).toBeGreaterThan(90);
+    expect(d).toBeLessThan(110);
+  });
+
+  it('simetriktir', () => {
+    const a = { lat: 21.4225, lng: 39.8261 };
+    const b = { lat: 21.4234, lng: 39.8270 };
+    expect(distanceM(a, b)).toBeCloseTo(distanceM(b, a), 5);
+  });
+});
+
+describe('bearingDeg', () => {
+  it('kuzey yönü 0 veya 360 döner', () => {
+    const a = { lat: 21.4225, lng: 39.8261 };
+    const b = { lat: 21.4235, lng: 39.8261 };
+    const bDeg = bearingDeg(a, b);
+    expect(bDeg < 5 || bDeg > 355).toBe(true);
+  });
+
+  it('doğu yönü ~90 döner', () => {
+    const a = { lat: 21.4225, lng: 39.8261 };
+    const b = { lat: 21.4225, lng: 39.8271 };
+    const bDeg = bearingDeg(a, b);
+    expect(bDeg).toBeGreaterThan(85);
+    expect(bDeg).toBeLessThan(95);
+  });
+
+  it('güney yönü ~180 döner', () => {
+    const a = { lat: 21.4225, lng: 39.8261 };
+    const b = { lat: 21.4215, lng: 39.8261 };
+    const bDeg = bearingDeg(a, b);
+    expect(bDeg).toBeGreaterThan(175);
+    expect(bDeg).toBeLessThan(185);
+  });
+});
+
+describe('TrailRecorder', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  it('başlangıçta boş dizi döner', () => {
+    const r = new TrailRecorder();
+    expect(r.getPoints()).toEqual([]);
+  });
+
+  it('start() watchPosition çağırır', () => {
+    const watchSpy = vi.spyOn(navigator.geolocation, 'watchPosition').mockReturnValue(42);
+    const r = new TrailRecorder();
+    r.start();
+    expect(watchSpy).toHaveBeenCalled();
+    r.stop();
+  });
+
+  it('start() iki kez çağrılırsa ikinci kez watchPosition çağırmaz', () => {
+    const watchSpy = vi.spyOn(navigator.geolocation, 'watchPosition').mockReturnValue(1);
+    const r = new TrailRecorder();
+    r.start();
+    r.start();
+    expect(watchSpy).toHaveBeenCalledTimes(1);
+    r.stop();
+  });
+
+  it('stop() clearWatch çağırır ve noktaları döndürür', () => {
+    const clearSpy = vi.spyOn(navigator.geolocation, 'clearWatch').mockImplementation(() => {});
+    vi.spyOn(navigator.geolocation, 'watchPosition').mockReturnValue(7);
+    const r = new TrailRecorder();
+    r.start();
+    const out = r.stop();
+    expect(clearSpy).toHaveBeenCalledWith(7);
+    expect(Array.isArray(out)).toBe(true);
+  });
+
+  it('start etmeden stop() crash etmez', () => {
+    const r = new TrailRecorder();
+    expect(() => r.stop()).not.toThrow();
+  });
+
+  it('60m üstü doğruluklu noktaları atar', () => {
+    let captured: PositionCallback | null = null;
+    vi.spyOn(navigator.geolocation, 'watchPosition').mockImplementation((ok) => {
+      captured = ok;
+      return 1;
+    });
+    const r = new TrailRecorder();
+    r.start();
+    captured!({
+      coords: { latitude: 21.42, longitude: 39.82, accuracy: 100 } as GeolocationCoordinates,
+      timestamp: 1,
+    } as GeolocationPosition);
+    expect(r.getPoints()).toHaveLength(0);
+    r.stop();
+  });
+
+  it('5m altı hareketleri birleştirir', () => {
+    let captured: PositionCallback | null = null;
+    vi.spyOn(navigator.geolocation, 'watchPosition').mockImplementation((ok) => {
+      captured = ok;
+      return 1;
+    });
+    const r = new TrailRecorder();
+    r.start();
+    captured!({
+      coords: { latitude: 21.42, longitude: 39.82, accuracy: 10 } as GeolocationCoordinates,
+      timestamp: 1,
+    } as GeolocationPosition);
+    captured!({
+      coords: { latitude: 21.42, longitude: 39.82, accuracy: 10 } as GeolocationCoordinates,
+      timestamp: 2,
+    } as GeolocationPosition);
+    expect(r.getPoints()).toHaveLength(1);
+    r.stop();
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/trail.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/trail.ts =====
+import type { TrailPoint } from './types';
+
+const MIN_ACCURACY = 60;
+const MIN_DISTANCE_M = 5;
+const MAX_POINTS = 200;
+
+export class TrailRecorder {
+  private points: TrailPoint[] = [];
+  private watchId: number | null = null;
+
+  start(): void {
+    if (!navigator.geolocation || this.watchId !== null) return;
+    this.watchId = navigator.geolocation.watchPosition(
+      (pos) => this.onPos(pos),
+      () => {},
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 }
+    );
+  }
+
+  private onPos(pos: GeolocationPosition): void {
+    const p: TrailPoint = {
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      accuracy: pos.coords.accuracy,
+      timestamp: pos.timestamp,
+    };
+    if (p.accuracy > MIN_ACCURACY) return;
+    const last = this.points[this.points.length - 1];
+    if (last && distanceM(last, p) < MIN_DISTANCE_M) return;
+    this.points.push(p);
+    if (this.points.length > MAX_POINTS) this.points.shift();
+  }
+
+  stop(): TrailPoint[] {
+    if (this.watchId !== null) {
+      navigator.geolocation.clearWatch(this.watchId);
+      this.watchId = null;
+    }
+    return this.points.slice();
+  }
+
+  getPoints(): TrailPoint[] {
+    return this.points.slice();
+  }
+}
+
+export function distanceM(
+  a: { lat: number; lng: number },
+  b: { lat: number; lng: number }
+): number {
+  const R = 6371000;
+  const dLat = (b.lat - a.lat) * Math.PI / 180;
+  const dLng = (b.lng - a.lng) * Math.PI / 180;
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(a.lat * Math.PI / 180) *
+    Math.cos(b.lat * Math.PI / 180) *
+    Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+export function bearingDeg(
+  from: { lat: number; lng: number },
+  to: { lat: number; lng: number }
+): number {
+  const dLng = (to.lng - from.lng) * Math.PI / 180;
+  const y = Math.sin(dLng) * Math.cos(to.lat * Math.PI / 180);
+  const x =
+    Math.cos(from.lat * Math.PI / 180) * Math.sin(to.lat * Math.PI / 180) -
+    Math.sin(from.lat * Math.PI / 180) *
+    Math.cos(to.lat * Math.PI / 180) *
+    Math.cos(dLng);
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/trail.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/types.ts =====
+export type VerificationStatus = 'verified' | 'approximate' | 'unverified';
+export type Popularity = 'high' | 'medium' | 'low';
+
+export interface DoorInfo {
+  id: number;
+  name: string;
+  area: 'kuzey' | 'güney' | 'doğu' | 'batı';
+  outsideLat: number;
+  outsideLng: number;
+  isMain: boolean;
+  verification: VerificationStatus;
+  source?: string;
+  /** Kısa Türkçe konum ipucu (yalnızca kaynaklarda doğrulananlar) */
+  hint?: string;
+  popularity?: Popularity;
+}
+
+export interface TrailPoint {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  timestamp: number;
+}
+
+export type LocationSource = 'gps' | 'catalog';
+
+export interface SavedGate {
+  doorId: number;
+  doorName: string;
+  outsideLat: number;
+  outsideLng: number;
+  savedAt: number;
+  trail: TrailPoint[];
+  /** 'gps': kullanıcı kapının önündeyken ölçülen gerçek konum. 'catalog': doğrulanmamış katalog (eski kayıtlar). */
+  locationSource: LocationSource;
+  /** Kayıt anındaki GPS hassasiyeti (metre) */
+  accuracy?: number;
+  /** Seçilen kapı numarası, kayıt anındaki GPS konumuyla uyuşmuyor (>300 m) */
+  numberMismatch?: boolean;
+}
+
+export interface NavUpdate {
+  distance: number;
+  instruction: string;
+  arrived: boolean;
+  bearingDeg: number;
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/types.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/ui.ts =====
+const SCREENS = ['home', 'pickDoor', 'confirm', 'saving', 'guide', 'help', 'verify'] as const;
+export type ScreenId = typeof SCREENS[number];
+
+export function show(id: ScreenId): void {
+  for (const s of SCREENS) {
+    const el = document.getElementById(s);
+    if (!el) continue;
+    const on = s === id;
+    el.classList.toggle('hide', !on);
+    el.setAttribute('aria-hidden', on ? 'false' : 'true');
+  }
+  window.scrollTo(0, 0);
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/ui.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/verify-ui.ts =====
+import { DOORS, findDoor } from './doors';
+import { distanceM } from './trail';
+import { show } from './ui';
+import { speak } from './speech';
+import {
+  summarizeFixes,
+  assess,
+  saveMeasurement,
+  loadMeasurements,
+  clearMeasurements,
+  exportMeasurements,
+  MAX_FIX_ACCURACY_M,
+  type Fix,
+  type Measurement,
+  type Summary,
+} from './verify';
+
+const MEASURE_SECONDS = 30;
+
+let watchId: number | null = null;
+let timer: ReturnType<typeof setTimeout> | null = null;
+let ticker: ReturnType<typeof setInterval> | null = null;
+let fixes: Fix[] = [];
+let lastSummary: Summary | null = null;
+let lastDoorId: number | null = null;
+
+const $ = (id: string) => document.getElementById(id);
+
+function text(id: string, value: string): void {
+  const el = $(id);
+  if (el) el.textContent = value;
+}
+
+function selectedDoorId(): number | null {
+  const custom = Number(($('vCustom') as HTMLInputElement | null)?.value);
+  if (Number.isFinite(custom) && custom >= 1 && custom <= 300) return Math.round(custom);
+  const sel = $('vDoor') as HTMLSelectElement | null;
+  const n = Number(sel?.value);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function renderList(): void {
+  const list = loadMeasurements();
+  const el = $('vList');
+  if (!el) return;
+  el.textContent = list.length
+    ? list
+        .map(
+          m =>
+            `Kapı ${m.doorId}: ${m.lat.toFixed(6)}, ${m.lng.toFixed(6)} ` +
+            `(±${Math.round(m.accuracy)} m, ${m.samples} örnek` +
+            (m.catalogDiffM !== undefined ? `, katalogdan ${Math.round(m.catalogDiffM)} m` : '') +
+            ')'
+        )
+        .join('\n')
+    : 'Henüz kayıtlı ölçüm yok.';
+  (el as HTMLElement).style.whiteSpace = 'pre-line';
+}
+
+function stopMeasuring(): void {
+  if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+  watchId = null;
+  if (timer) clearTimeout(timer);
+  if (ticker) clearInterval(ticker);
+  timer = null;
+  ticker = null;
+}
+
+function finish(): void {
+  stopMeasuring();
+  const doorId = lastDoorId;
+  const s = summarizeFixes(fixes);
+  const startBtn = $('btnVStart');
+  if (startBtn) startBtn.textContent = '▶ ÖLÇÜMÜ BAŞLAT (30 sn)';
+  if (!s || doorId === null) {
+    lastSummary = null;
+    $('btnVSave')?.classList.add('hide');
+    text(
+      'vStatus',
+      `Yeterli hassas ölçüm alınamadı (${fixes.length} okuma, en az 8 tanesi ≤ ${MAX_FIX_ACCURACY_M} m olmalı). ` +
+        'Açık alana çıkıp tekrar deneyin.'
+    );
+    return;
+  }
+  lastSummary = s;
+  const door = findDoor(doorId);
+  const diff = door
+    ? distanceM({ lat: s.lat, lng: s.lng }, { lat: door.outsideLat, lng: door.outsideLng })
+    : undefined;
+  const verdict = assess(diff, s.spreadM);
+  const verdictText =
+    verdict === 'bad'
+      ? '❌ Ölçüm kendi içinde tutarsız (yayılım yüksek). Yerinizde durup tekrar ölçün.'
+      : verdict === 'check'
+      ? `⚠️ Katalogdaki konumdan ${Math.round(diff!)} m farklı. Ölçümü kaydedin; birkaç ölçümle teyit edilecek.`
+      : diff === undefined
+      ? '✅ Ölçüm tutarlı (katalogda karşılaştırılacak kapı yok).'
+      : `✅ Katalogla uyumlu (${Math.round(diff)} m fark).`;
+  text(
+    'vStatus',
+    `Ölçülen: ${s.lat.toFixed(7)}, ${s.lng.toFixed(7)}\n` +
+      `Hassasiyet ±${Math.round(s.accuracy)} m · ${s.samples} örnek · yayılım ${Math.round(s.spreadM)} m\n` +
+      verdictText
+  );
+  $('btnVSave')?.classList.toggle('hide', verdict === 'bad');
+  try {
+    navigator.vibrate?.([150, 80, 150]);
+  } catch {}
+  speak('Ölçüm tamamlandı.', true);
+}
+
+function startMeasuring(): void {
+  const doorId = selectedDoorId();
+  if (doorId === null) {
+    text('vStatus', 'Önce bir kapı seçin veya numarasını yazın.');
+    return;
+  }
+  stopMeasuring();
+  fixes = [];
+  lastSummary = null;
+  lastDoorId = doorId;
+  $('btnVSave')?.classList.add('hide');
+  const startBtn = $('btnVStart');
+  if (startBtn) startBtn.textContent = '⏹ ÖLÇÜMÜ BİTİR';
+
+  const t0 = Date.now();
+  text('vStatus', 'Konum aranıyor… Kapının tam önünde sabit durun.');
+
+  watchId = navigator.geolocation.watchPosition(
+    pos => {
+      fixes.push({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: pos.coords.accuracy,
+        t: Date.now(),
+      });
+    },
+    err => text('vStatus', `Konum hatası (${err.code}). Konum iznini ve GPS'i kontrol edin.`),
+    { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
+  );
+
+  ticker = setInterval(() => {
+    const left = Math.max(0, MEASURE_SECONDS - Math.round((Date.now() - t0) / 1000));
+    const good = fixes.filter(f => f.accuracy <= MAX_FIX_ACCURACY_M).length;
+    text('vStatus', `Ölçülüyor… ${left} sn · ${fixes.length} okuma · ${good} hassas`);
+  }, 1000);
+  timer = setTimeout(finish, MEASURE_SECONDS * 1000);
+}
+
+function saveCurrent(): void {
+  if (!lastSummary || lastDoorId === null) return;
+  const door = findDoor(lastDoorId);
+  const m: Measurement = {
+    ...lastSummary,
+    doorId: lastDoorId,
+    measuredAt: Date.now(),
+    catalogDiffM: door
+      ? distanceM(
+          { lat: lastSummary.lat, lng: lastSummary.lng },
+          { lat: door.outsideLat, lng: door.outsideLng }
+        )
+      : undefined,
+  };
+  saveMeasurement(m);
+  $('btnVSave')?.classList.add('hide');
+  text('vStatus', `Kaydedildi: kapı ${m.doorId}. Başka kapıya geçebilirsiniz.`);
+  renderList();
+}
+
+async function copyAll(): Promise<void> {
+  const json = exportMeasurements(loadMeasurements());
+  try {
+    await navigator.clipboard.writeText(json);
+    text('vStatus', 'Kopyalandı. Geliştiriciye gönderin (WhatsApp/e-posta).');
+  } catch {
+    window.prompt('Kopyalayın:', json);
+  }
+}
+
+/** ?verify=1 ile açılan gizli saha doğrulama aracı */
+export function initVerifyUI(): void {
+  const sel = $('vDoor') as HTMLSelectElement | null;
+  if (sel && sel.options.length === 0) {
+    for (const d of DOORS) {
+      const o = document.createElement('option');
+      o.value = String(d.id);
+      o.textContent = `${d.id} — ${d.name}`;
+      sel.appendChild(o);
+    }
+  }
+  const open = $('btnVerify');
+  open?.classList.remove('hide');
+  open?.addEventListener('click', () => {
+    renderList();
+    show('verify');
+  });
+  $('btnVStart')?.addEventListener('click', () => {
+    if (watchId !== null) finish();
+    else startMeasuring();
+  });
+  $('btnVSave')?.addEventListener('click', saveCurrent);
+  $('btnVCopy')?.addEventListener('click', () => void copyAll());
+  $('btnVClear')?.addEventListener('click', () => {
+    if (window.confirm('Tüm kayıtlı ölçümler silinsin mi?')) {
+      clearMeasurements();
+      renderList();
+    }
+  });
+  $('btnVBack')?.addEventListener('click', () => {
+    stopMeasuring();
+    show('home');
+  });
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/verify-ui.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/verify.test.ts =====
+import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  summarizeFixes,
+  assess,
+  saveMeasurement,
+  loadMeasurements,
+  clearMeasurements,
+  exportMeasurements,
+  type Fix,
+} from './verify';
+
+function fixes(n: number, lat: number, lng: number, acc = 10, jitter = 0.00001): Fix[] {
+  return Array.from({ length: n }, (_, i) => ({
+    lat: lat + ((i % 3) - 1) * jitter,
+    lng: lng + ((i % 5) - 2) * jitter,
+    accuracy: acc,
+    t: i,
+  }));
+}
+
+describe('verify', () => {
+  beforeEach(() => localStorage.clear());
+
+  it('yeterli hassas örnek yoksa null', () => {
+    expect(summarizeFixes(fixes(5, 21.4, 39.8))).toBeNull();
+    expect(summarizeFixes(fixes(20, 21.4, 39.8, 80))).toBeNull(); // hepsi >30 m
+  });
+
+  it('medyan nokta ve yayılım hesaplanır', () => {
+    const s = summarizeFixes(fixes(20, 21.4210447, 39.8258406))!;
+    expect(s.samples).toBe(20);
+    expect(s.lat).toBeCloseTo(21.4210447, 5);
+    expect(s.lng).toBeCloseTo(39.8258406, 5);
+    expect(s.spreadM).toBeLessThan(5);
+    expect(s.accuracy).toBe(10);
+  });
+
+  it('aykırı (sıçrayan) okumalar medyanı bozmaz', () => {
+    const list = fixes(20, 21.42, 39.82);
+    list.push({ lat: 21.5, lng: 39.9, accuracy: 10, t: 99 }); // tek sıçrama
+    list.push({ lat: 21.3, lng: 39.7, accuracy: 10, t: 100 });
+    const s = summarizeFixes(list)!;
+    expect(s.lat).toBeCloseTo(21.42, 4);
+    expect(s.lng).toBeCloseTo(39.82, 4);
+  });
+
+  it('hassasiyeti kötü okumalar elenir', () => {
+    const list = [...fixes(10, 21.42, 39.82), ...fixes(30, 21.5, 39.9, 200)];
+    const s = summarizeFixes(list)!;
+    expect(s.samples).toBe(10);
+    expect(s.lat).toBeCloseTo(21.42, 4);
+  });
+
+  it('assess: tutarsız ölçüm bad, uyumlu good, uzak check', () => {
+    expect(assess(10, 40)).toBe('bad');
+    expect(assess(10, 5)).toBe('good');
+    expect(assess(120, 5)).toBe('check');
+    expect(assess(undefined, 5)).toBe('good');
+  });
+
+  it('ölçümler saklanır, yüklenir, temizlenir', () => {
+    const m = { doorId: 1, lat: 21.42, lng: 39.82, accuracy: 8, spreadM: 3, samples: 12, measuredAt: 1 };
+    saveMeasurement(m);
+    saveMeasurement({ ...m, doorId: 79 });
+    expect(loadMeasurements().map(x => x.doorId)).toEqual([1, 79]);
+    clearMeasurements();
+    expect(loadMeasurements()).toEqual([]);
+  });
+
+  it('export JSON okunur ve yuvarlanır', () => {
+    const json = exportMeasurements([
+      { doorId: 62, lat: 21.42283781234, lng: 39.82456961234, accuracy: 7.6, spreadM: 3.2, samples: 15, measuredAt: 0, catalogDiffM: 12.4 },
+    ]);
+    const arr = JSON.parse(json);
+    expect(arr[0]).toMatchObject({ doorId: 62, lat: 21.4228378, lng: 39.8245696, accuracy: 8, spreadM: 3, catalogDiffM: 12 });
+  });
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/verify.test.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/src/verify.ts =====
+import { distanceM } from './trail';
+
+export interface Fix {
+  lat: number;
+  lng: number;
+  accuracy: number;
+  t: number;
+}
+
+export interface Summary {
+  lat: number;
+  lng: number;
+  /** Örneklerin medyan hassasiyeti (m) */
+  accuracy: number;
+  /** Örneklerin %90'ının medyan noktaya uzaklığı (m) — ölçümün tutarlılığı */
+  spreadM: number;
+  samples: number;
+}
+
+export interface Measurement extends Summary {
+  doorId: number;
+  measuredAt: number;
+  /** Katalogdaki konumdan fark (m); katalogda yoksa undefined */
+  catalogDiffM?: number;
+}
+
+const KEY = 'doorMeasurements.v1';
+export const MIN_SAMPLES = 8;
+export const MAX_FIX_ACCURACY_M = 30;
+
+function median(values: number[]): number {
+  const s = [...values].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m]! : (s[m - 1]! + s[m]!) / 2;
+}
+
+/**
+ * Tek bir GPS okuması yerine, hassas okumaların MEDYANINI alır (aykırı değerlere dayanıklı).
+ * Yeterli sayıda hassas örnek yoksa null döner.
+ */
+export function summarizeFixes(fixes: Fix[], maxAccuracy = MAX_FIX_ACCURACY_M): Summary | null {
+  const good = fixes.filter(f => Number.isFinite(f.accuracy) && f.accuracy <= maxAccuracy);
+  if (good.length < MIN_SAMPLES) return null;
+
+  const lat = median(good.map(f => f.lat));
+  const lng = median(good.map(f => f.lng));
+  const dists = good.map(f => distanceM({ lat, lng }, { lat: f.lat, lng: f.lng })).sort((a, b) => a - b);
+  const spreadM = dists[Math.min(dists.length - 1, Math.floor(dists.length * 0.9))]!;
+
+  return {
+    lat,
+    lng,
+    accuracy: median(good.map(f => f.accuracy)),
+    spreadM,
+    samples: good.length,
+  };
+}
+
+/** Ölçümün katalogla karşılaştırılması için kısa değerlendirme */
+export function assess(diffM: number | undefined, spreadM: number): 'good' | 'check' | 'bad' {
+  if (spreadM > 25) return 'bad'; // ölçüm kendi içinde tutarsız → tekrar ölçülmeli
+  if (diffM === undefined) return 'good';
+  return diffM <= 40 ? 'good' : 'check';
+}
+
+export function loadMeasurements(): Measurement[] {
+  try {
+    const raw = localStorage.getItem(KEY);
+    const arr = raw ? (JSON.parse(raw) as Measurement[]) : [];
+    return Array.isArray(arr) ? arr.filter(m => Number.isFinite(m?.lat) && Number.isFinite(m?.lng)) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveMeasurement(m: Measurement): void {
+  try {
+    localStorage.setItem(KEY, JSON.stringify([...loadMeasurements(), m]));
+  } catch {}
+}
+
+export function clearMeasurements(): void {
+  try {
+    localStorage.removeItem(KEY);
+  } catch {}
+}
+
+/** Telefondan kopyalanıp tools/merge-measurements.mjs ile birleştirilecek biçim */
+export function exportMeasurements(list: Measurement[]): string {
+  return JSON.stringify(
+    list.map(m => ({
+      doorId: m.doorId,
+      lat: Number(m.lat.toFixed(7)),
+      lng: Number(m.lng.toFixed(7)),
+      accuracy: Math.round(m.accuracy),
+      spreadM: Math.round(m.spreadM),
+      samples: m.samples,
+      catalogDiffM: m.catalogDiffM === undefined ? null : Math.round(m.catalogDiffM),
+      measuredAt: new Date(m.measuredAt).toISOString(),
+    })),
+    null,
+    2
+  );
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/src/verify.ts =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/tools/merge-measurements.mjs =====
+#!/usr/bin/env node
+// Kullanım: node tools/merge-measurements.mjs olcum1.json olcum2.json ...
+// Uygulamadan "TÜMÜNÜ KOPYALA" ile alınan JSON dosyalarını birleştirir; her kapı için
+// MEDYAN konumu hesaplar ve doors.ts'e yapıştırılacak değerleri yazdırır.
+import { readFileSync } from 'node:fs';
+
+const files = process.argv.slice(2);
+if (files.length === 0) {
+  console.error('Kullanım: node tools/merge-measurements.mjs olcum1.json [olcum2.json ...]');
+  process.exit(1);
+}
+
+const median = a => {
+  const s = [...a].sort((x, y) => x - y);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+};
+const dist = (a, b) => {
+  const R = 6371000, r = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+};
+
+const byDoor = new Map();
+for (const f of files) {
+  for (const m of JSON.parse(readFileSync(f, 'utf8'))) {
+    if (m.spreadM > 25) continue; // tutarsız ölçümleri at
+    if (!byDoor.has(m.doorId)) byDoor.set(m.doorId, []);
+    byDoor.get(m.doorId).push(m);
+  }
+}
+
+for (const [id, list] of [...byDoor].sort((a, b) => a[0] - b[0])) {
+  const lat = median(list.map(m => m.lat));
+  const lng = median(list.map(m => m.lng));
+  const worst = Math.max(...list.map(m => dist({ lat, lng }, m)));
+  const verdict =
+    list.length >= 3 && worst <= 25 ? "verification: 'verified'" :
+    list.length >= 2 && worst <= 40 ? "verification: 'approximate'  // daha fazla ölçüm önerilir" :
+    "verification: 'unverified'  // ölçümler tutarsız veya yetersiz";
+  console.log(`// Kapı ${id}: ${list.length} ölçüm, en uzak sapma ${worst.toFixed(0)} m`);
+  console.log(`outsideLat: ${lat.toFixed(7)}, outsideLng: ${lng.toFixed(7)}, ${verdict}`);
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/tools/merge-measurements.mjs =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/tsconfig.json =====
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "types": ["vite/client", "vitest/globals"]
+  },
+  "include": ["src"]
+}
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/tsconfig.json =====
+===== FILE: /data/data/com.termux/files/home/proje/UmreDostum/vite.config.ts =====
+import { defineConfig } from 'vitest/config';
+import { VitePWA } from 'vite-plugin-pwa';
+import process from 'node:process';
+
+const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
+const supportsNoWebstorage =
+  nodeMajor! > 22 || (nodeMajor === 22 && nodeMinor! >= 4);
+
+if (supportsNoWebstorage && !process.env.NODE_OPTIONS?.includes('--no-webstorage')) {
+  process.env.NODE_OPTIONS = `${process.env.NODE_OPTIONS ?? ''} --no-webstorage`.trim();
+}
+
+export default defineConfig({
+  base: process.env.GITHUB_ACTIONS ? '/Umre-Dostum/' : '/',
+  build: {
+    target: 'es2020',
+    outDir: 'dist',
+    minify: 'esbuild',
+  },
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['icons/icon.svg', 'icons/icon-180.png'],
+      manifest: false,
+      minify: false,
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // 'development': service worker terser ile sıkıştırılmaz. Termux/Android'de
+        // workbox'un terser adımı çöküyor ("Unable to write the service worker file").
+        mode: 'development',
+        navigateFallback: 'index.html',
+        runtimeCaching: [
+          {
+            // Görüntülenen harita karoları çevrimdışı da görünsün
+            urlPattern: /^https:\/\/[abc]\.tile\.openstreetmap\.org\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
+      },
+    }),
+  ],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      include: [
+        'src/doors.ts',
+        'src/guide.ts',
+        'src/speech.ts',
+        'src/storage.ts',
+        'src/trail.ts',
+        'src/ui.ts',
+        'src/main.ts',
+        'src/compass.ts',
+        'src/help-i18n.ts',
+      ],
+      exclude: ['src/**/*.test.ts', 'src/test/**'],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 70,
+        statements: 80,
+      },
+    },
+  },
+});
+===== END:  /data/data/com.termux/files/home/proje/UmreDostum/vite.config.ts =====
